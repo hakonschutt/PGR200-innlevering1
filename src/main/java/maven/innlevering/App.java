@@ -1,28 +1,76 @@
 package maven.innlevering;
 
+import java.util.Scanner;
+
 /**
- * Hello world!
  *
  */
 public class App {
+    private DBHandler con;
+    private static boolean hasScanned = false;
+
     public static void main( String[] args ) {
-        System.out.println("Readying to connect to database....");
+        connectToDB();
+        printInstructions();
+        boolean quit = false;
 
-
-        //Scanner sc = new Scanner(System.in);
-        //printInstructions();
+        while(!quit){
+            quit = runApp();
+        }
     }
 
-    private static boolean connectToDB(String username, String password, String host){
+    private static void connectToDB(){
+        System.out.println("Readying to connect to database....");
+        Scanner sc = new Scanner(System.in);
+        System.out.print("DB user: ");
+        String dbUser = sc.nextLine();
+        System.out.print("DB pass: ");
+        String dbPass = sc.nextLine();
+        System.out.print("DB host: ");
+        String dbHost = sc.nextLine();
 
+        System.out.println("Connection successful...");
+        System.out.println("Prossessing to start program.");
     }
 
     private static void printInstructions(){
         System.out.println("The following instructions are valid in this program: ");
         System.out.println("(1) Print instructions (This page).");
         System.out.println("(2) Scan input file to database.");
-        System.out.println("(3) Change data in table.");
-        System.out.println("(4) Print semester plan.");
-        System.out.println("(5) Quit.");
+        System.out.println("(3) Print semester plan.");
+        System.out.println("(4) Quit.");
+    }
+
+    private static boolean runApp(){
+        System.out.println("What command do you want to execute?");
+        Scanner sc = new Scanner(System.in);
+        int asw = sc.nextInt();
+        switch(asw){
+            case 1:
+                printInstructions();
+                return false;
+            case 2:
+                if(hasScanned){
+                    System.out.println("File has already been scanned.");
+                } else {
+                    System.out.println("Scanning input file....");
+                    hasScanned = true;
+                }
+                return false;
+            case 3:
+                if(!hasScanned){
+                    System.out.println("No input has been scanned. Executing scann followed by print...");
+                    hasScanned = true;
+                } else {
+                    System.out.println("Printing plan..");
+                }
+                return false;
+            case 4:
+                System.out.println("Quiting program...");
+                return true;
+            default:
+                System.out.println("Not a valid command. Try again!");
+                return false;
+        }
     }
 }
