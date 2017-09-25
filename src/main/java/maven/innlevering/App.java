@@ -1,5 +1,7 @@
 package maven.innlevering;
 
+import maven.innlevering.database.DBHandler;
+
 import java.util.Scanner;
 
 /**
@@ -53,7 +55,7 @@ public class App {
                 if(hasScanned){
                     System.out.println("File has already been scanned.");
                 } else {
-                    System.out.println("Scanning input file....");
+                    ReadFile rf = new ReadFile();
                     hasScanned = true;
                 }
                 return false;
