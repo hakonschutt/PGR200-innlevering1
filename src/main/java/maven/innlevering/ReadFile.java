@@ -10,11 +10,7 @@ import java.io.FileReader;
 public class ReadFile {
     private Scanner sc;
 
-    public ReadFile(){
-        instructions();
-    }
-
-    private void instructions(){
+    public void instructions(){
         System.out.println("Which table should be read?");
         System.out.println("(1) Lectures");
         System.out.println("(2) Subjects");
@@ -46,8 +42,6 @@ public class ReadFile {
         try{
             String dir = "input/";
             BufferedReader in = new BufferedReader(new FileReader(dir + file));
-
-
 
             String s;
             while((s = in.readLine()) != null){
