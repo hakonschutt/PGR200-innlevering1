@@ -16,10 +16,7 @@ public class DBHandler {
     }
 
     private boolean DBConnect(){
-        try(){
+        return true;
 
-        } catch (){
-
-        }
     }
 }

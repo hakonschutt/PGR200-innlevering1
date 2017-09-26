@@ -1,5 +1,4 @@
-package maven.innlevering;
-
+import maven.innlevering.ReadFile;
 import maven.innlevering.database.DBHandler;
 
 import java.util.Scanner;
