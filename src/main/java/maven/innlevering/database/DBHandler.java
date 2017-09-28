@@ -14,7 +14,7 @@ public class DBHandler {
     public void overWriteDatabase(Connection con, String dbName){
         try (Statement stmt = con.createStatement()){
             stmt.executeUpdate("DROP DATABASE " + dbName +  "");
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(2);
 
             createDataBase(con, dbName);
         } catch (SQLException e){

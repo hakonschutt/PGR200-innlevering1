@@ -19,8 +19,6 @@ public class App {
     private static DBHandler handler = new DBHandler();
     private static DBConnect connect;
     private static Connection connection;
-    private static Properties properties = new Properties();
-    private static OutputStream outputStream;
     private static boolean quit = false;
     private static boolean hasScanned = false;
     private static Scanner sc = new Scanner(System.in);
@@ -30,7 +28,6 @@ public class App {
      * Main app method that calls all methods used.
      */
     public static void main( String[] args ) throws Exception {
-        outputStream = new FileOutputStream("data.properties");
 
         boolean works = false;
         while (!works){
@@ -77,6 +74,9 @@ public class App {
      * Writing user input to properties file AFTER checking if the connection works with database
      */
     private static void writeProperties() throws IOException {
+        Properties properties = new Properties();
+        OutputStream outputStream = new FileOutputStream("data.properties");;
+
         properties.setProperty("user", connect.getUser());
         properties.setProperty("pass", connect.getPass());
         properties.setProperty("host", connect.getHost());
