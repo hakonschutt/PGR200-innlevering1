@@ -1,0 +1,7 @@
+teacher-subject
+id/subject_id/teacher_id
+int/varchar/int
+11/255/11
+id
+1/PGR200/1
+2/DB110/1

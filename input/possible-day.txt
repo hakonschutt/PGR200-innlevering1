@@ -1,0 +1,10 @@
+possible-day
+day_id/day
+int/varchar
+11/255
+day_id
+1/monday
+2/tuesday
+3/wednesday
+4/thursday
+5/friday

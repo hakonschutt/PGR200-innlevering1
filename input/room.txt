@@ -1,0 +1,8 @@
+room
+room_id/maks_kapasitet
+varchar/varchar
+255/255
+room_id
+F101/200
+F311/40
+F307/60

@@ -1,0 +1,7 @@
+subject
+subject_id/subject
+varchar/varchar
+255/255
+subject_id
+PGR200/Avansert java
+DB110/Databaser

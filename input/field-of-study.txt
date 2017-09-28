@@ -1,0 +1,8 @@
+field-of-study
+study_id/study
+int/varchar
+11/255
+study_id
+1/Programmering
+2/Spillprogrammering
+3/Interaktivt design

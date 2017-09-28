@@ -1,0 +1,7 @@
+study-subject
+id/study_id/subject_id
+int/int/varchar
+11/11/255
+id
+1/1/PGR200
+2/1/DB110
