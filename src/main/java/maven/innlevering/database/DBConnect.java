@@ -19,6 +19,8 @@ public class DBConnect {
     private String host;
     private String dbName;
 
+    public DBConnect(){}
+
     public DBConnect(String user, String pass, String host, String dbName) {
         this.user = user;
         this.pass = pass;

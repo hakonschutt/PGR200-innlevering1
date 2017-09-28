@@ -3,9 +3,7 @@ import maven.innlevering.SearchFiles;
 import maven.innlevering.database.DBConnect;
 import maven.innlevering.database.DBHandler;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.sql.Connection;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +26,6 @@ public class App {
      * Main app method that calls all methods used.
      */
     public static void main( String[] args ) throws Exception {
-
         boolean works = false;
         while (!works){
             works = writeDBinfo();
@@ -183,13 +180,14 @@ public class App {
      * Scans the input files from the input directory
      */
     private static boolean scanInputFiles(){
-        // TODO: Implement scanInputFiles()
+        // TODO: Implement scanInputFiles() FIRST!
 
         if(hasScanned){
             System.out.println("File has already been scanned.");
         } else {
             Inputhandler rf = new Inputhandler();
-            rf.instructions();
+            rf.startInputScan();
+
             hasScanned = true;
         }
         return false;
@@ -199,7 +197,7 @@ public class App {
      * Print the optimal time schedule
      */
     private static boolean printPlan(){
-        // TODO: Implement printPlan()
+        // TODO: Implement printPlan() LAST!
 
         if(!hasScanned){
             System.out.println("No input has been scanned. Execute scann followed by print...");
@@ -214,10 +212,10 @@ public class App {
      * Search method which calls a new instance of the class Search Files.
      */
     private static boolean searchFiles(){
-        // TODO: Implement searchFiles()
-
+        // TODO: Implement searchFiles() SECOND LAST!
         SearchFiles search = new SearchFiles();
         search.instructions();
+
         return false;
     }
 

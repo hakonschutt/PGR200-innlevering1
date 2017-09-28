@@ -1,5 +1,7 @@
 package maven.innlevering;
 
+import maven.innlevering.database.DBUploadAsThread;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Scanner;
@@ -10,50 +12,48 @@ import java.util.Scanner;
 public class Inputhandler {
     private Scanner sc;
 
-    public void instructions(){
-        System.out.println("Which table should be read?");
-        System.out.println("(1) Lectures");
-        System.out.println("(2) Subjects");
-        System.out.println("(3) Rooms");
-        sc = new Scanner(System.in);
-        int choice = sc.nextInt();
-        checkFile(choice);
+    public void startInputScan(){
+        System.out.println("Started reading files");
+        for (int i = 1; i <= 8; i++){
+            String file = getFile(i);
+            DBUploadAsThread job = new DBUploadAsThread(file);
+            new Thread(job).start();
+        }
     }
 
-    private void checkFile(int choice){
-        switch(choice){
+    private String getFile(int fileNr){
+        String ext = ".txt";
+        String file;
+
+        switch(fileNr){
             case 1:
-                readFile("test.txt");
+                file = "day-teach";
                 break;
             case 2:
-                readFile("test.txt");
+                file = "field-of-study";
                 break;
             case 3:
-                readFile("test.txt");
+                file = "possible-day";
+                break;
+            case 4:
+                file = "room";
+                break;
+            case 5:
+                file = "study-subject";
+                break;
+            case 6:
+                file = "subject";
+                break;
+            case 7:
+                file = "teacher";
+                break;
+            case 8:
+                file = "teacher-subject";
                 break;
             default:
-                System.out.println("Not a valid choice.... ");
-                System.out.println("Exiting. ");
-                break;
+                return null;
         }
-    }
 
-    public void readFile(String file){
-        try{
-            String dir = "input/";
-            BufferedReader in = new BufferedReader(new FileReader(dir + file));
-
-            String s;
-            while((s = in.readLine()) != null){
-                String[] var = s.split("/");
-
-                for(int i = 0; i < var.length; i++){
-                    System.out.println(var[i]);
-                }
-            }
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        return file + ext;
     }
 }
