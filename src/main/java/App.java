@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 /**
- *
+ * This is the client class
  */
 public class App {
     private static DBHandler handler = new DBHandler();
@@ -25,11 +25,19 @@ public class App {
     private static boolean hasScanned = false;
     private static Scanner sc = new Scanner(System.in);
 
+
+    /*
+     * Main app method that calls all methods used.
+     */
     public static void main( String[] args ) throws Exception {
         outputStream = new FileOutputStream("data.properties");
 
-        writeDBinfo();
-        System.out.println();
+        boolean works = false;
+        while (!works){
+            works = writeDBinfo();
+            System.out.println();
+        }
+
         writeProperties();
 
         try (Connection connection = connect.getConnection()){
@@ -48,7 +56,10 @@ public class App {
         }
     }
 
-    private static void writeDBinfo() throws Exception {
+    /*
+     * User input for database connection
+     */
+    private static boolean writeDBinfo() throws Exception {
         String[] dbInfo = new String[4];
         System.out.print("DB user: ");
         dbInfo[0] = sc.nextLine();
@@ -59,9 +70,12 @@ public class App {
         System.out.print("DB name: ");
         dbInfo[3] = sc.nextLine();
 
-        connectToDatabase(dbInfo);
+        return connectToDatabase(dbInfo);
     }
 
+    /*
+     * Writing user input to properties file AFTER checking if the connection works with database
+     */
     private static void writeProperties() throws IOException {
         properties.setProperty("user", connect.getUser());
         properties.setProperty("pass", connect.getPass());
@@ -71,21 +85,37 @@ public class App {
         properties.store(outputStream, null);
     }
 
-    private static void connectToDatabase ( String[] dbInfo ) throws Exception {
+    /*
+     * Test connection with the user input
+     */
+    private static boolean connectToDatabase ( String[] dbInfo ) throws Exception {
         connect = new DBConnect(dbInfo[0], dbInfo[1], dbInfo[2], dbInfo[3]);
-        Connection con = connect.testConnection();
 
-        boolean dbExists = handler.validateIfDBExists(con, dbInfo[3]);
+        try (Connection con = connect.testConnection(false )){
+            boolean dbExists = handler.validateIfDBExists(con, dbInfo[3]);
 
-        if(!dbExists){
-            handler.createDataBase(con, dbInfo[3]);
-            System.out.print("Creating database: " + dbInfo[3]);
-            printLoader();
-        } else {
-            userInputForConnectionTest(con, dbInfo[3]);
+            if(!dbExists){
+                handler.createDataBase(con, dbInfo[3]);
+                System.out.print("Creating database: " + dbInfo[3]);
+                printLoader();
+            } else {
+                userInputForConnectionTest(con, dbInfo[3]);
+            }
+
+            return true;
+
+        } catch (Exception e){
+            System.out.println("Unable to connect with the current information");
+            System.out.println("Try again: ");
+            System.out.println();
+
+            return false;
         }
     }
 
+    /*
+     * User input IF the database already exists
+     */
     private static void userInputForConnectionTest(Connection con, String dbName) throws Exception {
         System.out.println("How would you like to continue?");
         System.out.println("(1) Continue with this connection");
@@ -115,6 +145,9 @@ public class App {
         }
     }
 
+    /*
+     * Lets the user change the database name IF the database already exists
+     */
     private static void changeDatabaseName(Connection con) throws Exception {
         System.out.println("Whats the new name:");
         Scanner sc = new Scanner(System.in);
@@ -132,6 +165,9 @@ public class App {
         }
     }
 
+    /*
+     * Prints the possible instructions for the method runApp()
+     */
     private static boolean printInstructions(){
         System.out.println("The following instructions are valid in this program: ");
         System.out.println("(1) Print instructions (This page).");
@@ -143,7 +179,12 @@ public class App {
         return false;
     }
 
+    /*
+     * Scans the input files from the input directory
+     */
     private static boolean scanInputFiles(){
+        // TODO: Implement scanInputFiles()
+
         if(hasScanned){
             System.out.println("File has already been scanned.");
         } else {
@@ -154,7 +195,12 @@ public class App {
         return false;
     }
 
+    /*
+     * Print the optimal time schedule
+     */
     private static boolean printPlan(){
+        // TODO: Implement printPlan()
+
         if(!hasScanned){
             System.out.println("No input has been scanned. Execute scann followed by print...");
             hasScanned = true;
@@ -164,15 +210,23 @@ public class App {
         return false;
     }
 
+    /*
+     * Search method which calls a new instance of the class Search Files.
+     */
     private static boolean searchFiles(){
+        // TODO: Implement searchFiles()
+
         SearchFiles search = new SearchFiles();
         search.instructions();
         return false;
     }
 
+    /*
+     * RunApp is the main method. It runs until the user wants to quit
+     */
     private static boolean runApp() throws Exception {
         int asw = sc.nextInt();
-        switch(asw){
+        switch (asw) {
             case 1:
                 return printInstructions();
             case 2:
@@ -190,6 +244,9 @@ public class App {
         }
     }
 
+    /*
+     * Print loader creates a processing in various parts of the program
+     */
     private static void printLoader() throws InterruptedException {
         System.out.print(".");
         TimeUnit.MILLISECONDS.sleep(200);

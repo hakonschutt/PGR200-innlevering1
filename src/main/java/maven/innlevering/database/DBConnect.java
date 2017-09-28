@@ -26,8 +26,11 @@ public class DBConnect {
         this.dbName = dbName;
     }
 
-    public Connection testConnection () throws SQLException, FileNotFoundException {
+    public Connection testConnection (boolean withDatabaseConnection) throws SQLException, FileNotFoundException {
         MysqlDataSource ds = new MysqlDataSource();
+
+        if(withDatabaseConnection)
+            ds.setDatabaseName(this.dbName);
 
         ds.setServerName(this.host);
         ds.setUser(this.user);
