@@ -1,7 +1,0 @@
-test_test
-id/day_id/teacher_id/name
-int/int/int/varchar
-11/11/11/255
-id
-1/1/1/test
-2/2/2/test

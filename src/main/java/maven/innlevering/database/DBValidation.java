@@ -92,10 +92,11 @@ public class DBValidation {
      * instruction to print if database exists
      */
     private void userInputForConnectionInstruction(){
+        System.out.println("The database already exists!");
         System.out.println("How would you like to continue?");
         System.out.println("(1) Continue with this connection");
         System.out.println("(2) Change to a new database name");
-        System.out.println("(3) ! Overwrite the current database !");
+        System.out.println("(3) !Overwrite the current database!");
     }
 
     /*
@@ -114,7 +115,7 @@ public class DBValidation {
                 changeDatabaseName(con);
                 break;
             case 3:
-                System.out.println( "Overwriting database " + dbName );
+                System.out.print( "Overwriting database " + dbName );
                 printLoader();
                 handler.overWriteDatabase( con, dbName );
                 break;
@@ -159,7 +160,6 @@ public class DBValidation {
         System.out.print( "." );
         TimeUnit.MILLISECONDS.sleep(200);
         System.out.print( "." );
-        TimeUnit.MILLISECONDS.sleep(200);
         System.out.println();
     }
 }

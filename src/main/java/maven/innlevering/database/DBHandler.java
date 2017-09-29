@@ -11,28 +11,28 @@ import java.sql.*;
  */
 public class DBHandler {
 
-    public void overWriteDatabase(Connection con, String dbName){
-        try (Statement stmt = con.createStatement()){
+    public void overWriteDatabase( Connection con, String dbName ){
+        try ( Statement stmt = con.createStatement() ){
             stmt.executeUpdate("DROP DATABASE " + dbName +  "");
-            TimeUnit.SECONDS.sleep(2);
+            TimeUnit.SECONDS.sleep(2 );
 
-            createDataBase(con, dbName);
-        } catch (SQLException e){
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+            createDataBase( con, dbName );
+        } catch ( SQLException e ){
+            throw new RuntimeException( e );
+        } catch ( InterruptedException e ) {
             e.printStackTrace();
         }
     }
 
-    public void createDataBase(Connection con, String newDbName){
+    public void createDataBase( Connection con, String newDbName ){
         try (Statement stmt = con.createStatement()){
             stmt.executeUpdate("CREATE DATABASE " + newDbName +  "");
-        } catch (SQLException e){
-            throw new RuntimeException(e);
+        } catch ( SQLException e ){
+            throw new RuntimeException( e );
         }
     }
 
-    public boolean validateIfDBExists(Connection con, String databaseName) throws Exception {
+    public boolean validateIfDBExists( Connection con, String databaseName ) throws Exception {
         try (Statement stmt = con.createStatement();
              ResultSet res =
                      stmt.executeQuery(
@@ -41,8 +41,8 @@ public class DBHandler {
 
             return res.next();
 
-        } catch (SQLException e){
-            throw new RuntimeException(e);
+        } catch ( SQLException e ){
+            throw new RuntimeException( e );
         }
     }
 }

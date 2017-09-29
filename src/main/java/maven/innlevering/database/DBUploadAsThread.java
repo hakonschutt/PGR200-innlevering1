@@ -22,7 +22,7 @@ public class DBUploadAsThread implements Runnable {
         try {
             createQuery(file);
             insertQuery(file);
-            System.out.println("Finished " + file);
+            System.out.println("Finished importing " + file);
 
         } catch (IOException e) {
             e.printStackTrace();

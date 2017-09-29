@@ -30,12 +30,16 @@ public class App {
         try (Connection con = connect.getConnection()){
             System.out.println( "Successful connection!" );
             TimeUnit.SECONDS.sleep(1);
-            System.out.println();
         } catch ( SQLException e ){
             throw new RuntimeException(e);
         }
 
-        if( !hasScanned ) scanInputFiles();
+        if( !hasScanned ) {
+            scanInputFiles();
+            TimeUnit.SECONDS.sleep(2);
+        }
+
+        System.out.println();
 
         printInstructions();
         while( !quit ){
