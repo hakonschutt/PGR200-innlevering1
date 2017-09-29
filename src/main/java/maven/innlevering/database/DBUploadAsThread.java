@@ -20,8 +20,7 @@ public class DBUploadAsThread implements Runnable {
     @Override
     public void run() {
         try {
-            String sql = createQuery(file);
-            executQuery(sql);
+            createQuery(file);
             insertQuery(file);
             System.out.println("Finished " + file);
 
@@ -30,7 +29,7 @@ public class DBUploadAsThread implements Runnable {
         }
     }
 
-    private String createQuery(String fileName) throws IOException {
+    private void createQuery(String fileName) throws IOException {
         try{
             String file = "input/" + fileName;
             BufferedReader in = new BufferedReader(new FileReader(file));
@@ -49,11 +48,10 @@ public class DBUploadAsThread implements Runnable {
             }
             sql += " PRIMARY KEY (`" + PK + "`))";
 
-            return sql;
+            executeQuery(sql);
 
         }catch(Exception e){
             e.printStackTrace();
-            return null;
         }
     }
 
@@ -93,11 +91,11 @@ public class DBUploadAsThread implements Runnable {
 
             sql += ")";
 
-            executQuery(sql);
+            executeQuery(sql);
         }
     }
 
-    private void executQuery(String sql){
+    private void executeQuery(String sql){
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             stmt.executeUpdate(sql);

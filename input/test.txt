@@ -1,7 +1,0 @@
-Navn/Adresse/Alder/Favorittfarge
-STRING/STRING/INT/STRING
-128/128/3/128
-Donald Duck/Uflaksveien 13/60/Grønn
-Fetter Anton/Flakseveien 1/50/Gul
-Dolly Duck/Andebygården 2/55/Blå
-Rolando/Andebygården 2/56/Sort

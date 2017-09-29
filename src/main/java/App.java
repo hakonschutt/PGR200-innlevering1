@@ -45,7 +45,6 @@ public class App {
         printInstructions();
 
         while(!quit){
-            System.out.println("What command do you want to execute?");
             quit = runApp();
         }
     }
@@ -180,17 +179,22 @@ public class App {
      * Scans the input files from the input directory
      */
     private static boolean scanInputFiles(){
-        // TODO: Implement scanInputFiles() FIRST!
-
         if(hasScanned){
             System.out.println("File has already been scanned.");
         } else {
             Inputhandler rf = new Inputhandler();
             rf.startInputScan();
-
             hasScanned = true;
         }
+
         return false;
+    }
+
+    /*
+     * Prints all the content in the table
+     */
+    private static boolean printTable(){
+        // TODO: Implement printTable
     }
 
     /*
@@ -223,6 +227,7 @@ public class App {
      * RunApp is the main method. It runs until the user wants to quit
      */
     private static boolean runApp() throws Exception {
+        System.out.println("What command do you want to execute?");
         int asw = sc.nextInt();
         switch (asw) {
             case 1:
@@ -232,8 +237,10 @@ public class App {
             case 3:
                 return searchFiles();
             case 4:
-                return printPlan();
+                return printTable();
             case 5:
+                return printPlan();
+            case 6:
                 System.out.println("Quiting program...");
                 return true;
             default:
