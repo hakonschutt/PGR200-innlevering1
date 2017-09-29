@@ -145,14 +145,37 @@ public class OutputHandler {
                 i++;
             } while (res.next());
         }
+
         finalSQL += " FROM " + tableName;
 
-        System.out.println(finalSQL);
+        printTableContent(finalSQL, data);
     }
 
     private void printTableContent(String sql, String[] columnName){
+        System.out.println("lets get printing!");
+        for(int i = 0; i < columnName.length; i++){
+            System.out.printf("%-15S", columnName[i]);
+        }
+        System.out.println();
+        for(int i = 0; i < columnName.length; i++){
+            System.out.printf("%-15S", "---------------");
+        }
+        System.out.println();
 
-
-
+        try (Connection con = db.getConnection();
+             Statement stmt = con.createStatement()) {
+            ResultSet res = stmt.executeQuery(sql);
+            if(!res.next()) {
+                throw new SQLException("No tables where found");
+            }
+            do {
+                for(int i = 0; i < columnName.length; i++){
+                    System.out.printf("%-15S", res.getObject(columnName[i]));
+                }
+                System.out.println();
+            } while (res.next());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
