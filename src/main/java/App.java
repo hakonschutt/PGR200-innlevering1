@@ -16,7 +16,7 @@ public class App {
     private static DBConnect connect;
     private static boolean quit = false;
     private static boolean hasScanned = false;
-    private static Scanner sc = new Scanner(System.in);
+    private static Scanner sc = new Scanner( System.in );
 
     /*
      * Main app method that calls all methods used.
@@ -26,19 +26,29 @@ public class App {
         hasScanned = dbVal.main();
 
         connect = new DBConnect();
+
         try (Connection con = connect.getConnection()){
-            System.out.println("Successful connection!");
+            System.out.println( "Successful connection!" );
             TimeUnit.SECONDS.sleep(1);
             System.out.println();
-        } catch (SQLException e){
+        } catch ( SQLException e ){
             throw new RuntimeException(e);
         }
 
-        printInstructions();
+        if( !hasScanned ) scanInputFiles();
 
-        while(!quit){
+        printInstructions();
+        while( !quit ){
             quit = runApp();
         }
+    }
+
+    /*
+     * Scans the input files from the input directory
+     */
+    private static void scanInputFiles(){
+        Inputhandler rf = new Inputhandler();
+        rf.startInputScan();
     }
 
     /*
@@ -47,26 +57,20 @@ public class App {
     private static boolean printInstructions(){
         System.out.println("The following instructions are valid in this program: ");
         System.out.println("(1) Print instructions (This page).");
-        System.out.println("(2) Scan input file to database.");
-        System.out.println("(3) Search for info.");
-        System.out.println("(4) Print table.");
-        System.out.println("(5) Print semester plan.");
-        System.out.println("(6) Quit.");
+        System.out.println("(2) Search for info.");
+        System.out.println("(3) Print table.");
+        System.out.println("(4) Print semester plan.");
+        System.out.println("(5) Quit.");
 
         return false;
     }
 
     /*
-     * Scans the input files from the input directory
+     * Search method which calls a new instance of the class Search Files.
      */
-    private static boolean scanInputFiles(){
-        if(hasScanned){
-            System.out.println("File has already been scanned.");
-        } else {
-            Inputhandler rf = new Inputhandler();
-            rf.startInputScan();
-            hasScanned = true;
-        }
+    private static boolean searchFiles() throws Exception {
+        SearchFiles search = new SearchFiles();
+        search.main();
 
         return false;
     }
@@ -75,7 +79,6 @@ public class App {
      * Prints all the content in the table
      */
     private static boolean printTable() throws Exception {
-        checkIfScanner();
         OutputHandler out = new OutputHandler();
         out.main();
 
@@ -86,21 +89,7 @@ public class App {
      * Print the optimal time schedule
      */
     private static boolean printPlan(){
-        // TODO: Implement printPlan() LAST!
-        checkIfScanner();
-
         System.out.println("Printing plan....");
-
-        return false;
-    }
-
-    /*
-     * Search method which calls a new instance of the class Search Files.
-     */
-    private static boolean searchFiles() throws Exception {
-        //checkIfScanner();
-        SearchFiles search = new SearchFiles();
-        search.main();
 
         return false;
     }
@@ -115,27 +104,17 @@ public class App {
             case 1:
                 return printInstructions();
             case 2:
-                return scanInputFiles();
-            case 3:
                 return searchFiles();
-            case 4:
+            case 3:
                 return printTable();
-            case 5:
+            case 4:
                 return printPlan();
-            case 6:
+            case 5:
                 System.out.println("Quiting program...");
                 return true;
             default:
                 System.out.println("Not a valid command. Try again!");
                 return false;
-        }
-    }
-
-    private static void checkIfScanner(){
-        if(!hasScanned){
-            System.out.println("No input has been scanned. Executing scan...");
-            boolean tempBool = scanInputFiles();
-            hasScanned = true;
         }
     }
 }

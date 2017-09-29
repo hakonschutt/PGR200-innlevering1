@@ -16,14 +16,15 @@ public class DBValidation {
     private DBConnect connect;
     private Connection connection;
     private boolean hasScanned = false;
-    private Scanner sc = new Scanner(System.in);
+    private Scanner sc = new Scanner( System.in );
 
     public boolean main() throws Exception {
         boolean works = false;
-        while (!works){
+        while ( !works ){
             works = writeDBinfo();
             System.out.println();
         }
+
         writeProperties();
         return hasScanned;
     }
@@ -33,16 +34,16 @@ public class DBValidation {
      */
     private boolean writeDBinfo() throws Exception {
         String[] dbInfo = new String[4];
-        System.out.print("DB user: ");
+        System.out.print( "DB user: " );
         dbInfo[0] = sc.nextLine();
-        System.out.print("DB pass: ");
+        System.out.print( "DB pass: ") ;
         dbInfo[1] = sc.nextLine();
-        System.out.print("DB host: ");
+        System.out.print( "DB host: " );
         dbInfo[2] = sc.nextLine();
-        System.out.print("DB name: ");
+        System.out.print( "DB name: " );
         dbInfo[3] = sc.nextLine();
 
-        return connectToDatabase(dbInfo);
+        return connectToDatabase( dbInfo );
     }
 
     /*
@@ -50,7 +51,7 @@ public class DBValidation {
      */
     private void writeProperties() throws IOException {
         Properties properties = new Properties();
-        OutputStream outputStream = new FileOutputStream("data.properties");;
+        OutputStream outputStream = new FileOutputStream("data.properties" );;
 
         properties.setProperty("user", connect.getUser());
         properties.setProperty("pass", connect.getPass());
@@ -87,20 +88,25 @@ public class DBValidation {
             return false;
         }
     }
-
     /*
-     * User input IF the database already exists
+     * instruction to print if database exists
      */
-    private void userInputForConnectionTest(Connection con, String dbName) throws Exception {
+    private void userInputForConnectionInstruction(){
         System.out.println("How would you like to continue?");
         System.out.println("(1) Continue with this connection");
         System.out.println("(2) Change to a new database name");
         System.out.println("(3) ! Overwrite the current database !");
+    }
 
+    /*
+     * User input IF the database already exists
+     */
+    private void userInputForConnectionTest( Connection con, String dbName ) throws Exception {
+        userInputForConnectionInstruction();
         int asw = sc.nextInt();
         switch(asw){
             case 1:
-                System.out.print("Connection to " + dbName);
+                System.out.print( "Connection to " + dbName );
                 printLoader();
                 this.hasScanned = true;
                 break;
@@ -108,13 +114,13 @@ public class DBValidation {
                 changeDatabaseName(con);
                 break;
             case 3:
-                System.out.println("Overwriting database " + dbName);
+                System.out.println( "Overwriting database " + dbName );
                 printLoader();
-                handler.overWriteDatabase(con, dbName);
+                handler.overWriteDatabase( con, dbName );
                 break;
             default:
-                System.out.println("Not a valid command.");
-                System.out.print("Connection to " + dbName);
+                System.out.println( "Not a valid command." );
+                System.out.print( "Connection to " + dbName );
                 printLoader();
                 this.hasScanned = true;
                 break;
@@ -124,20 +130,21 @@ public class DBValidation {
     /*
      * Lets the user change the database name IF the database already exists
      */
-    private void changeDatabaseName(Connection con) throws Exception {
-        System.out.println("Whats the new name:");
-        Scanner sc = new Scanner(System.in);
+    private void changeDatabaseName( Connection con ) throws Exception {
+        System.out.print( "Whats the new name:" );
+        Scanner sc = new Scanner( System.in );
         String newDbName = sc.nextLine();
+        System.out.println();
 
-        boolean dbExists = handler.validateIfDBExists(con, newDbName);
+        boolean dbExists = handler.validateIfDBExists( con, newDbName );
 
-        if (!dbExists) {
-            handler.createDataBase(con, newDbName);
-            System.out.print("Creating database: " + newDbName);
+        if ( !dbExists ) {
+            handler.createDataBase( con, newDbName );
+            System.out.print( "Creating database: " + newDbName );
             printLoader();
-            connect.setDbName(newDbName);
+            connect.setDbName( newDbName );
         } else {
-            userInputForConnectionTest(con, newDbName);
+            userInputForConnectionTest( con, newDbName );
         }
     }
 
@@ -145,13 +152,13 @@ public class DBValidation {
      * Print loader creates a processing in various parts of the program
      */
     private void printLoader() throws InterruptedException {
-        System.out.print(".");
+        System.out.print( "." );
         TimeUnit.MILLISECONDS.sleep(200);
-        System.out.print(".");
+        System.out.print( "." );
         TimeUnit.MILLISECONDS.sleep(200);
-        System.out.print(".");
+        System.out.print( "." );
         TimeUnit.MILLISECONDS.sleep(200);
-        System.out.print(".");
+        System.out.print( "." );
         TimeUnit.MILLISECONDS.sleep(200);
         System.out.println();
     }
