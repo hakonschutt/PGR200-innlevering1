@@ -23,10 +23,10 @@ public class OutputHandler {
         String sql = prepareQuery();
         String[] tables = getAlleTables(sql);
         int userInput = userChoice();
-
         String tableName = prepareTable(tables, userInput);
-
         prepateTableDataQuery( tableName );
+
+
     }
 
     private void setDatabaseName(){

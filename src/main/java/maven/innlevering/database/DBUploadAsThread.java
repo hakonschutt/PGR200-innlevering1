@@ -88,7 +88,6 @@ public class DBUploadAsThread implements Runnable {
                     sql += "'" + var[i] + "', ";
                 }
             }
-
             sql += ")";
 
             executeQuery(sql);

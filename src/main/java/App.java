@@ -97,21 +97,12 @@ public class App {
     /*
      * Search method which calls a new instance of the class Search Files.
      */
-    private static boolean searchFiles(){
-        checkIfScanner();
+    private static boolean searchFiles() throws Exception {
+        //checkIfScanner();
         SearchFiles search = new SearchFiles();
         search.main();
 
-
         return false;
-    }
-
-    private static void checkIfScanner(){
-        if(!hasScanned){
-            System.out.println("No input has been scanned. Executing scan...");
-            boolean tempBool = scanInputFiles();
-            hasScanned = true;
-        }
     }
 
     /*
@@ -137,6 +128,14 @@ public class App {
             default:
                 System.out.println("Not a valid command. Try again!");
                 return false;
+        }
+    }
+
+    private static void checkIfScanner(){
+        if(!hasScanned){
+            System.out.println("No input has been scanned. Executing scan...");
+            boolean tempBool = scanInputFiles();
+            hasScanned = true;
         }
     }
 }
