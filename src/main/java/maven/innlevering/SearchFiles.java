@@ -109,13 +109,12 @@ public class SearchFiles {
         int size = getCount(getDBCountQuery());
 
         while(wrongAns){
-            System.out.println("Which table do you want to search from?");
             int asw = sc.nextInt();
 
             if (asw < size + 1 && asw > 0){
                 return asw;
             } else {
-                System.out.println("Not a valid response");
+                System.out.println("Not a valid response. Try again");
             }
         }
         return -1;
@@ -156,15 +155,13 @@ public class SearchFiles {
     private int userColumnChoice(String tablename) throws Exception {
         boolean wrongAns = true;
         int size = getCount(getTableCountQuery(tablename));
-
         while(wrongAns){
-            System.out.println("Which column do you want to search from?");
             int asw = sc.nextInt();
 
             if (asw < size + 1 && asw > 0){
                 return asw;
             } else {
-                System.out.println("Not a valid response");
+                System.out.println("Not a valid response. Try again!");
             }
         }
         return -1;
@@ -212,7 +209,7 @@ public class SearchFiles {
                 System.out.println();
             } while (rs.next());
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println();
         }
     }
 }
