@@ -1,4 +1,4 @@
-teacher-subject
+teacher_subject
 id/subject_id/teacher_id
 int/varchar/int
 11/255/11

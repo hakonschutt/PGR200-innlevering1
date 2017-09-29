@@ -1,11 +1,10 @@
 import maven.innlevering.Inputhandler;
 import maven.innlevering.SearchFiles;
+import maven.innlevering.OutputHandler;
 import maven.innlevering.database.DBConnect;
-import maven.innlevering.database.DBHandler;
+import maven.innlevering.database.DBValidation;
 
-import java.io.*;
 import java.sql.Connection;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -14,27 +13,22 @@ import java.util.Scanner;
  * This is the client class
  */
 public class App {
-    private static DBHandler handler = new DBHandler();
     private static DBConnect connect;
-    private static Connection connection;
     private static boolean quit = false;
     private static boolean hasScanned = false;
     private static Scanner sc = new Scanner(System.in);
-
 
     /*
      * Main app method that calls all methods used.
      */
     public static void main( String[] args ) throws Exception {
-        boolean works = false;
-        while (!works){
-            works = writeDBinfo();
-            System.out.println();
-        }
+        printTable();
 
-        writeProperties();
+        /*DBValidation dbVal = new DBValidation();
+        hasScanned = dbVal.main();
 
-        try (Connection connection = connect.getConnection()){
+        connect = new DBConnect();
+        try (Connection con = connect.getConnection()){
             System.out.println("Successful connection!");
             TimeUnit.SECONDS.sleep(1);
             System.out.println();
@@ -46,119 +40,7 @@ public class App {
 
         while(!quit){
             quit = runApp();
-        }
-    }
-
-    /*
-     * User input for database connection
-     */
-    private static boolean writeDBinfo() throws Exception {
-        String[] dbInfo = new String[4];
-        System.out.print("DB user: ");
-        dbInfo[0] = sc.nextLine();
-        System.out.print("DB pass: ");
-        dbInfo[1] = sc.nextLine();
-        System.out.print("DB host: ");
-        dbInfo[2] = sc.nextLine();
-        System.out.print("DB name: ");
-        dbInfo[3] = sc.nextLine();
-
-        return connectToDatabase(dbInfo);
-    }
-
-    /*
-     * Writing user input to properties file AFTER checking if the connection works with database
-     */
-    private static void writeProperties() throws IOException {
-        Properties properties = new Properties();
-        OutputStream outputStream = new FileOutputStream("data.properties");;
-
-        properties.setProperty("user", connect.getUser());
-        properties.setProperty("pass", connect.getPass());
-        properties.setProperty("host", connect.getHost());
-        properties.setProperty("db", connect.getDbName());
-
-        properties.store(outputStream, null);
-    }
-
-    /*
-     * Test connection with the user input
-     */
-    private static boolean connectToDatabase ( String[] dbInfo ) throws Exception {
-        connect = new DBConnect(dbInfo[0], dbInfo[1], dbInfo[2], dbInfo[3]);
-
-        try (Connection con = connect.testConnection(false )){
-            boolean dbExists = handler.validateIfDBExists(con, dbInfo[3]);
-
-            if(!dbExists){
-                handler.createDataBase(con, dbInfo[3]);
-                System.out.print("Creating database: " + dbInfo[3]);
-                printLoader();
-            } else {
-                userInputForConnectionTest(con, dbInfo[3]);
-            }
-
-            return true;
-
-        } catch (Exception e){
-            System.out.println("Unable to connect with the current information");
-            System.out.println("Try again: ");
-            System.out.println();
-
-            return false;
-        }
-    }
-
-    /*
-     * User input IF the database already exists
-     */
-    private static void userInputForConnectionTest(Connection con, String dbName) throws Exception {
-        System.out.println("How would you like to continue?");
-        System.out.println("(1) Continue with this connection");
-        System.out.println("(2) Change to a new database name");
-        System.out.println("(3) ! Overwrite the current database !");
-
-        int asw = sc.nextInt();
-        switch(asw){
-            case 1:
-                System.out.print("Connection to " + dbName);
-                printLoader();
-                hasScanned = true;
-                break;
-            case 2:
-                changeDatabaseName(con);
-                break;
-            case 3:
-                System.out.println("Overwriting database " + dbName);
-                printLoader();
-                handler.overWriteDatabase(con, dbName);
-                break;
-            default:
-                System.out.println("Not a valid command.");
-                System.out.print("Connection to " + dbName);
-                printLoader();
-                break;
-        }
-    }
-
-    /*
-     * Lets the user change the database name IF the database already exists
-     */
-    private static void changeDatabaseName(Connection con) throws Exception {
-        System.out.println("Whats the new name:");
-        Scanner sc = new Scanner(System.in);
-        String newDbName = sc.nextLine();
-
-        boolean dbExists = handler.validateIfDBExists(con, newDbName);
-
-        if (!dbExists) {
-            handler.createDataBase(con, newDbName);
-            System.out.print("Creating database: " + newDbName);
-            printLoader();
-            connect.setDbName(newDbName);
-        } else {
-            userInputForConnectionTest(con, newDbName);
-        }
+        }*/
     }
 
     /*
@@ -169,8 +51,9 @@ public class App {
         System.out.println("(1) Print instructions (This page).");
         System.out.println("(2) Scan input file to database.");
         System.out.println("(3) Search for info.");
-        System.out.println("(4) Print semester plan.");
-        System.out.println("(5) Quit.");
+        System.out.println("(4) Print table.");
+        System.out.println("(5) Print semester plan.");
+        System.out.println("(6) Quit.");
 
         return false;
     }
@@ -193,8 +76,13 @@ public class App {
     /*
      * Prints all the content in the table
      */
-    private static boolean printTable(){
-        // TODO: Implement printTable
+    private static boolean printTable() throws Exception {
+        // TODO: Implement printTable()
+
+        OutputHandler out = new OutputHandler();
+        out.main();
+
+        return false;
     }
 
     /*
@@ -202,13 +90,14 @@ public class App {
      */
     private static boolean printPlan(){
         // TODO: Implement printPlan() LAST!
-
         if(!hasScanned){
-            System.out.println("No input has been scanned. Execute scann followed by print...");
+            System.out.println("No input has been scanned. Executing scan followed by print...");
+            boolean tempBool = scanInputFiles();
             hasScanned = true;
         } else {
             System.out.println("Printing plan..");
         }
+
         return false;
     }
 
@@ -247,20 +136,5 @@ public class App {
                 System.out.println("Not a valid command. Try again!");
                 return false;
         }
-    }
-
-    /*
-     * Print loader creates a processing in various parts of the program
-     */
-    private static void printLoader() throws InterruptedException {
-        System.out.print(".");
-        TimeUnit.MILLISECONDS.sleep(200);
-        System.out.print(".");
-        TimeUnit.MILLISECONDS.sleep(200);
-        System.out.print(".");
-        TimeUnit.MILLISECONDS.sleep(200);
-        System.out.print(".");
-        TimeUnit.MILLISECONDS.sleep(200);
-        System.out.println();
     }
 }

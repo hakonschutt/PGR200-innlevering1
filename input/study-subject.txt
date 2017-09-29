@@ -1,4 +1,4 @@
-study-subject
+study_subject
 id/study_id/subject_id
 int/int/varchar
 11/11/255

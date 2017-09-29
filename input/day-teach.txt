@@ -1,4 +1,4 @@
-day-teacher-unavailability
+day_teacher_unavailability
 id/day_id/teacher_id
 int/int/int
 11/11/11

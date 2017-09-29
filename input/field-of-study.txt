@@ -1,4 +1,4 @@
-field-of-study
+field_of_study
 study_id/study
 int/varchar
 11/255

@@ -1,9 +1,6 @@
 package maven.innlevering;
 
 import maven.innlevering.database.DBUploadAsThread;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.Scanner;
 
 /**

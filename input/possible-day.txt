@@ -1,4 +1,4 @@
-possible-day
+possible_day
 day_id/day
 int/varchar
 11/255
