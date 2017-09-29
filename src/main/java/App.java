@@ -22,9 +22,7 @@ public class App {
      * Main app method that calls all methods used.
      */
     public static void main( String[] args ) throws Exception {
-        printTable();
-
-        /*DBValidation dbVal = new DBValidation();
+        DBValidation dbVal = new DBValidation();
         hasScanned = dbVal.main();
 
         connect = new DBConnect();
@@ -40,7 +38,7 @@ public class App {
 
         while(!quit){
             quit = runApp();
-        }*/
+        }
     }
 
     /*
@@ -77,8 +75,7 @@ public class App {
      * Prints all the content in the table
      */
     private static boolean printTable() throws Exception {
-        // TODO: Implement printTable()
-
+        checkIfScanner();
         OutputHandler out = new OutputHandler();
         out.main();
 
@@ -90,13 +87,9 @@ public class App {
      */
     private static boolean printPlan(){
         // TODO: Implement printPlan() LAST!
-        if(!hasScanned){
-            System.out.println("No input has been scanned. Executing scan followed by print...");
-            boolean tempBool = scanInputFiles();
-            hasScanned = true;
-        } else {
-            System.out.println("Printing plan..");
-        }
+        checkIfScanner();
+
+        System.out.println("Printing plan....");
 
         return false;
     }
@@ -105,11 +98,20 @@ public class App {
      * Search method which calls a new instance of the class Search Files.
      */
     private static boolean searchFiles(){
-        // TODO: Implement searchFiles() SECOND LAST!
+        checkIfScanner();
         SearchFiles search = new SearchFiles();
-        search.instructions();
+        search.main();
+
 
         return false;
+    }
+
+    private static void checkIfScanner(){
+        if(!hasScanned){
+            System.out.println("No input has been scanned. Executing scan...");
+            boolean tempBool = scanInputFiles();
+            hasScanned = true;
+        }
     }
 
     /*

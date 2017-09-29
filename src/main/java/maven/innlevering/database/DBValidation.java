@@ -144,7 +144,7 @@ public class DBValidation {
     /*
      * Print loader creates a processing in various parts of the program
      */
-    private static void printLoader() throws InterruptedException {
+    private void printLoader() throws InterruptedException {
         System.out.print(".");
         TimeUnit.MILLISECONDS.sleep(200);
         System.out.print(".");

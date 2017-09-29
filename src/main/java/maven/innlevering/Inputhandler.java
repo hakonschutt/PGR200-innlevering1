@@ -11,7 +11,7 @@ public class Inputhandler {
 
     public void startInputScan(){
         System.out.println("Started reading files");
-        for (int i = 1; i <= 8; i++){
+        for (int i = 1; i <= 9; i++){
             String file = getFile(i);
             DBUploadAsThread job = new DBUploadAsThread(file);
             new Thread(job).start();
@@ -46,6 +46,9 @@ public class Inputhandler {
                 break;
             case 8:
                 file = "teacher-subject";
+                break;
+            case 9:
+                file = "test";
                 break;
             default:
                 return null;
