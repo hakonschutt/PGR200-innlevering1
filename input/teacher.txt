@@ -4,4 +4,14 @@ int/varchar/varchar
 11/255/255
 id
 1/Per Lauvås/per@westerdals.no
-2/Test Test/test@westerdals.no
+2/Tomas Sandnes/tomas@westerdals.no
+3/Andrea Arcuri/andrea@westerdals.no
+4/Kjetil Raaen/kjetil@westerdals.no
+5/Alexander Dreyer Johnsen/alexander@westerdals.no
+6/Tor-Morten Grønli/tor@westerdals.no
+7/Rolando Gonzalez/roland@westerdals.no
+8/Moutaz Haddara/moutax@westerdals.no
+9/Oddvar Torgersen/oddvar@westerdals.no
+10/Hanne Sørum/hanne@westerdals.no
+11/Siri Fagernes/siri@westerdals.no
+12/Annette Kallevig/annette@westerdals.no

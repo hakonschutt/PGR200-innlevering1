@@ -14,8 +14,8 @@ public class Inputhandler {
             String file = getFile(i);
             DBUploadAsThread job = new DBUploadAsThread(file);
             new Thread(job).start();
-            System.out.println();
         }
+        System.out.println();
     }
 
     private String getFile(int fileNr){

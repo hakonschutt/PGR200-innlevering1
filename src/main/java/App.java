@@ -35,6 +35,8 @@ public class App {
         }
 
         if( !hasScanned ) {
+            System.out.println("Starting input scanner");
+            TimeUnit.SECONDS.sleep(1);
             scanInputFiles();
             TimeUnit.SECONDS.sleep(2);
         }

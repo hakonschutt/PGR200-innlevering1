@@ -3,5 +3,17 @@ subject_id/subject
 varchar/varchar
 255/255
 subject_id
-PGR200/Avansert java
-DB110/Databaser
+PGR200/Avansert Javaprogrammering
+IS3200/Mobile økosystemer
+DS3800/Grensesnittdesign
+PRO200/Smidig prosjekt
+PG3400/Programmering i C for Linux
+PG4200/Algoritmer og datastrukturer
+PG3300/Software design
+IKT200/Introduksjon til Intelligente systemer
+DS3101/Webutvikling 1
+IS3100/ERP-systemer
+BU3100/Bedriftsøkonomi
+DS3300/Interaksjonsdesign 1
+DS3110/Content Management Systems
+DIM201/Datadrevet markedsføring

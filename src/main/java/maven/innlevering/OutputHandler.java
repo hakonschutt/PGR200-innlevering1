@@ -25,8 +25,6 @@ public class OutputHandler {
         int userInput = userChoice();
         String tableName = prepareTable(tables, userInput);
         prepateTableDataQuery( tableName );
-
-
     }
 
     private void setDatabaseName(){
@@ -152,7 +150,6 @@ public class OutputHandler {
     }
 
     private void printTableContent(String sql, String[] columnName){
-        System.out.println("lets get printing!");
         for(int i = 0; i < columnName.length; i++){
             System.out.printf("%-15S", columnName[i]);
         }

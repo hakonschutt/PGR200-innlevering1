@@ -3,6 +3,10 @@ study_id/study
 int/varchar
 11/255
 study_id
-1/Programmering
+1/Frontend- og mobilutvikling
 2/Spillprogrammering
-3/Interaktivt design
+3/Intellegente Systemer
+4/E-business
+5/Programmering
+6/Interaktivt design
+7/Digital markedsføring

@@ -42,7 +42,7 @@ public class SearchFiles {
         printTableContent(newSql, columns, searchString);
     }
 
-    private void setDatabaseName(){
+    public void setDatabaseName(){
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream("data.properties")) {
             properties.load(input);
@@ -53,11 +53,11 @@ public class SearchFiles {
         }
     }
 
-    private String prepareQuery(){
+    public String prepareQuery(){
         return "SHOW TABLES FROM " + this.dbName;
     }
 
-    private int getCount(String sql) throws Exception{
+    public int getCount(String sql) throws Exception{
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
@@ -70,7 +70,7 @@ public class SearchFiles {
         }
     }
 
-    private String getDBCountQuery(){
+    public String getDBCountQuery(){
         String sql = "SELECT COUNT(*) as total FROM information_schema.tables WHERE table_schema = '" + this.dbName + "'";
 
         return sql;
