@@ -151,11 +151,11 @@ public class OutputHandler {
 
     private void printTableContent(String sql, String[] columnName){
         for(int i = 0; i < columnName.length; i++){
-            System.out.printf("%-15S", columnName[i]);
+            System.out.printf("%-20S", columnName[i]);
         }
         System.out.println();
         for(int i = 0; i < columnName.length; i++){
-            System.out.printf("%-15S", "---------------");
+            System.out.printf("%-20S", "--------------------");
         }
         System.out.println();
 
@@ -167,7 +167,7 @@ public class OutputHandler {
             }
             do {
                 for(int i = 0; i < columnName.length; i++){
-                    System.out.printf("%-15S", res.getObject(columnName[i]));
+                    System.out.printf("%-20S", res.getObject(columnName[i]));
                 }
                 System.out.println();
             } while (res.next());

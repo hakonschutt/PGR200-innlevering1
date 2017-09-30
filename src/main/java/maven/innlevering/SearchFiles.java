@@ -187,13 +187,15 @@ public class SearchFiles {
 
     private void printTableContent(String sql, String[] columnName, String searchString){
         for(int i = 0; i < columnName.length; i++){
-            System.out.printf("%-15S", columnName[i]);
+            System.out.printf("%-20S", columnName[i]);
         }
         System.out.println();
         for(int i = 0; i < columnName.length; i++){
-            System.out.printf("%-15S", "---------------");
+            System.out.printf("%-20S", "--------------------");
         }
         System.out.println();
+
+        searchString = "%" + searchString + "%";
 
         try (Connection con = db.getConnection();
              PreparedStatement ps = con.prepareStatement(sql + "?")) {
@@ -204,7 +206,7 @@ public class SearchFiles {
             }
             do {
                 for(int i = 0; i < columnName.length; i++){
-                    System.out.printf("%-15S", rs.getObject(columnName[i]));
+                    System.out.printf("%-20S", rs.getObject(columnName[i]));
                 }
                 System.out.println();
             } while (rs.next());
