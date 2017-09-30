@@ -1,4 +1,5 @@
 import maven.innlevering.Inputhandler;
+import maven.innlevering.RuleController;
 import maven.innlevering.SearchFiles;
 import maven.innlevering.OutputHandler;
 import maven.innlevering.database.DBConnect;
@@ -22,7 +23,9 @@ public class App {
      * Main app method that calls all methods used.
      */
     public static void main( String[] args ) throws Exception {
-        DBValidation dbVal = new DBValidation();
+        printPlan();
+
+        /*DBValidation dbVal = new DBValidation();
         hasScanned = dbVal.main();
 
         connect = new DBConnect();
@@ -46,7 +49,7 @@ public class App {
         printInstructions();
         while( !quit ){
             quit = runApp();
-        }
+        }*/
     }
 
     /*
@@ -65,7 +68,7 @@ public class App {
         System.out.println("(1) Print instructions (This page).");
         System.out.println("(2) Search for info.");
         System.out.println("(3) Print table.");
-        System.out.println("(4) Print semester plan.");
+        System.out.println("(4) Create semester plan.");
         System.out.println("(5) Quit.");
 
         return false;
@@ -95,7 +98,8 @@ public class App {
      * Print the optimal time schedule
      */
     private static boolean printPlan(){
-        System.out.println("Printing plan....");
+        RuleController rc = new RuleController();
+        rc.main();
 
         return false;
     }
