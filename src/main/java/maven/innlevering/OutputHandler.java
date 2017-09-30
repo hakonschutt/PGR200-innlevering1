@@ -27,7 +27,7 @@ public class OutputHandler {
         prepateTableDataQuery( tableName );
     }
 
-    private void setDatabaseName(){
+    public void setDatabaseName(){
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream("data.properties")) {
             properties.load(input);
@@ -38,11 +38,11 @@ public class OutputHandler {
         }
     }
 
-    private String prepareQuery(){
+    public String prepareQuery(){
         return "SHOW TABLES FROM " + this.dbName;
     }
 
-    private int getCount(String sql) throws Exception{
+    public int getCount(String sql) throws Exception{
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
@@ -55,13 +55,13 @@ public class OutputHandler {
         }
     }
 
-    private String getDBCountQuery(){
+    public String getDBCountQuery(){
         String sql = "SELECT COUNT(*) as total FROM information_schema.tables WHERE table_schema = '" + this.dbName + "'";
 
         return sql;
     }
 
-    private String getTableCountQuery(String tableName){
+    public String getTableCountQuery(String tableName){
         String sql = "SELECT COUNT(*) as total " +
                 "FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'" +
                 tableName + "' AND table_schema = '" + this.dbName + "'";
@@ -69,7 +69,7 @@ public class OutputHandler {
         return sql;
     }
 
-    private String[] getAlleTables(String sql) throws Exception{
+    public String[] getAlleTables(String sql) throws Exception{
         String[] tables = new String[getCount(getDBCountQuery())];
 
         try (Connection con = db.getConnection();

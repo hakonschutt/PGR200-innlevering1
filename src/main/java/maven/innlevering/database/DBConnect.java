@@ -58,9 +58,8 @@ public class DBConnect {
             return connect;
 
         } catch (Exception e){
+            return null;
         }
-
-        return null;
     }
 
     public String getUser() { return user; }

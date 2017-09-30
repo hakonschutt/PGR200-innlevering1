@@ -97,7 +97,7 @@ public class App {
     /*
      * Print the optimal time schedule
      */
-    private static boolean printPlan(){
+    private static boolean printPlan() throws Exception {
         RuleController rc = new RuleController();
         rc.main();
 
