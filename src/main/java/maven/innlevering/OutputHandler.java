@@ -31,7 +31,7 @@ public class OutputHandler {
 
             this.dbName = properties.getProperty("db");
         } catch (Exception e){
-            return;
+            throw new RuntimeException(e);
         }
     }
 
@@ -54,6 +54,8 @@ public class OutputHandler {
                 tables[i] = res.getString(1);
                 i++;
             } while (res.next());
+        } catch (SQLException e){
+            throw new SQLException("Unable to connect with current connection");
         }
         return tables;
     }
@@ -66,8 +68,8 @@ public class OutputHandler {
                 throw new SQLException("No tables where found");
             }
             return res.getInt("total");
-        } catch (Exception e ){
-            return -1;
+        } catch (SQLException e ){
+            throw new SQLException("Unable to connect with current connection");
         }
     }
 

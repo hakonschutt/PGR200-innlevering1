@@ -1,19 +1,19 @@
 subject
-subject_id/subject
-varchar/varchar
-255/255
+subject_id/subject/number_of_attendees
+varchar/varchar/int
+255/255/11
 subject_id
-PGR200/Avansert Javaprogrammering
-IS3200/Mobile økosystemer
-DS3800/Grensesnittdesign
-PRO200/Smidig prosjekt
-PG3400/Programmering i C for Linux
-PG4200/Algoritmer og datastrukturer
-PG3300/Software design
-IKT200/Introduksjon til Intelligente systemer
-DS3101/Webutvikling 1
-IS3100/ERP-systemer
-BU3100/Bedriftsøkonomi
-DS3300/Interaksjonsdesign 1
-DS3110/Content Management Systems
-DIM201/Datadrevet markedsføring
+PGR200/Avansert Javaprogrammering/50
+IS3200/Mobile økosystemer/30
+DS3800/Grensesnittdesign/30
+PRO200/Smidig prosjekt/180
+PG3400/Programmering i C for Linux/50
+PG4200/Algoritmer og datastrukturer/100
+PG3300/Software design/100
+IKT200/Introduksjon til Intelligente systemer/30
+DS3101/Webutvikling 1/60
+IS3100/ERP-systemer/30
+BU3100/Bedriftsøkonomi/30
+DS3300/Interaksjonsdesign 1/60
+DS3110/Content Management Systems/30
+DIM201/Datadrevet markedsføring/30

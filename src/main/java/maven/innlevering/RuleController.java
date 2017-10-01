@@ -16,6 +16,7 @@ public class RuleController {
     private int endWeek;
     private Scanner sc;
     private DBConnect db = new DBConnect();
+    private Connection con;
 
     public void main() throws Exception {
         boolean isCorrectDB = validateTables();
