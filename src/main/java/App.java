@@ -1,7 +1,4 @@
-import maven.innlevering.Inputhandler;
-import maven.innlevering.RuleController;
-import maven.innlevering.SearchFiles;
-import maven.innlevering.OutputHandler;
+import maven.innlevering.*;
 import maven.innlevering.database.DBConnect;
 import maven.innlevering.database.DBValidation;
 
@@ -23,9 +20,9 @@ public class App {
      * Main app method that calls all methods used.
      */
     public static void main( String[] args ) throws Exception {
-        printPlan();
+        //printPlan();
 
-        /*DBValidation dbVal = new DBValidation();
+        DBValidation dbVal = new DBValidation();
         hasScanned = dbVal.main();
 
         connect = new DBConnect();
@@ -49,7 +46,7 @@ public class App {
         printInstructions();
         while( !quit ){
             quit = runApp();
-        }*/
+        }
     }
 
     /*
@@ -88,8 +85,8 @@ public class App {
      * Prints all the content in the table
      */
     private static boolean printTable() throws Exception {
-        OutputHandler out = new OutputHandler();
-        out.main();
+        PrintTables pt = new PrintTables();
+        pt.main();
 
         return false;
     }

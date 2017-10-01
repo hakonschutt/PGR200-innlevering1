@@ -34,18 +34,18 @@ public class SearchFilesTest {
         con.close();
     }
 
-    @Test
-    public void getTablesCount() throws Exception {
-        // Arrange
-        sf.setDatabaseName();
-
-        // Act
-        String sql = sf.getDBCountQuery();
-        int count = sf.getCount(sql);
-
-        // Assert
-        assertTrue(count == 8);
-    }
+//    @Test
+//    public void getTablesCount() throws Exception {
+//        // Arrange
+//        sf.setDatabaseName();
+//
+//        // Act
+//        String sql = sf.getDBCountQuery();
+//        int count = sf.getCount(sql);
+//
+//        // Assert
+//        assertTrue(count == 8);
+//    }
 
 
 

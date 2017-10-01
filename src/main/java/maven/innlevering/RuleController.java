@@ -23,18 +23,17 @@ public class RuleController {
         if(isCorrectDB){
             setSemester();
         } else {
-            System.out.println("You are not using the correct database");
-            System.out.println("Connect to a database with the necessary tables");
+            System.out.println("You are not using the correct database.");
+            System.out.println("You can still search and print with this connection.");
+            System.out.println("Connect to a database with the necessary tables if you want to create a semester plan!");
+
         }
 
     }
 
     private boolean validateTables() throws Exception {
         OutputHandler oh = new OutputHandler();
-        oh.setDatabaseName();
-        String sql = oh.prepareQuery();
-        int ant = oh.getCount(oh.getDBCountQuery());
-        String[] tables = getAlleTables(sql, ant);
+        String[] tables = oh.getAlleTables();
         int total = checkForTables(tables);
 
         if(total == 4){
@@ -42,27 +41,6 @@ public class RuleController {
         }
 
         return false;
-    }
-
-    private String[] getAlleTables(String sql, int ant) throws Exception{
-        String[] tables = new String[ant];
-
-        try (Connection con = db.getConnection();
-             Statement stmt = con.createStatement()) {
-            int i = 0;
-            ResultSet res = stmt.executeQuery(sql);
-            if(!res.next()) {
-                throw new SQLException("No tables where found");
-            }
-            do {
-                tables[i] = res.getString(1);
-                i++;
-            } while (res.next());
-        } catch (SQLException e){
-            throw new SQLException("Not able to connect");
-        }
-
-        return tables;
     }
 
     private int checkForTables(String[] tables){
