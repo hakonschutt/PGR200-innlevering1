@@ -42,7 +42,6 @@ public class RuleController {
             deleteInWeekColumn();
             currentWeek++;
         }
-
         deleteTotalColumn();
     }
 
