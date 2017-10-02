@@ -20,9 +20,9 @@ public class App {
      * Main app method that calls all methods used.
      */
     public static void main( String[] args ) throws Exception {
-        printPlan();
+        //printPlan();
 
-        /*DBValidation dbVal = new DBValidation();
+        DBValidation dbVal = new DBValidation();
         hasScanned = dbVal.main();
 
         connect = new DBConnect();
@@ -46,7 +46,7 @@ public class App {
         printInstructions();
         while( !quit ){
             quit = runApp();
-        }*/
+        }
     }
 
     /*

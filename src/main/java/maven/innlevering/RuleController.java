@@ -2,25 +2,17 @@ package maven.innlevering;
 
 import maven.innlevering.database.DBConnect;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.HashMap;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-
-//presenter = new Presenter(1, 2, "F101", 1, "PGR200");
 
 /**
  * Created by hakonschutt on 26/09/2017.
  */
 public class RuleController {
-    private int startWeek = 1;
-    private int endWeek = 1;
+    private int startWeek;
+    private int endWeek;
     private int currentWeek;
     private int currentDay;
     private DBConnect db = new DBConnect();
@@ -87,12 +79,11 @@ public class RuleController {
         String sql = getPossibleSubjectsQuery(day);
         HashMap<String, Integer> subjects = getItemInHashMap(sql);
         createFieldsForDay();
-
+        // TimeUnit.MILLISECONDS.sleep(200);
         // Every day is set at 2 blocks, morning or evening. J represents blocks
-        for(int j = 0; j < 2; j++){
+        for(int j = 1; j < 3; j++){
             String roomSql = getPossibleRooms();
             HashMap<String, Integer> rooms = getItemInHashMap(roomSql);
-
             checkIfLecturesCanOccure(rooms, subjects, j);
         }
 
@@ -100,7 +91,7 @@ public class RuleController {
     }
 
     private String getPossibleRooms(){
-        String sql = "SELECT room_id, maks_kapasitet FROM room ORDER BY maks_kapasitet * 1 ASC";
+        String sql = "SELECT room_id, maks_kapasitet FROM room ORDER BY maks_kapasitet DESC";
 
         return sql;
     }
@@ -114,9 +105,9 @@ public class RuleController {
                         "ON ts.teacher_id = t.id " +
                     "INNER JOIN subject as s " +
                         "ON s.subject_id = ts.subject_id " +
-                    "WHERE s.total < 12 AND isInWeek" + currentWeek + " = 0 AND t.id NOT IN ( " +
+                    "WHERE s.total < 12 AND s.isInWeek" + currentWeek + " = 0 AND t.id NOT IN ( " +
                         "SELECT teacher_id FROM day_teacher_unavailability " +
-                        "WHERE day_id = " + day + " )";
+                        "WHERE day_id = " + day + " ) ORDER BY s.total * 1 ASC";
 
         return sql;
     }
@@ -132,9 +123,7 @@ public class RuleController {
             do {
                 hash.put(res.getString(1), res.getInt(2));
             } while (res.next());
-        } catch (SQLException e){
-            System.out.println("Not able to connect!");
-        }
+        } catch (SQLException e){}
 
         return hash;
     }
@@ -147,15 +136,17 @@ public class RuleController {
             String room_name = (String) room.getKey();
 
             Iterator su = subjects.entrySet().iterator();
-            while (su.hasNext()) {
+            while ( su.hasNext() ) {
                 Map.Entry subject = (Map.Entry)su.next();
                 int subject_ant = (int) subject.getValue();
                 String subject_id = (String) subject.getKey();
 
-                if(room_kap > subject_ant){
-                    if(checkIfTeacherHasLecture(subject_id) && checkIfStudyHasLecture(subject_id)) {
-                        updateFields();
+                if( room_kap >= subject_ant && subject_ant * 2 >= room_kap ){
+                    if(checkIfTeacherHasLecture( subject_id ) && checkIfStudyHasLecture( subject_id )) {
+                        updateFields(subject_id);
                         Presenter pre = new Presenter(currentWeek, currentDay, room_name, currentblock, subject_id);
+                        su.remove();
+                        break;
                     }
                 }
             }
@@ -165,9 +156,9 @@ public class RuleController {
 
     private void updateFields(String subject){
         executeUpdateQuery("UPDATE subject SET total = total + 1 WHERE subject_id = '" + subject + "'");
-        executeUpdateQuery("UPDATE teacher SET isON" + currentDay + " = 1 WHERE subject_id = '" + subject + "'");
-        executeUpdateQuery();
-
+        executeUpdateQuery("UPDATE subject SET isInWeek" + currentWeek + " = 1 WHERE subject_id = '" + subject + "'");
+        executeUpdateQuery("UPDATE teacher SET isON" + currentDay + " = 1 WHERE id IN (SELECT teacher_id FROM teacher_subject WHERE subject_id = '" + subject + "' )");
+        executeUpdateQuery("UPDATE field_of_study SET isON" + currentDay + " = 1 WHERE study_id IN (SELECT study_id FROM study_subject WHERE subject_id = '" + subject + "' )");
     }
 
     private boolean checkIfTeacherHasLecture(String subject) throws SQLException {
@@ -177,17 +168,21 @@ public class RuleController {
                     "ON ts.teacher_id = t.id " +
                     "WHERE ts.subject_id = '" + subject + "' AND t.isOn" + currentDay + " != 1";
 
-        return (executeCountQuery(sql) > 0);
+        return (executeCountQuery(sql) == 1);
     }
 
     private boolean checkIfStudyHasLecture(String subject) throws SQLException {
         String sql= "SELECT COUNT(*) as total " +
-                    "FROM field_of_study as fos " +
-                    "JOIN study_subject as ss " +
-                    "ON ss.study_id = fos.study_id " +
-                    "WHERE ss.subject_id = '" + subject + "' AND fos.isOn" + currentDay + " != 1";
+                    "FROM field_of_study " +
+                    "WHERE isOn" + currentDay + " = 0 AND study_id IN " +
+                    "(SELECT study_id FROM study_subject WHERE subject_id = '" + subject + "')";
 
-        return (executeCountQuery(sql) > 0);
+        String getAlleSql = "SELECT COUNT(*) as total " +
+                            "FROM field_of_study " +
+                            "WHERE study_id IN " +
+                            "(SELECT study_id FROM study_subject WHERE subject_id = '" + subject + "')";
+
+        return (executeCountQuery(sql) == executeCountQuery(getAlleSql));
     }
 
     private int executeCountQuery(String sql) throws SQLException {

@@ -21,18 +21,16 @@ public class CreatePlan {
     private RuleController rc = new RuleController();
 
     public void main() throws Exception {
-        rc.startSemesterPlan();
+        boolean isCorrectDB = validateTables();
 
-        //boolean isCorrectDB = validateTables();
-
-        //if(isCorrectDB){
-//            setSemester();
-//            rc.startSemesterPlan();
-//        } else {
-//            System.out.println("You are not using the correct database.");
-//            System.out.println("You can still search and print with this connection.");
-//            System.out.println("Connect to a database with the necessary tables if you want to create a semester plan!");
-//        }
+        if(isCorrectDB){
+            setSemester();
+            rc.startSemesterPlan();
+        } else {
+            System.out.println("You are not using the correct database.");
+            System.out.println("You can still search and print with this connection.");
+            System.out.println("Connect to a database with the necessary tables if you want to create a semester plan!");
+        }
 
 
     }
