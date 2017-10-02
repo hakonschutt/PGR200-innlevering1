@@ -1,14 +1,14 @@
 import maven.innlevering.*;
 import maven.innlevering.database.DBConnect;
 import maven.innlevering.database.DBValidation;
-
 import java.sql.Connection;
 import java.util.concurrent.TimeUnit;
 import java.sql.SQLException;
 import java.util.Scanner;
 
 /**
- * This is the client class
+ * App class is the applications main class. It is where the use is asked to choose from a string of options
+ * Ths user can execute semester print, search and table print.
  */
 public class App {
     private static DBConnect connect;
@@ -16,8 +16,8 @@ public class App {
     private static boolean hasScanned = false;
     private static Scanner sc = new Scanner( System.in );
 
-    /*
-     * Main app method that calls all methods used.
+    /**
+     * Main app method that calls all methods used to initiate the program
      */
     public static void main( String[] args ) throws Exception {
         DBValidation dbVal = new DBValidation();
@@ -47,7 +47,7 @@ public class App {
         }
     }
 
-    /*
+    /**
      * Scans the input files from the input directory
      */
     private static void scanInputFiles(){
@@ -55,7 +55,7 @@ public class App {
         rf.startInputScan();
     }
 
-    /*
+    /**
      * Prints the possible instructions for the method runApp()
      */
     private static boolean printInstructions(){
@@ -69,8 +69,8 @@ public class App {
         return false;
     }
 
-    /*
-     * Search method which calls a new instance of the class Search Files.
+    /**
+     * searhFiles lets the user search for entries in the database
      */
     private static boolean searchFiles() throws Exception {
         SearchFiles search = new SearchFiles();
@@ -79,8 +79,8 @@ public class App {
         return false;
     }
 
-    /*
-     * Prints all the content in the table
+    /**
+     * printTable method is used to prompt the user with table options and print from the selected table
      */
     private static boolean printTable() throws Exception {
         PrintTables pt = new PrintTables();
@@ -89,8 +89,8 @@ public class App {
         return false;
     }
 
-    /*
-     * Print the optimal time schedule
+    /**
+     * printPlan method is used to print the semester plan. It initiates the createPlan class
      */
     private static boolean printPlan() throws Exception {
         CreatePlan cp = new CreatePlan();
@@ -99,8 +99,9 @@ public class App {
         return false;
     }
 
-    /*
-     * RunApp is the main method. It runs until the user wants to quit
+    /**
+     * RunApp is the main method in this class. It directs the application to the correct
+     * method based on the users input
      */
     private static boolean runApp() throws Exception {
         System.out.println("What command do you want to execute?");

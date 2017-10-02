@@ -1,18 +1,11 @@
 package maven.innlevering;
 
-import com.oracle.tools.packager.JreUtils;
 import maven.innlevering.database.DBConnect;
-
-import java.sql.Connection;
-import java.util.Scanner;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Scanner;
 
 /**
+ * CreatePlan is used to start the semesterplaning.
+ * It askes the user for start and end point of the semester
  * Created by hakonschutt on 01/10/2017.
  */
 public class CreatePlan {
@@ -20,6 +13,10 @@ public class CreatePlan {
     private DBConnect db = new DBConnect();
     private RuleController rc = new RuleController();
 
+    /**
+     * Calles the necessary methods to evaulate if the user is connected to the correct database
+     * @throws Exception
+     */
     public void main() throws Exception {
         boolean isCorrectDB = validateTables();
 
@@ -35,6 +32,11 @@ public class CreatePlan {
 
     }
 
+    /**
+     * Method validates if tables used in semester planing is present in database
+     * @return
+     * @throws Exception
+     */
     private boolean validateTables() throws Exception {
         OutputHandler oh = new OutputHandler();
         String[] tables = oh.getAlleTables();
@@ -47,6 +49,11 @@ public class CreatePlan {
         return false;
     }
 
+    /**
+     * Method checks for 4 tables that are important to the semester planing.
+     * @param tables
+     * @return
+     */
     private int checkForTables(String[] tables){
         int count = 0;
 
@@ -59,6 +66,9 @@ public class CreatePlan {
         return count;
     }
 
+    /**
+     * Method lets the user set a semester start and end
+     */
     private void setSemester(){
         sc = new Scanner(System.in);
         boolean correct = false;

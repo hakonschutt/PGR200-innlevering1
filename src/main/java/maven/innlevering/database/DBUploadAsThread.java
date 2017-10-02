@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.sql.*;
 
 /**
+ * Class is ment to run as thread and therefor implements runnable
+ * It uploads the text files to the database
  * Created by hakonschutt on 29/09/2017.
  */
 public class DBUploadAsThread implements Runnable {
@@ -16,6 +18,9 @@ public class DBUploadAsThread implements Runnable {
         this.file = file;
     }
 
+    /**
+     * Thread run job method. Calls all methods used by thread.
+     */
     @Override
     public void run() {
         try {
@@ -27,6 +32,11 @@ public class DBUploadAsThread implements Runnable {
         }
     }
 
+    /**
+     * Creates query to create table from the input file
+     * @param fileName
+     * @throws IOException
+     */
     private void createQuery(String fileName) throws IOException {
         try{
             String file = "input/" + fileName;
@@ -53,6 +63,10 @@ public class DBUploadAsThread implements Runnable {
         }
     }
 
+    /**
+     * General execute create query that is used to create tables
+     * @param sql
+     */
     private void executeCreate(String sql){
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
@@ -62,6 +76,11 @@ public class DBUploadAsThread implements Runnable {
         }
     }
 
+    /**
+     * Creates insert Query from the current file
+     * @param filename
+     * @throws IOException
+     */
     private void insertQuery(String filename) throws IOException {
         String file = "input/" + filename;
         BufferedReader in = new BufferedReader(new FileReader(file));
@@ -101,6 +120,11 @@ public class DBUploadAsThread implements Runnable {
         }
     }
 
+    /**
+     * Executes insert query for table information.
+     * @param sql
+     * @param var
+     */
     private void executeInsert(String sql, String[] var){
         try (Connection con = db.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {

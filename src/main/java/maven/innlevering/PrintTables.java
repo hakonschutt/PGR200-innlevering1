@@ -1,7 +1,6 @@
 package maven.innlevering;
 
 import maven.innlevering.database.DBConnect;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,6 +8,8 @@ import java.sql.Statement;
 import java.util.Scanner;
 
 /**
+ * Print table class uses OutputHandler to get user information about which table to print.
+ * The class is used to printing the content of a table in the database
  * Created by hakonschutt on 01/10/2017.
  */
 public class PrintTables {
@@ -16,6 +17,11 @@ public class PrintTables {
     private OutputHandler oh;
     private Scanner sc = new Scanner(System.in);
 
+    /**
+     * Main method initiate neccassary output methods to receive user data
+     * Using this data to start print method for this class
+     * @throws Exception
+     */
     public void main() throws Exception {
         oh = new OutputHandler();
         String[] tables = oh.getAlleTables();
@@ -31,6 +37,13 @@ public class PrintTables {
         prepareTableQuery(tableName, query, size);
     }
 
+    /**
+     * Prepares the query to receive all table data
+     * @param tableName
+     * @param sql
+     * @param size
+     * @throws Exception
+     */
     private void prepareTableQuery(String tableName, String sql, int size) throws Exception {
         String[] data = new String[ size ];
         String finalSQL = "SELECT";
@@ -61,6 +74,11 @@ public class PrintTables {
         printTableContent(finalSQL, data);
     }
 
+    /**
+     * Print the content of the table based on sql parsed over, and column names received from outputHandler
+     * @param sql
+     * @param columnName
+     */
     private void printTableContent(String sql, String[] columnName){
         for(int i = 0; i < columnName.length; i++){
             System.out.printf("%-20S", columnName[i]);

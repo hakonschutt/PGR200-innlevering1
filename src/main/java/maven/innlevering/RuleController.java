@@ -1,13 +1,15 @@
 package maven.innlevering;
 
 import maven.innlevering.database.DBConnect;
-
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 /**
+ * RuleController is the main semesterPrinter class. It keeps track of all
+ * the logic for the semester planer
+ *
  * Created by hakonschutt on 26/09/2017.
  */
 public class RuleController {
@@ -19,6 +21,10 @@ public class RuleController {
     private Connection con;
     private Presenter presenter;
 
+    /**
+     * Initiate the semester planing
+     * @throws Exception
+     */
     public void startSemesterPlan() throws Exception {
         System.out.println();
         presenter = new Presenter();
@@ -40,32 +46,56 @@ public class RuleController {
         deleteTotalColumn();
     }
 
+    /**
+     * Creates a total column on subject table
+     */
     private void createTotalColumn(){
         executeUpdateQuery("ALTER TABLE subject ADD total int(2) DEFAULT 0 NOT NULL");
     }
 
+    /**
+     * Deletes total column from subject table
+     */
     private void deleteTotalColumn(){
         executeUpdateQuery("ALTER TABLE subject DROP COLUMN total");
     }
 
+    /**
+     * Creates isInWeek column on subject table.
+     * This is used to filter out subjects that has allready
+     * occurred this week.
+     */
     private void createInWeekColumn(){
         executeUpdateQuery("ALTER TABLE subject ADD isInWeek" + currentWeek + " int(1) DEFAULT 0 NOT NULL");
     }
 
+    /**
+     * Deletes the isInWeek column when the week is over
+     */
     private void deleteInWeekColumn(){
         executeUpdateQuery("ALTER TABLE subject DROP COLUMN isInWeek" + currentWeek);
     }
 
+    /**
+     * Creates columns in field_of_study and teacher to make sure study and teachers dont have two lecture on the same day
+     */
     private void createFieldsForDay(){
         executeUpdateQuery("ALTER TABLE field_of_study ADD isOn" + currentDay + " int(1) DEFAULT 0 NOT NULL");
         executeUpdateQuery("ALTER TABLE teacher ADD isOn" + currentDay + " int(1) DEFAULT 0 NOT NULL");
     }
 
+    /**
+     * Deletes columns isOn"day" after day is over
+     */
     private void deleteFieldForDay(){
         executeUpdateQuery("ALTER TABLE field_of_study DROP COLUMN isOn" + currentDay);
         executeUpdateQuery("ALTER TABLE teacher DROP COLUMN isOn" + currentDay);
     }
 
+    /**
+     * General method to execute alle update queries implementet in this class
+     * @param sql
+     */
     private void executeUpdateQuery(String sql){
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
@@ -75,12 +105,17 @@ public class RuleController {
         }
     }
 
+    /**
+     * Checks possible subejects and rooms for day.
+     * For loop is used to run through the 2 possible blocks
+     * 1 = 9 - 13 AND 2 = 13 - 17
+     * @param day
+     * @throws Exception
+     */
     private void checkSingleDay(int day) throws Exception {
         String sql = getPossibleSubjectsQuery(day);
         HashMap<String, Integer> subjects = getItemInHashMap(sql);
         createFieldsForDay();
-        // TimeUnit.MILLISECONDS.sleep(200);
-        // Every day is set at 2 blocks, morning or evening. J represents blocks
         for(int j = 1; j < 3; j++){
             String roomSql = getPossibleRooms();
             HashMap<String, Integer> rooms = getItemInHashMap(roomSql);
@@ -90,12 +125,20 @@ public class RuleController {
         deleteFieldForDay();
     }
 
+    /**
+     * Returns possible rooms to use on the current day and block
+     * @return
+     */
     private String getPossibleRooms(){
         String sql = "SELECT room_id, maks_kapasitet FROM room ORDER BY maks_kapasitet DESC";
-
         return sql;
     }
 
+    /**
+     * Returns alle subjects where teacher is available on current day and lecture has not occurred more then 12 times.
+     * @param day
+     * @return
+     */
     private String getPossibleSubjectsQuery(int day){
         String sql= "SELECT distinct s.subject_id, s.number_of_attendees " +
                     "FROM day_teacher_unavailability as dtu " +
@@ -112,6 +155,11 @@ public class RuleController {
         return sql;
     }
 
+    /**
+     * General class to use with rooms and subjects that returns name and id in a HashMap
+     * @param sql
+     * @return
+     */
     private HashMap getItemInHashMap(String sql){
         HashMap<String, Integer> hash = new HashMap<>();
         try (Connection con = db.getConnection();
@@ -128,6 +176,15 @@ public class RuleController {
         return hash;
     }
 
+    /**
+     * Method is called every block of every day. It checks if lecture and room can pair. If they can Pair
+     * it check if field of study and teacher can attand. If this results to true it calls the
+     * Presenter class filling the parameters with the current information passed through.
+     * @param rooms
+     * @param subjects
+     * @param currentblock
+     * @throws Exception
+     */
     private void checkIfLecturesCanOccure(HashMap rooms, HashMap subjects, int currentblock) throws Exception {
         Iterator ro = rooms.entrySet().iterator();
         while (ro.hasNext()) {
@@ -154,6 +211,11 @@ public class RuleController {
         }
     }
 
+    /**
+     * After checkIfLEcturesCanOccure loops valuates to true it updates the fields so total is increased and other
+     * neccessary calls
+     * @param subject
+     */
     private void updateFields(String subject){
         executeUpdateQuery("UPDATE subject SET total = total + 1 WHERE subject_id = '" + subject + "'");
         executeUpdateQuery("UPDATE subject SET isInWeek" + currentWeek + " = 1 WHERE subject_id = '" + subject + "'");
@@ -161,6 +223,12 @@ public class RuleController {
         executeUpdateQuery("UPDATE field_of_study SET isON" + currentDay + " = 1 WHERE study_id IN (SELECT study_id FROM study_subject WHERE subject_id = '" + subject + "' )");
     }
 
+    /**
+     * Evaluates if teacher can have a lecture on the current day with current subject.
+     * @param subject
+     * @return
+     * @throws SQLException
+     */
     private boolean checkIfTeacherHasLecture(String subject) throws SQLException {
         String sql= "SELECT COUNT(*) as total " +
                     "FROM teacher as t " +
@@ -171,6 +239,12 @@ public class RuleController {
         return (executeCountQuery(sql) == 1);
     }
 
+    /**
+     * Evaulates if a field of study can have a lecture on the current day
+     * @param subject
+     * @return
+     * @throws SQLException
+     */
     private boolean checkIfStudyHasLecture(String subject) throws SQLException {
         String sql= "SELECT COUNT(*) as total " +
                     "FROM field_of_study " +
@@ -185,6 +259,12 @@ public class RuleController {
         return (executeCountQuery(sql) == executeCountQuery(getAlleSql));
     }
 
+    /**
+     * General execute Query method to be called on to receive the number of items in query.
+     * @param sql
+     * @return
+     * @throws SQLException
+     */
     private int executeCountQuery(String sql) throws SQLException {
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
@@ -198,18 +278,34 @@ public class RuleController {
         }
     }
 
+    /**
+     * Returns start week of semester
+     * @return
+     */
     public int getStartWeek() {
         return startWeek;
     }
 
+    /**
+     * Set the start week of the semester
+     * @param startWeek
+     */
     public void setStartWeek(int startWeek) {
         this.startWeek = startWeek;
     }
 
+    /**
+     * Return the end week of the semester
+     * @return
+     */
     public int getEndWeek() {
         return endWeek;
     }
 
+    /**
+     * Set the end week of the semester
+     * @param endWeek
+     */
     public void setEndWeek(int endWeek) {
         this.endWeek = endWeek;
     }

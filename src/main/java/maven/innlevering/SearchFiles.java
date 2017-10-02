@@ -1,7 +1,6 @@
 package maven.innlevering;
 
 import maven.innlevering.database.DBConnect;
-
 import java.sql.PreparedStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -11,12 +10,19 @@ import java.util.Scanner;
 
 /**
  * Created by hakonschutt on 26/09/2017.
+ *
+ * Search files class lets the user search for entries in the database
+ * based on table and column
  */
 public class SearchFiles {
     private DBConnect db = new DBConnect();
     private OutputHandler oh = new OutputHandler();
     private Scanner sc = new Scanner(System.in);
 
+    /**
+     * Initiate all necessary methods for the searchFiles class
+     * @throws Exception
+     */
     public void main() throws Exception {
         oh = new OutputHandler();
         String[] tables = oh.getAlleTables();
@@ -40,6 +46,13 @@ public class SearchFiles {
         printTableContent(newSql, columns, searchString );
     }
 
+    /**
+     * Returns all columns in the selected table
+     * @param sql
+     * @param size
+     * @return
+     * @throws Exception
+     */
     private String[] getAlleColumns(String sql, int size) throws Exception{
         String[] tables = new String[ size ];
 
@@ -58,6 +71,11 @@ public class SearchFiles {
         return tables;
     }
 
+    /**
+     * Lets the user enter a search String
+     * @param columnName
+     * @return
+     */
     private String userSearhString(String columnName){
         System.out.print("Search in " + columnName + ": ");
         String searchString = sc.nextLine();
@@ -66,6 +84,13 @@ public class SearchFiles {
         return searchString;
     }
 
+    /**
+     * Prepares the searh query
+     * @param tablename
+     * @param column
+     * @param columns
+     * @return
+     */
     private String prepareQuerySearch(String tablename, String column, String[] columns){
         String sql = "SELECT";
 
@@ -84,6 +109,12 @@ public class SearchFiles {
         return sql;
     }
 
+    /**
+     * Prints all content based on the user input
+     * @param sql
+     * @param columnName
+     * @param searchString
+     */
     private void printTableContent(String sql, String[] columnName, String searchString){
         for(int i = 0; i < columnName.length; i++){
             System.out.printf("%-20S", columnName[i]);

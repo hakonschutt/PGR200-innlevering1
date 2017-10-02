@@ -9,6 +9,8 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Class validates the database. It checks if the database exists and asks the user for input if some conditions arnt met
+ * The class also initiate the connection information
  * Created by hakonschutt on 29/09/2017.
  */
 public class DBValidation {
@@ -18,6 +20,11 @@ public class DBValidation {
     private boolean hasScanned = false;
     private Scanner sc = new Scanner( System.in );
 
+    /**
+     * Main method calls the writeDBinfo until the connection is successful
+     * @return
+     * @throws Exception
+     */
     public boolean main() throws Exception {
         boolean works = false;
         while ( !works ){
@@ -29,8 +36,8 @@ public class DBValidation {
         return hasScanned;
     }
 
-    /*
-     * User input for database connection
+    /**
+     * Method askes for user input for database connection
      */
     private boolean writeDBinfo() throws Exception {
         String[] dbInfo = new String[4];
@@ -46,8 +53,8 @@ public class DBValidation {
         return connectToDatabase( dbInfo );
     }
 
-    /*
-     * Writing user input to properties file AFTER checking if the connection works with database
+    /**
+     * Writing user input to property file AFTER checking if the connection works with database
      */
     private void writeProperties() throws IOException {
         Properties properties = new Properties();
@@ -61,8 +68,8 @@ public class DBValidation {
         properties.store(outputStream, null);
     }
 
-    /*
-     * Test connection with the user input
+    /**
+     * Method tests the connection with the user input
      */
     private boolean connectToDatabase ( String[] dbInfo ) throws Exception {
         connect = new DBConnect(dbInfo[0], dbInfo[1], dbInfo[2], dbInfo[3]);
@@ -88,8 +95,9 @@ public class DBValidation {
             return false;
         }
     }
-    /*
-     * instruction to print if database exists
+
+    /**
+     * Instruction to print if database exists
      */
     private void userInputForConnectionInstruction(){
         System.out.println("The database already exists!");
@@ -99,7 +107,7 @@ public class DBValidation {
         System.out.println("(3) !Overwrite the current database!");
     }
 
-    /*
+    /**
      * User input IF the database already exists
      */
     private void userInputForConnectionTest( Connection con, String dbName ) throws Exception {
@@ -128,7 +136,7 @@ public class DBValidation {
         }
     }
 
-    /*
+    /**
      * Lets the user change the database name IF the database already exists
      */
     private void changeDatabaseName( Connection con ) throws Exception {
@@ -149,8 +157,8 @@ public class DBValidation {
         }
     }
 
-    /*
-     * Print loader creates a processing in various parts of the program
+    /**
+     * Print loader creates a processing bar in the program
      */
     private void printLoader() throws InterruptedException {
         System.out.print( "." );

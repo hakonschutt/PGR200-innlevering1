@@ -4,11 +4,15 @@ import maven.innlevering.database.DBUploadAsThread;
 import java.util.Scanner;
 
 /**
+ * Class is used to start thread jobs. It goes through the list of files and asign a file to each thread.
  * Created by hakonschutt on 26/09/2017.
  */
 public class Inputhandler {
     private Scanner sc;
 
+    /**
+     * Method initiate the thread job
+     */
     public void startInputScan(){
         for (int i = 1; i <= 8; i++){
             String file = getFile(i);
@@ -18,6 +22,11 @@ public class Inputhandler {
         System.out.println();
     }
 
+    /**
+     * Method takes in a filenr and returns the file name the thread is going to work with
+     * @param fileNr
+     * @return
+     */
     private String getFile(int fileNr){
         String ext = ".txt";
         String file;
