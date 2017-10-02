@@ -20,8 +20,6 @@ public class App {
      * Main app method that calls all methods used.
      */
     public static void main( String[] args ) throws Exception {
-        //printPlan();
-
         DBValidation dbVal = new DBValidation();
         hasScanned = dbVal.main();
 
