@@ -24,7 +24,7 @@ public class OutputHandler {
 
     public String getDbName() { return dbName; }
 
-    private void setDbName() {
+    public void setDbName() {
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream("data.properties")) {
             properties.load(input);
