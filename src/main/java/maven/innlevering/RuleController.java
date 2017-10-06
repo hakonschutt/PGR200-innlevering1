@@ -115,11 +115,12 @@ public class RuleController {
         String sql = getPossibleSubjectsQuery(day);
         HashMap<String, Integer> subjects = getItemInHashMap(sql);
         createFieldsForDay();
-        for(int j = 1; j < 3; j++){
+        checkIfLecturesCanOccure(subjects);
+        /*for(int j = 1; j < 3; j++){
             String roomSql = getPossibleRooms();
             HashMap<String, Integer> rooms = getItemInHashMap(roomSql);
             checkIfLecturesCanOccure(rooms, subjects, j);
-        }
+        }*/
 
         deleteFieldForDay();
     }
@@ -179,34 +180,37 @@ public class RuleController {
      * Method is called every block of every day. It checks if lecture and room can pair. If they can Pair
      * it check if field of study and teacher can attand. If this results to true it calls the
      * Presenter class filling the parameters with the current information passed through.
-     * @param rooms
      * @param subjects
-     * @param currentblock
      * @throws Exception
      */
-    private void checkIfLecturesCanOccure(HashMap rooms, HashMap subjects, int currentblock) throws Exception {
-        Iterator ro = rooms.entrySet().iterator();
-        while (ro.hasNext()) {
-            Map.Entry room = (Map.Entry)ro.next();
-            int room_kap = (int) room.getValue();
-            String room_name = (String) room.getKey();
+    private void checkIfLecturesCanOccure(HashMap subjects) throws Exception {
+        HashMap<String, Integer> rooms;
+        for(int j = 1; j < 3; j++){
+            String roomSql = getPossibleRooms();
+            rooms = getItemInHashMap(roomSql);
+            Iterator ro = rooms.entrySet().iterator();
+            while (ro.hasNext()) {
+                Map.Entry room = (Map.Entry)ro.next();
+                int room_kap = (int) room.getValue();
+                String room_name = (String) room.getKey();
 
-            Iterator su = subjects.entrySet().iterator();
-            while ( su.hasNext() ) {
-                Map.Entry subject = (Map.Entry)su.next();
-                int subject_ant = (int) subject.getValue();
-                String subject_id = (String) subject.getKey();
+                Iterator su = subjects.entrySet().iterator();
+                while ( su.hasNext() ) {
+                    Map.Entry subject = (Map.Entry)su.next();
+                    int subject_ant = (int) subject.getValue();
+                    String subject_id = (String) subject.getKey();
 
-                if( room_kap >= subject_ant && subject_ant * 2 >= room_kap ){
-                    if(checkIfTeacherHasLecture( subject_id ) && checkIfStudyHasLecture( subject_id )) {
-                        updateFields(subject_id);
-                        Presenter pre = new Presenter(currentWeek, currentDay, room_name, currentblock, subject_id);
-                        su.remove();
-                        break;
+                    if( room_kap >= subject_ant && subject_ant * 2 >= room_kap ){
+                        if(checkIfTeacherHasLecture( subject_id ) && checkIfStudyHasLecture( subject_id )) {
+                            updateFields(subject_id);
+                            Presenter pre = new Presenter(currentWeek, currentDay, room_name, j, subject_id);
+                            su.remove();
+                            break;
+                        }
                     }
                 }
+                ro.remove();
             }
-            ro.remove();
         }
     }
 
