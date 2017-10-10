@@ -13,15 +13,18 @@ import java.util.Scanner;
 public class App {
     private static DBConnect connect;
     private static boolean quit = false;
-    private static boolean hasScanned = false;
+    private static boolean hasScanned;
     private static Scanner sc = new Scanner( System.in );
 
     /**
      * Main app method that calls all methods used to initiate the program
      */
     public static void main( String[] args ) throws Exception {
-        DBValidation dbVal = new DBValidation();
-        hasScanned = dbVal.main();
+        hasScanned = useOldConnection();
+        if (!hasScanned){
+            DBValidation dbVal = new DBValidation();
+            hasScanned = dbVal.main();
+        }
 
         connect = new DBConnect();
 
@@ -29,6 +32,7 @@ public class App {
             System.out.println( "Successful connection!" );
             TimeUnit.SECONDS.sleep(1);
         } catch ( SQLException e ){
+            System.out.println("Unsuccessful connection!");
             throw new RuntimeException(e);
         }
 
@@ -45,6 +49,16 @@ public class App {
         while( !quit ){
             quit = runApp();
         }
+    }
+
+    private static boolean useOldConnection(){
+        System.out.println("Do you want to continue with the old connection:");
+        System.out.print("(1) Yes. (2) No.");
+        int ans = sc.nextInt();
+        if (ans == 1){
+            return true;
+        }
+        return false;
     }
 
     /**
