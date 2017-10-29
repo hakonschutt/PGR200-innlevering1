@@ -64,9 +64,7 @@ public class RuleController {
      * This is used to filter out subjects that has allready
      * occurred this week.
      */
-    private void createInWeekColumn(){
-        executeUpdateQuery("ALTER TABLE subject ADD isInWeek" + currentWeek + " int(1) DEFAULT 0 NOT NULL");
-    }
+    private void createInWeekColumn(){ executeUpdateQuery("ALTER TABLE subject ADD isInWeek" + currentWeek + " int(1) DEFAULT 0 NOT NULL"); }
 
     /**
      * Deletes the isInWeek column when the week is over

@@ -2,6 +2,8 @@ package maven.innlevering;
 
 import maven.innlevering.database.DBUploadAsThread;
 import java.util.Scanner;
+import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Class is used to start thread jobs. It goes through the list of files and asign a file to each thread.
@@ -13,53 +15,52 @@ public class Inputhandler {
     /**
      * Method initiate the thread job
      */
-    public void startInputScan(){
-        for (int i = 1; i <= 8; i++){
-            String file = getFile(i);
-            DBUploadAsThread job = new DBUploadAsThread(file);
-            new Thread(job).start();
+    public void startInputScan() {
+        String[] files = getAllFiles();
+        Thread[] threads = new Thread[files.length];
+
+        for (int i = 0; i < files.length; i++){
+            DBUploadAsThread job = new DBUploadAsThread(files[i]);
+            threads[i] = new Thread(job);
+            threads[i].start();
         }
-        System.out.println();
+
+        try {
+            for (int i = 0; i < threads.length; i++){
+                threads[i].join();
+            }
+        } catch (Exception e) {
+            System.out.println("Unable to join threads");
+        }
+
+        System.out.println("All jobs are completed.... ");
     }
 
-    /**
-     * Method takes in a filenr and returns the file name the thread is going to work with
-     * @param fileNr
-     * @return
-     */
-    private String getFile(int fileNr){
-        String ext = ".txt";
-        String file;
+    private String[] getAllFiles(){
+        File folder = new File("input/");
+        File[] orgFile = folder.listFiles();
+        String[] files = new String[orgFile.length];
+        int n = 0;
 
-        switch(fileNr){
-            case 1:
-                file = "day-teach";
-                break;
-            case 2:
-                file = "field-of-study";
-                break;
-            case 3:
-                file = "possible-day";
-                break;
-            case 4:
-                file = "room";
-                break;
-            case 5:
-                file = "study-subject";
-                break;
-            case 6:
-                file = "subject";
-                break;
-            case 7:
-                file = "teacher";
-                break;
-            case 8:
-                file = "teacher-subject";
-                break;
-            default:
-                return null;
+        for (int i = 0; i < orgFile.length; i++) {
+            if (orgFile[i].isFile()) {
+                files[n] = orgFile[i].getName();
+                n++;
+            }
         }
 
-        return file + ext;
+        return trimStringArray(files);
+    }
+
+    private String[] trimStringArray(String[] array){
+        ArrayList<String> list = new ArrayList<>();
+
+        for(String s : array) {
+            if(s != null && s.length() > 0) {
+                list.add(s);
+            }
+        }
+
+        return list.toArray(new String[list.size()]);
     }
 }

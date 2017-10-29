@@ -37,7 +37,7 @@ public class CreatePlan {
      * @return
      * @throws Exception
      */
-    private boolean validateTables() throws Exception {
+    public boolean validateTables() throws Exception {
         OutputHandler oh = new OutputHandler();
         String[] tables = oh.getAlleTables();
         int total = checkForTables(tables);

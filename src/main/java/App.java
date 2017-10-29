@@ -1,8 +1,7 @@
 import maven.innlevering.*;
-import maven.innlevering.database.DBConnect;
 import maven.innlevering.database.DBValidation;
+import maven.innlevering.database.DBConnect;
 import java.sql.Connection;
-import java.util.concurrent.TimeUnit;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -11,54 +10,73 @@ import java.util.Scanner;
  * Ths user can execute semester print, search and table print.
  */
 public class App {
-    private static DBConnect connect;
+    private static DBConnect connect = new DBConnect();
     private static boolean quit = false;
-    private static boolean hasScanned;
     private static Scanner sc = new Scanner( System.in );
+    private static boolean canCreateSemesterPlan;
+    private static CreatePlan createPlan = new CreatePlan();
 
     /**
      * Main app method that calls all methods used to initiate the program
      */
     public static void main( String[] args ) throws Exception {
-        hasScanned = useOldConnection();
+
+        boolean hasScanned = useOldConnection();
+
         if (!hasScanned){
+            System.out.println("Set up a new connection!");
             DBValidation dbVal = new DBValidation();
             hasScanned = dbVal.main();
         }
 
-        connect = new DBConnect();
+        testConnection : try (Connection con = connect.getConnection()){
+            if(con == null){
+                System.out.println("Unsuccessful connection!");
+                quit = true;
+                break testConnection;
+            }
 
-        try (Connection con = connect.getConnection()){
             System.out.println( "Successful connection!" );
-            TimeUnit.SECONDS.sleep(1);
+            if( !hasScanned ) {
+                System.out.println("Starting input scanner");
+                scanInputFiles();
+            }
         } catch ( SQLException e ){
             System.out.println("Unsuccessful connection!");
-            throw new RuntimeException(e);
+            quit = true;
         }
 
-        if( !hasScanned ) {
-            System.out.println("Starting input scanner");
-            TimeUnit.SECONDS.sleep(1);
-            scanInputFiles();
-            TimeUnit.SECONDS.sleep(2);
-        }
+        canCreateSemesterPlan = createPlan.validateTables();
 
-        System.out.println();
+        if(!quit) printInstructions();
 
-        printInstructions();
         while( !quit ){
             quit = runApp();
         }
+
+        System.out.println("Quiting program...");
     }
 
     private static boolean useOldConnection(){
-        System.out.println("Do you want to continue with the old connection:");
-        System.out.print("(1) Yes. (2) No.");
-        int ans = sc.nextInt();
-        if (ans == 1){
-            return true;
+        try (Connection con = connect.getConnection()){
+            if(con == null){
+                System.out.println("Unable to use old connection. Setup a new.");
+                return false;
+            }
+
+            System.out.print("Do you want to continue with the old connection(yes/no): ");
+            while(true){
+                String ans = sc.nextLine().trim();
+                if (ans.equals("yes") || ans.equals("no")){
+                    return ans.equals("yes");
+                } else {
+                    System.out.print("Not a valid answer. Try again: ");
+                }
+            }
+        } catch (SQLException e){
+            System.out.println("Unable to use old connection. Setup a new.");
+            return false;
         }
-        return false;
     }
 
     /**
@@ -73,12 +91,18 @@ public class App {
      * Prints the possible instructions for the method runApp()
      */
     private static boolean printInstructions(){
-        System.out.println("The following instructions are valid in this program: ");
-        System.out.println("(1) Print instructions (This page).");
-        System.out.println("(2) Search for info.");
-        System.out.println("(3) Print table.");
-        System.out.println("(4) Create semester plan.");
-        System.out.println("(5) Quit.");
+        System.out.println();
+        System.out.println("-------------------------------------------");
+        System.out.println(String.format("%-10s %-25s", "Command", "Instruction"));
+        System.out.println("-------------------------------------------");
+        System.out.println(String.format("%-10s %-25s", "intro", "Print instructions (This page)"));
+        System.out.println(String.format("%-10s %-25s", "search", "Search for info"));
+        System.out.println(String.format("%-10s %-25s", "print", "Print table"));
+
+        if(canCreateSemesterPlan) System.out.println(String.format("%-10s %-25s", "create", "Create semester plan"));
+
+        System.out.println(String.format("%-10s %-25s", "exit", "Quit program"));
+        System.out.println("-------------------------------------------");
 
         return false;
     }
@@ -107,8 +131,7 @@ public class App {
      * printPlan method is used to print the semester plan. It initiates the createPlan class
      */
     private static boolean printPlan() throws Exception {
-        CreatePlan cp = new CreatePlan();
-        cp.main();
+        createPlan.main();
 
         return false;
     }
@@ -118,19 +141,24 @@ public class App {
      * method based on the users input
      */
     private static boolean runApp() throws Exception {
-        System.out.println("What command do you want to execute?");
-        int asw = sc.nextInt();
+        System.out.print("What command do you want to execute: ");
+        String asw = sc.nextLine().trim();
+        System.out.println();
         switch (asw) {
-            case 1:
+            case "intro":
                 return printInstructions();
-            case 2:
+            case "search":
                 return searchFiles();
-            case 3:
+            case "print":
                 return printTable();
-            case 4:
-                return printPlan();
-            case 5:
-                System.out.println("Quiting program...");
+            case "create":
+                if(canCreateSemesterPlan){
+                    return printPlan();
+                } else {
+                    System.out.println("Not a valid command. Try again!");
+                    return false;
+                }
+            case "exit":
                 return true;
             default:
                 System.out.println("Not a valid command. Try again!");
