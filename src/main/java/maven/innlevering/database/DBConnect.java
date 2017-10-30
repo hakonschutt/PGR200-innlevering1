@@ -46,19 +46,24 @@ public class DBConnect {
      * @throws SQLException
      * @throws FileNotFoundException
      */
-    public Connection testConnection (boolean withDatabaseConnection) throws SQLException, FileNotFoundException {
-        MysqlDataSource ds = new MysqlDataSource();
+    public Connection testConnection (boolean withDatabaseConnection) {
+        try {
+            MysqlDataSource ds = new MysqlDataSource();
 
-        if(withDatabaseConnection)
-            ds.setDatabaseName(this.dbName);
+            if(withDatabaseConnection)
+                ds.setDatabaseName(this.dbName);
 
-        ds.setServerName(this.host);
-        ds.setUser(this.user);
-        ds.setPassword(this.pass);
+            ds.setServerName(this.host);
+            ds.setUser(this.user);
+            ds.setPassword(this.pass);
 
-        Connection connect = ds.getConnection();
+            Connection connect = ds.getConnection();
 
-        return connect;
+            return connect;
+        } catch (SQLException e){
+            System.out.println("Unable to create a connection. ");
+            return null;
+        }
     }
 
     /**

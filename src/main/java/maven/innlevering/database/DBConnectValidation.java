@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
@@ -13,10 +14,9 @@ import java.util.concurrent.TimeUnit;
  * The class also initiate the connection information
  * Created by hakonschutt on 29/09/2017.
  */
-public class DBValidation {
+public class DBConnectValidation {
     private DBHandler handler = new DBHandler();
     private DBConnect connect;
-    private Connection connection;
     private boolean hasScanned = false;
     private Scanner sc = new Scanner( System.in );
 
@@ -56,16 +56,18 @@ public class DBValidation {
     /**
      * Writing user input to property file AFTER checking if the connection works with database
      */
-    private void writeProperties() throws IOException {
+    private void writeProperties() {
         Properties properties = new Properties();
-        OutputStream outputStream = new FileOutputStream("data.properties" );;
+        try (OutputStream outputStream = new FileOutputStream("data.properties")) {
+            properties.setProperty("user", connect.getUser());
+            properties.setProperty("pass", connect.getPass());
+            properties.setProperty("host", connect.getHost());
+            properties.setProperty("db", connect.getDbName());
 
-        properties.setProperty("user", connect.getUser());
-        properties.setProperty("pass", connect.getPass());
-        properties.setProperty("host", connect.getHost());
-        properties.setProperty("db", connect.getDbName());
-
-        properties.store(outputStream, null);
+            properties.store(outputStream, null);
+        } catch (IOException e){
+            System.out.println("Unable to write to property file. Make sure its not deleted.");
+        }
     }
 
     /**
@@ -87,7 +89,7 @@ public class DBValidation {
 
             return true;
 
-        } catch (Exception e){
+        } catch (SQLException e){
             System.out.println("Unable to connect with the current information");
             System.out.println("Try again: ");
             System.out.println();

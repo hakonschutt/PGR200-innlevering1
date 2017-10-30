@@ -1,6 +1,8 @@
 import maven.innlevering.*;
-import maven.innlevering.database.DBValidation;
+import maven.innlevering.database.DBHandler;
+import maven.innlevering.database.DBConnectValidation;
 import maven.innlevering.database.DBConnect;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -10,59 +12,51 @@ import java.util.Scanner;
  * Ths user can execute semester print, search and table print.
  */
 public class App {
-    private static DBConnect connect = new DBConnect();
-    private static boolean quit = false;
-    private static Scanner sc = new Scanner( System.in );
-    private static boolean canCreateSemesterPlan;
-    private static CreatePlan createPlan = new CreatePlan();
+    private DBConnect connect = new DBConnect();
+    private Scanner sc = new Scanner( System.in );
+    private boolean canCreateSemesterPlan;
 
-    /**
-     * Main app method that calls all methods used to initiate the program
-     */
-    public static void main( String[] args ) throws Exception {
+    public void start() throws Exception {
+        boolean filesHaveBeenScanned = checkForPropertyFile() && useOldConnection();
+        boolean quit;
 
-        boolean hasScanned = useOldConnection();
+        if (!filesHaveBeenScanned) filesHaveBeenScanned = new DBConnectValidation().main();
 
-        if (!hasScanned){
-            System.out.println("Set up a new connection!");
-            DBValidation dbVal = new DBValidation();
-            hasScanned = dbVal.main();
-        }
-
-        testConnection : try (Connection con = connect.getConnection()){
-            if(con == null){
-                System.out.println("Unsuccessful connection!");
-                quit = true;
-                break testConnection;
-            }
+        try (Connection con = connect.getConnection()){
+            if(con == null) throw new SQLException();
 
             System.out.println( "Successful connection!" );
-            if( !hasScanned ) {
-                System.out.println("Starting input scanner");
-                scanInputFiles();
-            }
+
+            if( !filesHaveBeenScanned ) scanInputFiles();
+
+            canCreateSemesterPlan = new DBHandler().validateTables();
+            quit = false;
         } catch ( SQLException e ){
             System.out.println("Unsuccessful connection!");
             quit = true;
         }
 
-        canCreateSemesterPlan = createPlan.validateTables();
-
         if(!quit) printInstructions();
 
         while( !quit ){
-            quit = runApp();
+            try (Connection con = connect.getConnection()){
+                quit = con == null || runApp();
+            } catch (SQLException e){
+                System.out.println("Lost connection to database.");
+                break;
+            }
         }
 
         System.out.println("Quiting program...");
     }
 
-    private static boolean useOldConnection(){
+    private boolean checkForPropertyFile(){
+        return new File("data.properties").exists();
+    }
+
+    private boolean useOldConnection(){
         try (Connection con = connect.getConnection()){
-            if(con == null){
-                System.out.println("Unable to use old connection. Setup a new.");
-                return false;
-            }
+            if(con == null) throw new SQLException();
 
             System.out.print("Do you want to continue with the old connection(yes/no): ");
             while(true){
@@ -82,7 +76,7 @@ public class App {
     /**
      * Scans the input files from the input directory
      */
-    private static void scanInputFiles(){
+    private void scanInputFiles(){
         Inputhandler rf = new Inputhandler();
         rf.startInputScan();
     }
@@ -90,7 +84,7 @@ public class App {
     /**
      * Prints the possible instructions for the method runApp()
      */
-    private static boolean printInstructions(){
+    private boolean printInstructions(){
         System.out.println();
         System.out.println("-------------------------------------------");
         System.out.println(String.format("%-10s %-25s", "Command", "Instruction"));
@@ -98,8 +92,8 @@ public class App {
         System.out.println(String.format("%-10s %-25s", "intro", "Print instructions (This page)"));
         System.out.println(String.format("%-10s %-25s", "search", "Search for info"));
         System.out.println(String.format("%-10s %-25s", "print", "Print table"));
-
-        if(canCreateSemesterPlan) System.out.println(String.format("%-10s %-25s", "create", "Create semester plan"));
+        if(canCreateSemesterPlan)
+            System.out.println(String.format("%-10s %-25s", "create", "Create semester plan"));
 
         System.out.println(String.format("%-10s %-25s", "exit", "Quit program"));
         System.out.println("-------------------------------------------");
@@ -110,7 +104,7 @@ public class App {
     /**
      * searhFiles lets the user search for entries in the database
      */
-    private static boolean searchFiles() throws Exception {
+    private boolean searchFiles() throws Exception {
         SearchFiles search = new SearchFiles();
         search.main();
 
@@ -120,7 +114,7 @@ public class App {
     /**
      * printTable method is used to prompt the user with table options and print from the selected table
      */
-    private static boolean printTable() throws Exception {
+    private boolean printTable() throws Exception {
         PrintTables pt = new PrintTables();
         pt.main();
 
@@ -130,9 +124,9 @@ public class App {
     /**
      * printPlan method is used to print the semester plan. It initiates the createPlan class
      */
-    private static boolean printPlan() throws Exception {
+    private boolean printPlan() throws Exception {
+        CreatePlan createPlan = new CreatePlan();
         createPlan.main();
-
         return false;
     }
 
@@ -140,7 +134,7 @@ public class App {
      * RunApp is the main method in this class. It directs the application to the correct
      * method based on the users input
      */
-    private static boolean runApp() throws Exception {
+    private boolean runApp() throws Exception {
         System.out.print("What command do you want to execute: ");
         String asw = sc.nextLine().trim();
         System.out.println();
@@ -152,17 +146,22 @@ public class App {
             case "print":
                 return printTable();
             case "create":
-                if(canCreateSemesterPlan){
-                    return printPlan();
-                } else {
-                    System.out.println("Not a valid command. Try again!");
-                    return false;
-                }
+                if(canCreateSemesterPlan) return printPlan();
+                else break;
             case "exit":
                 return true;
             default:
-                System.out.println("Not a valid command. Try again!");
-                return false;
+                break;
         }
+
+        System.out.println("Not a valid command. Try again!");
+        return false;
+    }
+
+    /**
+     * Main app method that calls all methods used to initiate the program
+     */
+    public static void main( String[] args ) throws Exception {
+        new App().start();
     }
 }

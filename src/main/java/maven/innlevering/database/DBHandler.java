@@ -2,6 +2,7 @@ package maven.innlevering.database;
 
 import java.util.concurrent.TimeUnit;
 import java.sql.*;
+import maven.innlevering.OutputHandler;
 
 /**
  * Class is used to controll database overwriting and creating.
@@ -38,6 +39,40 @@ public class DBHandler {
         } catch ( SQLException e ){
             throw new RuntimeException( e );
         }
+    }
+
+    /**
+     * Method validates if tables used in semester planing is present in database
+     * @return
+     * @throws Exception
+     */
+    public boolean validateTables() throws Exception {
+        OutputHandler oh = new OutputHandler();
+        String[] tables = oh.getAlleTables();
+        int total = checkForTables(tables);
+
+        if(total == 4){
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Method checks for 4 tables that are important to the semester planing.
+     * @param tables
+     * @return
+     */
+    private int checkForTables(String[] tables){
+        int count = 0;
+
+        for(int i = 0; i < tables.length; i++){
+            if(tables[i].equals("field_of_study") || tables[i].equals("room") || tables[i].equals("subject") || tables[i].equals("teacher")){
+                count++;
+            }
+        }
+
+        return count;
     }
 
     /**
