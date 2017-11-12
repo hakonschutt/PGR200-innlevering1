@@ -129,9 +129,25 @@ public class DBHandler {
             String sql;
 
             sql = "ALTER TABLE `" + table + "` ";
-            for(int i = 0; i < FK.length; i+=2){
-                sql += "ADD FOREIGN KEY (PersonID) REFERENCES Persons(PersonID)";
+            for(int i = 0; i < FK.length; i+=3){
+                sql += "ADD FOREIGN KEY (" + FK[i] + ") REFERENCES " + FK[i + 1] + "(" + FK[i + 2] + ")";
+                if(i == FK.length - 3){
+                    sql += "";
+                } else {
+                    sql += ", ";
+                }
             }
+            executeUpdate(sql);
+        }
+    }
+
+    public void executeUpdate(String sql){
+        DBConnect db = new DBConnect();
+        try (Connection con = db.getConnection();
+                Statement stmt = con.createStatement()){
+             stmt.executeUpdate(sql);
+        } catch ( SQLException e ){
+            System.out.println("Unable to add foreign key");
         }
     }
 }

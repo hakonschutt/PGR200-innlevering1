@@ -4,6 +4,7 @@ int/varchar
 11/255
 day_id
 nofk
+0/available
 1/monday
 2/tuesday
 3/wednesday

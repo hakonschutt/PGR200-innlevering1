@@ -5,6 +5,7 @@ import maven.innlevering.database.DBConnect;
 import maven.innlevering.database.DBSemesterPlanHandler;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -20,11 +21,7 @@ public class App {
     private boolean hasCreatedSemesterPlan;
 
     private void start() throws Exception {
-        Inputhandler input = new Inputhandler();
-        input.startInputScan();
-
-
-        /*boolean filesHaveBeenScanned = checkForPropertyFile() && useOldConnection();
+        boolean filesHaveBeenScanned = checkForPropertyFile() && useOldConnection();
         boolean quit = false;
 
         if (!filesHaveBeenScanned) filesHaveBeenScanned = new DBConnectValidation().main();
@@ -56,7 +53,7 @@ public class App {
             }
         }
 
-        System.out.println("Quiting program...");*/
+        System.out.println("Quiting program...");
     }
 
     private boolean checkForPropertyFile(){
@@ -84,10 +81,10 @@ public class App {
     /**
      * Scans the input files from the input directory
      */
-   /* private void scanInputFiles(){
+    private void scanInputFiles() throws IOException {
         Inputhandler rf = new Inputhandler();
         rf.startInputScan();
-    }*/
+    }
 
     /**
      * Prints the possible instructions for the method runApp()

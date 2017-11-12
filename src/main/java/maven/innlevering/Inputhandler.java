@@ -20,7 +20,7 @@ public class Inputhandler {
      */
     public void startInputScan() throws IOException {
         String[] files = getAllFiles();
-        /*Thread[] threads = new Thread[files.length];
+        Thread[] threads = new Thread[files.length];
 
         for (int i = 0; i < files.length; i++){
             DBUploadAsThread job = new DBUploadAsThread(files[i]);
@@ -34,8 +34,9 @@ public class Inputhandler {
             }
         } catch (Exception e) {
             System.out.println("Unable to join threads");
-        }*/
+        }
 
+        System.out.println("Fixing foreign keys");
         for (int i = 0; i < files.length; i++){
             DBHandler handler = new DBHandler();
             handler.fixForeighKeysForTable(files[i]);
