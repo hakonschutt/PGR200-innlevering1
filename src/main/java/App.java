@@ -18,7 +18,7 @@ public class App {
 
     public void start() throws Exception {
         boolean filesHaveBeenScanned = checkForPropertyFile() && useOldConnection();
-        boolean quit;
+        boolean quit = false;
 
         if (!filesHaveBeenScanned) filesHaveBeenScanned = new DBConnectValidation().main();
 
@@ -30,9 +30,8 @@ public class App {
             if( !filesHaveBeenScanned ) scanInputFiles();
 
             canCreateSemesterPlan = new DBHandler().validateTables();
-            quit = false;
         } catch ( SQLException e ){
-            System.out.println("Unsuccessful connection!");
+            System.out.println("Unknown connection issue.");
             quit = true;
         }
 
@@ -63,9 +62,8 @@ public class App {
                 String ans = sc.nextLine().trim();
                 if (ans.equals("yes") || ans.equals("no")){
                     return ans.equals("yes");
-                } else {
-                    System.out.print("Not a valid answer. Try again: ");
                 }
+                System.out.print("Not a valid answer. Try again(yes/no): ");
             }
         } catch (SQLException e){
             System.out.println("Unable to use old connection. Setup a new.");
