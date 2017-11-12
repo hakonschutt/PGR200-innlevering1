@@ -1,6 +1,9 @@
 package maven.innlevering;
 
+import maven.innlevering.database.DBHandler;
 import maven.innlevering.database.DBUploadAsThread;
+
+import java.io.IOException;
 import java.util.Scanner;
 import java.io.File;
 import java.util.ArrayList;
@@ -15,9 +18,9 @@ public class Inputhandler {
     /**
      * Method initiate the thread job
      */
-    public void startInputScan() {
+    public void startInputScan() throws IOException {
         String[] files = getAllFiles();
-        Thread[] threads = new Thread[files.length];
+        /*Thread[] threads = new Thread[files.length];
 
         for (int i = 0; i < files.length; i++){
             DBUploadAsThread job = new DBUploadAsThread(files[i]);
@@ -31,8 +34,14 @@ public class Inputhandler {
             }
         } catch (Exception e) {
             System.out.println("Unable to join threads");
+        }*/
+
+        for (int i = 0; i < files.length; i++){
+            DBHandler handler = new DBHandler();
+            handler.fixForeighKeysForTable(files[i]);
         }
 
+        System.out.println();
         System.out.println("All jobs are completed.... ");
     }
 

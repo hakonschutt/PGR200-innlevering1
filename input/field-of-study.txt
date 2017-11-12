@@ -3,6 +3,7 @@ study_id/study
 int/varchar
 11/255
 study_id
+nofk
 1/Frontend- og mobilutvikling
 2/Spillprogrammering
 3/Intellegente Systemer

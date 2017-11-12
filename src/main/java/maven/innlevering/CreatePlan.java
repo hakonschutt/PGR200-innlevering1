@@ -10,16 +10,16 @@ import java.util.Scanner;
  */
 public class CreatePlan {
     private Scanner sc;
-    private DBConnect db = new DBConnect();
     private RuleController rc = new RuleController();
 
     /**
      * Calles the necessary methods to evaulate if the user is connected to the correct database
      * @throws Exception
      */
-    public void main() throws Exception {
+    public boolean main() throws Exception {
         setSemester();
         rc.startSemesterPlan();
+        return true;
     }
 
     /**

@@ -3,6 +3,7 @@ id/teacher_id/day_id
 int/int/int
 11/11/11
 id
+teacher_id/teacher/day_id/possible_day
 1/1/0
 2/2/2
 3/2/3

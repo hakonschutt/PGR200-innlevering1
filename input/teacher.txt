@@ -3,6 +3,7 @@ id/name/email
 int/varchar/varchar
 11/255/255
 id
+nofk
 1/Per Lauvås/per@westerdals.no
 2/Tomas Sandnes/tomas@westerdals.no
 3/Andrea Arcuri/andrea@westerdals.no

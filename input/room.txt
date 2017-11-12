@@ -3,6 +3,7 @@ room_id/maks_kapasitet
 varchar/varchar
 255/255
 room_id
+nofk
 F101/200
 F305/50
 F307/80

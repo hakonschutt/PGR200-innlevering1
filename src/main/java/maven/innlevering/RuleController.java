@@ -1,6 +1,8 @@
 package maven.innlevering;
 
 import maven.innlevering.database.DBConnect;
+import maven.innlevering.database.DBSemesterPlanHandler;
+
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,8 +20,8 @@ public class RuleController {
     private int currentWeek;
     private int currentDay;
     private DBConnect db = new DBConnect();
-    private Connection con;
-    private Presenter presenter;
+    private DBSemesterPlanHandler semesterPlanHandler = new DBSemesterPlanHandler();
+
 
     /**
      * Initiate the semester planing
@@ -27,11 +29,15 @@ public class RuleController {
      */
     public void startSemesterPlan() throws Exception {
         System.out.println();
-        presenter = new Presenter();
+        semesterPlanHandler.createTableForSemester();
 
         createTotalColumn();
+
+        int diff = endWeek - startWeek;
+
         currentWeek = startWeek;
         while(currentWeek <= endWeek){
+            printProgressBar(diff, currentWeek - startWeek);
             createInWeekColumn();
             int i = 1;
             while(i <= 5){
@@ -43,7 +49,25 @@ public class RuleController {
             currentWeek++;
         }
         deleteTotalColumn();
+        System.out.println("\n\nFinished creating semesterplan!");
     }
+
+    public void printProgressBar(int total, int currentDiff){
+        String formatForString = "[%-" + ((total * 3)+1) + "s]";
+        String progress = "";
+        for(int i = 0; i < currentDiff; i++){
+            progress += "===";
+        }
+        progress += ">";
+
+        String stringToPrint = String.format(formatForString, progress);
+
+
+
+
+        System.out.print("\r" + stringToPrint + " " + currentDiff + "/" + total + " weeks created.");
+    }
+
 
     /**
      * Creates a total column on subject table
@@ -114,12 +138,6 @@ public class RuleController {
         HashMap<String, Integer> subjects = getItemInHashMap(sql);
         createFieldsForDay();
         checkIfLecturesCanOccure(subjects);
-        /*for(int j = 1; j < 3; j++){
-            String roomSql = getPossibleRooms();
-            HashMap<String, Integer> rooms = getItemInHashMap(roomSql);
-            checkIfLecturesCanOccure(rooms, subjects, j);
-        }*/
-
         deleteFieldForDay();
     }
 
@@ -201,7 +219,7 @@ public class RuleController {
                     if( room_kap >= subject_ant && subject_ant * 2 >= room_kap ){
                         if(checkIfTeacherHasLecture( subject_id ) && checkIfStudyHasLecture( subject_id )) {
                             updateFields(subject_id);
-                            Presenter pre = new Presenter(currentWeek, currentDay, room_name, j, subject_id);
+                            semesterPlanHandler.uploadToTable(currentWeek, currentDay, room_name, j, subject_id);
                             su.remove();
                             break;
                         }

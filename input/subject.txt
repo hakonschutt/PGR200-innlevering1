@@ -1,19 +1,20 @@
 subject
-subject_id/subject/number_of_attendees/tull
-varchar/varchar/int/int
-255/255/11/11
+subject_id/subject/number_of_attendees
+varchar/varchar/int
+255/255/11
 subject_id
-PGR200/Avansert Javaprogrammering/50/1
-IS3200/Mobile økosystemer/30/1
-PG3300/Software design/80/1
-DS3800/Grensesnittdesign/30/1
-PRO200/Smidig prosjekt/180/1
-PG3400/Programmering i C for Linux/50/1
-PG4200/Algoritmer og datastrukturer/80/1
-IKT200/Introduksjon til Intelligente systemer/30/0
-DS3101/Webutvikling 1/60/0
-IS3100/ERP-systemer/30/0
-BU3100/Bedriftsøkonomi/30/0
-DS3300/Interaksjonsdesign 1/60/0
-DS3110/Content Management Systems/30/0
-DIM201/Datadrevet markedsføring/30/1
+nofk
+PGR200/Avansert Javaprogrammering/50
+IS3200/Mobile økosystemer/30
+PG3300/Software design/80
+DS3800/Grensesnittdesign/30
+PRO200/Smidig prosjekt/180
+PG3400/Programmering i C for Linux/50
+PG4200/Algoritmer og datastrukturer/80
+IKT200/Introduksjon til Intelligente systemer/30
+DS3101/Webutvikling 1/60
+IS3100/ERP-systemer/30
+BU3100/Bedriftsøkonomi/30
+DS3300/Interaksjonsdesign 1/60
+DS3110/Content Management Systems/30
+DIM201/Datadrevet markedsføring/30

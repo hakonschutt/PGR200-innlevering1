@@ -1,5 +1,8 @@
 package maven.innlevering.database;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.sql.*;
 import maven.innlevering.OutputHandler;
@@ -39,6 +42,18 @@ public class DBHandler {
         } catch ( SQLException e ){
             throw new RuntimeException( e );
         }
+    }
+
+    public boolean validateIfSemesterPlanExists() throws Exception {
+        OutputHandler oh = new OutputHandler();
+        String[] tables = oh.getAlleTables();
+
+        for(int i = 0; i < tables.length; i++){
+            if(tables[i].equals("semester_plan")){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -93,6 +108,27 @@ public class DBHandler {
 
         } catch ( SQLException e ){
             throw new RuntimeException( e );
+        }
+    }
+
+
+    public void fixForeighKeysForTable(String fileName) throws IOException {
+        /*ALTER TABLE Orders
+        ADD FOREIGN KEY (PersonID) REFERENCES Persons(PersonID);*/
+        String file = "input/" + fileName;
+        BufferedReader in = new BufferedReader(new FileReader(file));
+
+        String table = in.readLine();
+        String[] waiste = in.readLine().split("/");
+        String[] dataType = in.readLine().split("/");
+        String[] dataSize = in.readLine().split("/");
+        String PK = in.readLine();
+        String[] FK = in.readLine().split("/");
+
+        if(!FK[0].equals("nofk")){
+            String sql;
+
+            System.out.println("Fk for table = " + table);
         }
     }
 }

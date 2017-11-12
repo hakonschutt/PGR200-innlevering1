@@ -2,6 +2,8 @@ import maven.innlevering.*;
 import maven.innlevering.database.DBHandler;
 import maven.innlevering.database.DBConnectValidation;
 import maven.innlevering.database.DBConnect;
+import maven.innlevering.database.DBSemesterPlanHandler;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,9 +17,14 @@ public class App {
     private DBConnect connect = new DBConnect();
     private Scanner sc = new Scanner( System.in );
     private boolean canCreateSemesterPlan;
+    private boolean hasCreatedSemesterPlan;
 
-    public void start() throws Exception {
-        boolean filesHaveBeenScanned = checkForPropertyFile() && useOldConnection();
+    private void start() throws Exception {
+        Inputhandler input = new Inputhandler();
+        input.startInputScan();
+
+
+        /*boolean filesHaveBeenScanned = checkForPropertyFile() && useOldConnection();
         boolean quit = false;
 
         if (!filesHaveBeenScanned) filesHaveBeenScanned = new DBConnectValidation().main();
@@ -29,7 +36,10 @@ public class App {
 
             if( !filesHaveBeenScanned ) scanInputFiles();
 
-            canCreateSemesterPlan = new DBHandler().validateTables();
+            DBHandler handler = new DBHandler();
+
+            hasCreatedSemesterPlan = handler.validateIfSemesterPlanExists();
+            canCreateSemesterPlan = handler.validateTables();
         } catch ( SQLException e ){
             System.out.println("Unknown connection issue.");
             quit = true;
@@ -46,7 +56,7 @@ public class App {
             }
         }
 
-        System.out.println("Quiting program...");
+        System.out.println("Quiting program...");*/
     }
 
     private boolean checkForPropertyFile(){
@@ -74,10 +84,10 @@ public class App {
     /**
      * Scans the input files from the input directory
      */
-    private void scanInputFiles(){
+   /* private void scanInputFiles(){
         Inputhandler rf = new Inputhandler();
         rf.startInputScan();
-    }
+    }*/
 
     /**
      * Prints the possible instructions for the method runApp()
@@ -92,7 +102,8 @@ public class App {
         System.out.println(String.format("%-10s %-25s", "print", "Print table"));
         if(canCreateSemesterPlan)
             System.out.println(String.format("%-10s %-25s", "create", "Create semester plan"));
-
+        if(hasCreatedSemesterPlan)
+            System.out.println(String.format("%-10s %-25s", "semester", "Print current semester plan"));
         System.out.println(String.format("%-10s %-25s", "exit", "Quit program"));
         System.out.println("-------------------------------------------");
 
@@ -122,9 +133,23 @@ public class App {
     /**
      * printPlan method is used to print the semester plan. It initiates the createPlan class
      */
-    private boolean printPlan() throws Exception {
+    private boolean createPlan() throws Exception {
         CreatePlan createPlan = new CreatePlan();
         createPlan.main();
+        hasCreatedSemesterPlan = true;
+
+        System.out.print("Do you want to print the plan? (yes/no) ");
+        String ans = sc.nextLine().toLowerCase().replace(" ", "");
+        if(ans.equals("yes")){
+            return printPlan();
+        }
+
+        return false;
+    }
+
+    private boolean printPlan() {
+        DBSemesterPlanHandler db = new DBSemesterPlanHandler();
+        db.presentAllSemesterData();
         return false;
     }
 
@@ -144,7 +169,10 @@ public class App {
             case "print":
                 return printTable();
             case "create":
-                if(canCreateSemesterPlan) return printPlan();
+                if(canCreateSemesterPlan) return createPlan();
+                else break;
+            case "semester":
+                if(hasCreatedSemesterPlan) return printPlan();
                 else break;
             case "exit":
                 return true;

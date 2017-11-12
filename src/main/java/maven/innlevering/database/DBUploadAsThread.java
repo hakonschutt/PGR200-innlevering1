@@ -47,6 +47,7 @@ public class DBUploadAsThread implements Runnable {
             String[] dataType = in.readLine().split("/");
             String[] dataSize = in.readLine().split("/");
             String PK = in.readLine();
+            String FK = in.readLine();
 
             String sql;
 
@@ -90,6 +91,7 @@ public class DBUploadAsThread implements Runnable {
         String[] dataType = in.readLine().split("/");
         String[] dataSize = in.readLine().split("/");
         String PK = in.readLine();
+        String FK = in.readLine();
 
         String sql;
 
