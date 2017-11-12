@@ -3,7 +3,7 @@ id/subject_id/teacher_id
 int/varchar/int
 11/255/11
 id
-subject_id/subject/teacher_id/teacher
+subject_id/subject/subject_id/teacher_id/teacher/id
 1/PGR200/1
 2/IS3200/5
 3/DS3800/6

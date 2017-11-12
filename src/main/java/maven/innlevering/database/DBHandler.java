@@ -128,7 +128,10 @@ public class DBHandler {
         if(!FK[0].equals("nofk")){
             String sql;
 
-            System.out.println("Fk for table = " + table);
+            sql = "ALTER TABLE `" + table + "` ";
+            for(int i = 0; i < FK.length; i+=2){
+                sql += "ADD FOREIGN KEY (PersonID) REFERENCES Persons(PersonID)";
+            }
         }
     }
 }

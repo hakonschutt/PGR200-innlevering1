@@ -3,7 +3,7 @@ id/study_id/subject_id
 int/int/varchar
 11/11/255
 id
-study_id/field_of_study/subject_id/subject
+study_id/field_of_study/study_id/subject_id/subject/subject_id
 1/1/PGR200
 2/5/PGR200
 3/1/IS3200
