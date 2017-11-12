@@ -2,9 +2,6 @@ package maven.innlevering;
 
 import maven.innlevering.database.DBHandler;
 import maven.innlevering.database.DBUploadAsThread;
-
-import java.io.IOException;
-import java.util.Scanner;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -13,12 +10,11 @@ import java.util.ArrayList;
  * Created by hakonschutt on 26/09/2017.
  */
 public class Inputhandler {
-    private Scanner sc;
 
     /**
      * Method initiate the thread job
      */
-    public void startInputScan() throws IOException {
+    public void startInputScan() {
         String[] files = getAllFiles();
         Thread[] threads = new Thread[files.length];
 
@@ -29,21 +25,25 @@ public class Inputhandler {
         }
 
         try {
-            for (int i = 0; i < threads.length; i++){
+            for (int i = 0; i < threads.length; i++)
                 threads[i].join();
-            }
+
         } catch (Exception e) {
             System.out.println("Unable to join threads");
         }
 
-        System.out.println("Fixing foreign keys");
-        for (int i = 0; i < files.length; i++){
-            DBHandler handler = new DBHandler();
-            handler.fixForeighKeysForTable(files[i]);
-        }
+        uploadForeignKeys(files);
 
         System.out.println();
         System.out.println("All jobs are completed.... ");
+    }
+
+    public void uploadForeignKeys(String[] files){
+        DBHandler handler = new DBHandler();
+
+        for (int i = 0; i < files.length; i++)
+            handler.fixForeignKeysForTable(files[i]);
+
     }
 
     private String[] getAllFiles(){

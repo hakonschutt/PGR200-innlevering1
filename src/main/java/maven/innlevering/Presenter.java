@@ -26,7 +26,7 @@ public class Presenter {
      * @param subject_id
      * @throws Exception
      */
-    public static void presentData(int week, int day, String room, int block, String subject_id, String teacherName) throws Exception {
+    public static void presentData(int week, int day, String room, int block, String subject_id, String teacherName) {
         String line = String.format(SEMESTER_STRING_FORMAT, week, getDayName(day), getBlockTime(block), room, subject_id, teacherName);
         System.out.println(line);
     }

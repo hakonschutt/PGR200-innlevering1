@@ -7,7 +7,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class validates the database. It checks if the database exists and asks the user for input if some conditions arnt met
@@ -25,7 +24,7 @@ public class DBConnectValidation {
      * @return
      * @throws Exception
      */
-    public boolean main() throws Exception {
+    public boolean main() {
         boolean works = false;
         while ( !works ){
             works = writeDBinfo();
@@ -39,7 +38,7 @@ public class DBConnectValidation {
     /**
      * Method askes for user input for database connection
      */
-    private boolean writeDBinfo() throws Exception {
+    private boolean writeDBinfo() {
         String[] dbInfo = new String[4];
         System.out.print( "DB user: " );
         dbInfo[0] = sc.nextLine();
@@ -73,7 +72,7 @@ public class DBConnectValidation {
     /**
      * Method tests the connection with the user input
      */
-    private boolean connectToDatabase ( String[] dbInfo ) throws Exception {
+    private boolean connectToDatabase( String[] dbInfo ) {
         connect = new DBConnect(dbInfo[0], dbInfo[1], dbInfo[2], dbInfo[3]);
 
         try (Connection con = connect.testConnection(false )){
@@ -82,14 +81,13 @@ public class DBConnectValidation {
             if(!dbExists){
                 handler.createDataBase(con, dbInfo[3]);
                 System.out.print("Creating database: " + dbInfo[3]);
-                printLoader();
             } else {
                 userInputForConnectionTest(con, dbInfo[3]);
             }
 
             return true;
 
-        } catch (SQLException e){
+        } catch (Exception e){
             System.out.println("Unable to connect with the current information");
             System.out.println("Try again: ");
             System.out.println();
@@ -112,13 +110,12 @@ public class DBConnectValidation {
     /**
      * User input IF the database already exists
      */
-    private void userInputForConnectionTest( Connection con, String dbName ) throws Exception {
+    private void userInputForConnectionTest( Connection con, String dbName ) {
         userInputForConnectionInstruction();
         int asw = sc.nextInt();
         switch(asw){
             case 1:
                 System.out.print( "Connection to " + dbName );
-                printLoader();
                 this.hasScanned = true;
                 break;
             case 2:
@@ -126,13 +123,11 @@ public class DBConnectValidation {
                 break;
             case 3:
                 System.out.print( "Overwriting database " + dbName );
-                printLoader();
                 handler.overWriteDatabase( con, dbName );
                 break;
             default:
                 System.out.println( "Not a valid command." );
                 System.out.print( "Connection to " + dbName );
-                printLoader();
                 this.hasScanned = true;
                 break;
         }
@@ -141,7 +136,7 @@ public class DBConnectValidation {
     /**
      * Lets the user change the database name IF the database already exists
      */
-    private void changeDatabaseName( Connection con ) throws Exception {
+    private void changeDatabaseName( Connection con ) {
         System.out.print( "Whats the new name:" );
         Scanner sc = new Scanner( System.in );
         String newDbName = sc.nextLine();
@@ -152,24 +147,9 @@ public class DBConnectValidation {
         if ( !dbExists ) {
             handler.createDataBase( con, newDbName );
             System.out.print( "Creating database: " + newDbName );
-            printLoader();
             connect.setDbName( newDbName );
         } else {
             userInputForConnectionTest( con, newDbName );
         }
-    }
-
-    /**
-     * Print loader creates a processing bar in the program
-     */
-    private void printLoader() throws InterruptedException {
-        System.out.print( "." );
-        TimeUnit.MILLISECONDS.sleep(200);
-        System.out.print( "." );
-        TimeUnit.MILLISECONDS.sleep(200);
-        System.out.print( "." );
-        TimeUnit.MILLISECONDS.sleep(200);
-        System.out.print( "." );
-        System.out.println();
     }
 }

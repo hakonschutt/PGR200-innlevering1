@@ -1,6 +1,7 @@
 package maven.innlevering.database;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
@@ -23,13 +24,9 @@ public class DBUploadAsThread implements Runnable {
      */
     @Override
     public void run() {
-        try {
-            createQuery(file);
-            insertQuery(file);
-            System.out.println("Finished importing " + file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        createQuery(file);
+        insertQuery(file);
+        System.out.println("Finished importing " + file);
     }
 
     /**
@@ -37,17 +34,15 @@ public class DBUploadAsThread implements Runnable {
      * @param fileName
      * @throws IOException
      */
-    private void createQuery(String fileName) throws IOException {
-        try{
-            String file = "input/" + fileName;
-            BufferedReader in = new BufferedReader(new FileReader(file));
-
+    private void createQuery(String fileName) {
+        String file = "input/" + fileName;
+        try (BufferedReader in = new BufferedReader(new FileReader(file))){
             String table = in.readLine();
             String[] col = in.readLine().split("/");
             String[] dataType = in.readLine().split("/");
             String[] dataSize = in.readLine().split("/");
             String PK = in.readLine();
-            String FK = in.readLine();
+            in.readLine(); // Skips foreign key.
 
             String sql;
 
@@ -59,8 +54,8 @@ public class DBUploadAsThread implements Runnable {
 
             executeCreate(sql);
 
-        }catch(Exception e){
-            e.printStackTrace();
+        }catch(IOException e){
+            System.out.println("Unable to read from " + fileName);
         }
     }
 
@@ -73,7 +68,7 @@ public class DBUploadAsThread implements Runnable {
              Statement stmt = con.createStatement()) {
             stmt.executeUpdate(sql);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Unable to execute create.");
         }
     }
 
@@ -82,43 +77,43 @@ public class DBUploadAsThread implements Runnable {
      * @param filename
      * @throws IOException
      */
-    private void insertQuery(String filename) throws IOException {
+    private void insertQuery(String filename) {
         String file = "input/" + filename;
-        BufferedReader in = new BufferedReader(new FileReader(file));
+        try (BufferedReader in = new BufferedReader(new FileReader(file))){
+            String db = in.readLine();
+            String[] col = in.readLine().split("/");
+            for(int i = 0; i < 4; i++)
+                in.readLine();
 
-        String db = in.readLine();
-        String[] col = in.readLine().split("/");
-        String[] dataType = in.readLine().split("/");
-        String[] dataSize = in.readLine().split("/");
-        String PK = in.readLine();
-        String FK = in.readLine();
+            String sql;
 
-        String sql;
-
-        String s;
-        while((s = in.readLine()) != null){
-            sql = "INSERT INTO `" + db + "` ( ";
-            for(int i = 0; i < col.length; i++){
-                if(i == col.length -1){
-                    sql += "`" + col[i] + "`";
-                } else {
-                    sql += "`" + col[i] + "`, ";
+            String s;
+            while((s = in.readLine()) != null){
+                sql = "INSERT INTO `" + db + "` ( ";
+                for(int i = 0; i < col.length; i++){
+                    if(i == col.length -1){
+                        sql += "`" + col[i] + "`";
+                    } else {
+                        sql += "`" + col[i] + "`, ";
+                    }
                 }
-            }
-            sql += ") VALUES ( ";
+                sql += ") VALUES ( ";
 
-            String[] var = s.split("/");
+                String[] var = s.split("/");
 
-            for(int i = 0; i < var.length; i++){
-                if(i == col.length -1){
-                    sql += "? ";
-                } else {
-                    sql += "?, ";
+                for(int i = 0; i < var.length; i++){
+                    if(i == col.length -1){
+                        sql += "? ";
+                    } else {
+                        sql += "?, ";
+                    }
                 }
-            }
-            sql += ")";
+                sql += ")";
 
-            executeInsert(sql, var);
+                executeInsert(sql, var);
+            }
+        } catch (IOException e) {
+            System.out.println("Unable to read from " + filename);
         }
     }
 
@@ -133,9 +128,9 @@ public class DBUploadAsThread implements Runnable {
             for (int i = 0; i < var.length; i++){
                 ps.setObject(i + 1, var[i]);
             }
-            int rs = ps.executeUpdate();
+            ps.executeUpdate();
         } catch (SQLException e) {
-            System.out.println();
+            System.out.println("Unable to execute insertion of data.");
         }
     }
 }

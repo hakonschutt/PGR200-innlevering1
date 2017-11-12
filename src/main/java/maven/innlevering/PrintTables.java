@@ -22,19 +22,23 @@ public class PrintTables {
      * Using this data to start print method for this class
      * @throws Exception
      */
-    public void main() throws Exception {
-        oh = new OutputHandler();
-        String[] tables = oh.getAlleTables();
-        oh.printTables(tables);
+    public void main() {
+        try {
+            oh = new OutputHandler();
+            String[] tables = oh.getAllTables();
+            oh.printTables(tables);
 
-        System.out.println("Which table do you want to search from?");
-        int userInput = oh.userChoice(tables.length);
+            System.out.println("Which table do you want to search from?");
+            int userInput = oh.userChoice(tables.length);
 
-        String tableName = oh.prepareTable( tables, userInput );
-        int size = oh.getCount( oh.getTableCountQuery( tableName ) );
-        String query = oh.prepareTableDataQuery( tableName );
+            String tableName = oh.prepareTable( tables, userInput );
+            int size = oh.getCount( oh.getTableCountQuery( tableName ) );
+            String query = oh.prepareTableDataQuery( tableName );
 
-        prepareTableQuery(tableName, query, size);
+            prepareTableQuery(tableName, query, size);
+        } catch (Exception e){
+            System.out.println("Unable to print table content.");
+        }
     }
 
     /**
@@ -44,7 +48,7 @@ public class PrintTables {
      * @param size
      * @throws Exception
      */
-    private void prepareTableQuery(String tableName, String sql, int size) throws Exception {
+    private void prepareTableQuery(String tableName, String sql, int size) {
         String[] data = new String[ size ];
         String finalSQL = "SELECT";
 
@@ -67,6 +71,8 @@ public class PrintTables {
 
                 i++;
             } while (res.next());
+        } catch (SQLException e ){
+            System.out.println("Unable to execute table query");
         }
 
         finalSQL += " FROM " + tableName;
@@ -102,7 +108,7 @@ public class PrintTables {
                 System.out.println();
             } while (res.next());
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Unable to print table content.");
         }
     }
 }

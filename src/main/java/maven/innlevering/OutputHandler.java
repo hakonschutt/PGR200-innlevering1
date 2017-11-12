@@ -44,7 +44,7 @@ public class OutputHandler {
 
             this.dbName = properties.getProperty("db");
         } catch (Exception e){
-            throw new RuntimeException(e);
+            System.out.println("Unable to read from property file.");
         }
     }
 
@@ -61,7 +61,7 @@ public class OutputHandler {
      * @return
      * @throws Exception
      */
-    public String[] getAlleTables() throws Exception{
+    public String[] getAllTables() {
         String sql = prepareQuery();
         String[] tables = new String[getCount(getDBCountQuery())];
 
@@ -77,7 +77,7 @@ public class OutputHandler {
                 i++;
             } while (res.next());
         } catch (SQLException e){
-            throw new SQLException("Unable to connect with current connection");
+            System.out.println("Unable to connect with current connection");
         }
         return tables;
     }
@@ -88,7 +88,7 @@ public class OutputHandler {
      * @return
      * @throws Exception
      */
-    public int getCount(String sql) throws Exception{
+    public int getCount(String sql) {
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
@@ -97,7 +97,8 @@ public class OutputHandler {
             }
             return res.getInt("total");
         } catch (SQLException e ){
-            throw new SQLException("Unable to connect with current connection");
+            System.out.println("Unable to connect with current connection");
+            return -1;
         }
     }
 
@@ -140,7 +141,7 @@ public class OutputHandler {
      * @return
      * @throws Exception
      */
-    public int userChoice(int size) throws Exception {
+    public int userChoice(int size) {
         boolean wrongAns = true;
 
         while(wrongAns){
@@ -172,7 +173,7 @@ public class OutputHandler {
      * @return
      * @throws Exception
      */
-    public String prepareTableDataQuery( String tableName ) throws Exception {
+    public String prepareTableDataQuery( String tableName ) {
         String sql = "SELECT COLUMN_NAME " +
                 "FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'" +
                 tableName + "' AND table_schema = '" + getDbName() + "'";

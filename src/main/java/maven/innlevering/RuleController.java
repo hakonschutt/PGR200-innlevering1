@@ -27,29 +27,33 @@ public class RuleController {
      * Initiate the semester planing
      * @throws Exception
      */
-    public void startSemesterPlan() throws Exception {
-        System.out.println();
-        semesterPlanHandler.createTableForSemester();
+    public void startSemesterPlan() {
+        try {
+            System.out.println();
+            semesterPlanHandler.createTableForSemester();
 
-        createTotalColumn();
+            createTotalColumn();
 
-        int diff = endWeek - startWeek;
+            int diff = endWeek - startWeek;
 
-        currentWeek = startWeek;
-        while(currentWeek <= endWeek){
-            printProgressBar(diff, currentWeek - startWeek);
-            createInWeekColumn();
-            int i = 1;
-            while(i <= 5){
-                currentDay = i;
-                checkSingleDay(i);
-                i++;
+            currentWeek = startWeek;
+            while(currentWeek <= endWeek){
+                printProgressBar(diff, currentWeek - startWeek);
+                createInWeekColumn();
+                int i = 1;
+                while(i <= 5){
+                    currentDay = i;
+                    checkSingleDay(i);
+                    i++;
+                }
+                deleteInWeekColumn();
+                currentWeek++;
             }
-            deleteInWeekColumn();
-            currentWeek++;
+            deleteTotalColumn();
+            System.out.println("\n\nFinished creating semesterplan!");
+        } catch (Exception e){
+            System.out.println("Unable to finished semester plan.");
         }
-        deleteTotalColumn();
-        System.out.println("\n\nFinished creating semesterplan!");
     }
 
     public void printProgressBar(int total, int currentDiff){
@@ -122,7 +126,7 @@ public class RuleController {
              Statement stmt = con.createStatement()) {
             int res = stmt.executeUpdate(sql);
         } catch (SQLException e){
-            throw new RuntimeException(e);
+            System.out.println("Unable to execute update query.");
         }
     }
 
@@ -133,12 +137,16 @@ public class RuleController {
      * @param day
      * @throws Exception
      */
-    private void checkSingleDay(int day) throws Exception {
-        String sql = getPossibleSubjectsQuery(day);
-        HashMap<String, Integer> subjects = getItemInHashMap(sql);
-        createFieldsForDay();
-        checkIfLecturesCanOccure(subjects);
-        deleteFieldForDay();
+    private void checkSingleDay(int day) {
+        try {
+            String sql = getPossibleSubjectsQuery(day);
+            HashMap<String, Integer> subjects = getItemInHashMap(sql);
+            createFieldsForDay();
+            checkIfLecturesCanOccur(subjects);
+            deleteFieldForDay();
+        } catch (Exception e){
+            System.out.println("Unable ");
+        }
     }
 
     /**
@@ -199,7 +207,7 @@ public class RuleController {
      * @param subjects
      * @throws Exception
      */
-    private void checkIfLecturesCanOccure(HashMap subjects) throws Exception {
+    private void checkIfLecturesCanOccur(HashMap subjects) throws Exception {
         HashMap<String, Integer> rooms;
         for(int j = 1; j < 3; j++){
             String roomSql = getPossibleRooms();
@@ -248,7 +256,7 @@ public class RuleController {
      * @return
      * @throws SQLException
      */
-    private boolean checkIfTeacherHasLecture(String subject) throws SQLException {
+    private boolean checkIfTeacherHasLecture(String subject) {
         String sql= "SELECT COUNT(*) as total " +
                     "FROM teacher as t " +
                     "JOIN teacher_subject as ts " +
@@ -264,18 +272,18 @@ public class RuleController {
      * @return
      * @throws SQLException
      */
-    private boolean checkIfStudyHasLecture(String subject) throws SQLException {
+    private boolean checkIfStudyHasLecture(String subject) {
         String sql= "SELECT COUNT(*) as total " +
                     "FROM field_of_study " +
                     "WHERE isOn" + currentDay + " = 0 AND study_id IN " +
                     "(SELECT study_id FROM study_subject WHERE subject_id = '" + subject + "')";
 
-        String getAlleSql = "SELECT COUNT(*) as total " +
+        String getAllSql = "SELECT COUNT(*) as total " +
                             "FROM field_of_study " +
                             "WHERE study_id IN " +
                             "(SELECT study_id FROM study_subject WHERE subject_id = '" + subject + "')";
 
-        return (executeCountQuery(sql) == executeCountQuery(getAlleSql));
+        return (executeCountQuery(sql) == executeCountQuery(getAllSql));
     }
 
     /**
@@ -284,16 +292,15 @@ public class RuleController {
      * @return
      * @throws SQLException
      */
-    private int executeCountQuery(String sql) throws SQLException {
+    private int executeCountQuery(String sql) {
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
-            if(!res.next()) {
-                throw new SQLException("No tables where found");
-            }
+            if(!res.next()) throw new SQLException();
             return res.getInt("total");
         } catch (SQLException e ){
-            throw new SQLException("Unable to connect with current connection");
+            System.out.println("Unable to execute count.");
+            return -1;
         }
     }
 

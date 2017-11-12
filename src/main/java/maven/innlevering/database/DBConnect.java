@@ -41,6 +41,8 @@ public class DBConnect {
 
     /**
      * Method can be called to test connection with or without database information
+     * This method is used when setting up the database information.
+     * It tests if it can access the database with the user information.
      * @param withDatabaseConnection
      * @return
      * @throws SQLException
@@ -61,7 +63,7 @@ public class DBConnect {
 
             return connect;
         } catch (SQLException e){
-            System.out.println("Unable to create a connection. ");
+            System.out.println("Unable to create a connection " + (withDatabaseConnection ? "with" : "without") + " the database");
             return null;
         }
     }
@@ -86,6 +88,7 @@ public class DBConnect {
             return connect;
 
         } catch (Exception e){
+            System.out.println("Unable to establish connection from property entries.");
             return null;
         }
     }

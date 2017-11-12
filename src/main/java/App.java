@@ -5,7 +5,6 @@ import maven.innlevering.database.DBConnect;
 import maven.innlevering.database.DBSemesterPlanHandler;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -20,9 +19,10 @@ public class App {
     private boolean canCreateSemesterPlan;
     private boolean hasCreatedSemesterPlan;
 
-    private void start() throws Exception {
+    private void start() {
         boolean filesHaveBeenScanned = checkForPropertyFile() && useOldConnection();
         boolean quit = false;
+
 
         if (!filesHaveBeenScanned) filesHaveBeenScanned = new DBConnectValidation().main();
 
@@ -38,19 +38,20 @@ public class App {
             hasCreatedSemesterPlan = handler.validateIfSemesterPlanExists();
             canCreateSemesterPlan = handler.validateTables();
         } catch ( SQLException e ){
-            System.out.println("Unknown connection issue.");
+            System.out.println("Unable to connect to database.");
             quit = true;
         }
 
         if(!quit) printInstructions();
 
         while( !quit ){
-            try (Connection con = connect.getConnection()){
+            quit = runApp();
+            /*try (Connection con = connect.getConnection()){
                 quit = con == null || runApp();
             } catch (SQLException e){
                 System.out.println("Lost connection to database.");
                 break;
-            }
+            }*/
         }
 
         System.out.println("Quiting program...");
@@ -81,7 +82,7 @@ public class App {
     /**
      * Scans the input files from the input directory
      */
-    private void scanInputFiles() throws IOException {
+    private void scanInputFiles() {
         Inputhandler rf = new Inputhandler();
         rf.startInputScan();
     }
@@ -110,7 +111,7 @@ public class App {
     /**
      * searhFiles lets the user search for entries in the database
      */
-    private boolean searchFiles() throws Exception {
+    private boolean searchFiles() {
         SearchFiles search = new SearchFiles();
         search.main();
 
@@ -120,7 +121,7 @@ public class App {
     /**
      * printTable method is used to prompt the user with table options and print from the selected table
      */
-    private boolean printTable() throws Exception {
+    private boolean printTable() {
         PrintTables pt = new PrintTables();
         pt.main();
 
@@ -130,7 +131,7 @@ public class App {
     /**
      * printPlan method is used to print the semester plan. It initiates the createPlan class
      */
-    private boolean createPlan() throws Exception {
+    private boolean createPlan() {
         CreatePlan createPlan = new CreatePlan();
         createPlan.main();
         hasCreatedSemesterPlan = true;
@@ -154,7 +155,7 @@ public class App {
      * RunApp is the main method in this class. It directs the application to the correct
      * method based on the users input
      */
-    private boolean runApp() throws Exception {
+    private boolean runApp() {
         System.out.print("What command do you want to execute: ");
         String asw = sc.nextLine().trim();
         System.out.println();

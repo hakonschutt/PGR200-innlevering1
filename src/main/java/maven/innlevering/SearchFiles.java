@@ -23,27 +23,32 @@ public class SearchFiles {
      * Initiate all necessary methods for the searchFiles class
      * @throws Exception
      */
-    public void main() throws Exception {
-        oh = new OutputHandler();
-        String[] tables = oh.getAlleTables();
-        oh.printTables(tables);
+    public void main() {
+        try {
+            oh = new OutputHandler();
+            String[] tables = oh.getAllTables();
+            oh.printTables(tables);
 
-        System.out.println("Which table do you want to search from?");
-        int userInput = oh.userChoice(tables.length);
-        String tableName = oh.prepareTable( tables, userInput );
-        int size = oh.getCount( oh.getTableCountQuery( tableName ) );
-        String colSql = oh.prepareTableDataQuery( tableName );
+            System.out.println("Which table do you want to search from?");
+            int userInput = oh.userChoice(tables.length);
+            String tableName = oh.prepareTable( tables, userInput );
+            int size = oh.getCount( oh.getTableCountQuery( tableName ) );
+            String colSql = oh.prepareTableDataQuery( tableName );
 
-        String[] columns = getAlleColumns(colSql, size);
-        oh.printTables(columns);
+            String[] columns = getAllColumns(colSql, size);
+            oh.printTables(columns);
 
-        System.out.println("Which column do you want to search from?");
-        int userColumn = oh.userChoice( size );
+            System.out.println("Which column do you want to search from?");
+            int userColumn = oh.userChoice( size );
 
-        String searchString = userSearhString(columns[userColumn - 1]);
+            String searchString = userSearchString(columns[userColumn - 1]);
 
-        String newSql = prepareQuerySearch( tableName, columns[ userColumn - 1 ], columns );
-        printTableContent(newSql, columns, searchString );
+            String newSql = prepareQuerySearch( tableName, columns[ userColumn - 1 ], columns );
+            printTableContent(newSql, columns, searchString );
+        } catch (Exception e){
+            System.out.println("Unable to search for content.");
+        }
+
     }
 
     /**
@@ -53,7 +58,7 @@ public class SearchFiles {
      * @return
      * @throws Exception
      */
-    private String[] getAlleColumns(String sql, int size) throws Exception{
+    public String[] getAllColumns(String sql, int size) {
         String[] tables = new String[ size ];
 
         try (Connection con = db.getConnection();
@@ -67,6 +72,8 @@ public class SearchFiles {
                 tables[i] = res.getString(1);
                 i++;
             } while (res.next());
+        } catch (SQLException e){
+            System.out.println("Unable to query for tables.");
         }
         return tables;
     }
@@ -76,7 +83,7 @@ public class SearchFiles {
      * @param columnName
      * @return
      */
-    private String userSearhString(String columnName){
+    private String userSearchString(String columnName){
         System.out.print("Search in " + columnName + ": ");
         String searchString = sc.nextLine();
         System.out.println();
@@ -132,7 +139,7 @@ public class SearchFiles {
             ps.setString(1, searchString);
             ResultSet rs = ps.executeQuery();
             if(!rs.next()) {
-                System.out.println("! No data whore found !");
+                System.out.println("! no data was found !");
             }
             do {
                 for(int i = 0; i < columnName.length; i++){
@@ -141,7 +148,7 @@ public class SearchFiles {
                 System.out.println();
             } while (rs.next());
         } catch (SQLException e) {
-            System.out.println();
+            System.out.println("Unable to query for table content");
         }
         System.out.println();
     }

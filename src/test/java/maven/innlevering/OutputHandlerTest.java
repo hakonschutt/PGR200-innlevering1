@@ -43,7 +43,7 @@ public class OutputHandlerTest {
 
     @Test
     public void testGetAlleTables() throws Exception {
-        String[] tables = oh.getAlleTables();
+        String[] tables = oh.getAllTables();
 
         assertEquals(tables[0], "day_teacher_unavailability");
         assertEquals(tables[3], "room");

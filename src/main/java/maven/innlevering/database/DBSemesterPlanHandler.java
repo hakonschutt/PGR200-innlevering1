@@ -12,6 +12,9 @@ import java.sql.*;
 public class DBSemesterPlanHandler{
     private DBConnect db = new DBConnect();
 
+    /**
+     * Creates semester plan table from semester plan query.
+     */
     public void createTableForSemester(){
         dropSemesterTable();
         try (Connection con = db.getConnection();
@@ -22,6 +25,9 @@ public class DBSemesterPlanHandler{
         }
     }
 
+    /**
+     * Drops semester plan table if it exists.
+     */
     private void dropSemesterTable() {
         String sql = "DROP TABLE IF EXISTS `semester_plan`";
 
@@ -33,6 +39,9 @@ public class DBSemesterPlanHandler{
         }
     }
 
+    /**
+     * Prints all semester plan data to the console.
+     */
     public void presentAllSemesterData(){
         Presenter.presentHeader();
         String sql = getDataQuery();
@@ -48,17 +57,25 @@ public class DBSemesterPlanHandler{
                 Presenter.presentData(res.getInt("week"), res.getInt("day"), res.getString("room"), res.getInt("block"), res.getString("subject_id"), teacher);
             } while (res.next());
         } catch (Exception e){
-            System.out.println("Unable to get semesterplan");
+            System.out.println("Unable to get semester plan");
         }
 
         Presenter.presentFooter();
         System.out.println();
     }
 
+    /**
+     * Returns a get data query for printing out database content from semester plan.
+     * @return
+     */
     public String getDataQuery(){
         return "SELECT week, day, room, block, subject_id, teacher_id FROM semester_plan";
     }
 
+    /**
+     * Returns a create semester plan table query.
+     * @return
+     */
     public String createTableSQL(){
         String sql = "CREATE TABLE `semester_plan` (" +
                     "`week` int(2) unsigned NOT NULL," +
@@ -74,6 +91,14 @@ public class DBSemesterPlanHandler{
         return sql;
     }
 
+    /**
+     * Uploads information to the semester table.
+     * @param week
+     * @param day
+     * @param room_id
+     * @param block
+     * @param subject_id
+     */
     public void uploadToTable(int week, int day, String room_id, int block, String subject_id){
         String sql = insertIntoSemesterPlanerQuery();
         int teacher_id = getTeacherIdBySubjectId(subject_id);
@@ -87,9 +112,9 @@ public class DBSemesterPlanHandler{
             ps.setString(5, subject_id);
             ps.setInt(6, teacher_id);
 
-            int rs = ps.executeUpdate();
+            ps.executeUpdate();
         } catch (SQLException e) {
-            System.out.println();
+            System.out.println("Unable to upload information to semester table.");
         }
     }
 
@@ -104,7 +129,6 @@ public class DBSemesterPlanHandler{
      * Executes a query for teachers name based of Subject ID
      * @param subjectID
      * @return
-     * @throws Exception
      */
     public String getTeachBySubjectID(String subjectID) {
         String sql = getTeacherNameQuery(subjectID);
@@ -118,13 +142,18 @@ public class DBSemesterPlanHandler{
                 return res.getString(1);
             } while (res.next());
         } catch (SQLException e){
-            System.out.println("Unable to connect and query for teachers name");
+            System.out.println("Unable to query for teachers name from subject id: " + subjectID);
         }
 
 
         return null;
     }
 
+    /**
+     * Method returns a teacher name from the teacher id
+     * @param teacher_id
+     * @return
+     */
     public String getTeachNameFromID(int teacher_id){
         String sql = getTeacherNameFromIdQuery(teacher_id);
         try (Connection con = db.getConnection();
@@ -137,12 +166,17 @@ public class DBSemesterPlanHandler{
                 return res.getString(1);
             } while (res.next());
         } catch (SQLException e){
-            System.out.println("Unable to query for teacher name from that id");
+            System.out.println("Unable to query for teacher name from teacher id: " + teacher_id);
         }
 
         return null;
     }
 
+    /**
+     * Method returns a teacher id from the subject id input.
+     * @param subjectID
+     * @return
+     */
     public int getTeacherIdBySubjectId(String subjectID) {
         String sql = getTeacherIdQuery(subjectID);
         try (Connection con = db.getConnection();
@@ -155,7 +189,7 @@ public class DBSemesterPlanHandler{
                 return res.getInt(1);
             } while (res.next());
         } catch (SQLException e){
-            System.out.println("Unable to connect and query for teachers name");
+            System.out.println("Unable to query for teachers id from subject id: " + subjectID);
         }
 
         return -1;
@@ -165,7 +199,6 @@ public class DBSemesterPlanHandler{
      * GetTeacherName takes in a subject parameter and returns the teachers name
      * @param subject
      * @return
-     * @throws Exception
      */
     private String getTeacherNameQuery(String subject) {
         String sql= "SELECT t.name " +
@@ -177,6 +210,11 @@ public class DBSemesterPlanHandler{
         return sql;
     }
 
+    /**
+     * Returns teach id from subject id query
+     * @param subject
+     * @return
+     */
     private String getTeacherIdQuery(String subject) {
         String sql= "SELECT t.id " +
                 "FROM teacher as t " +
@@ -187,6 +225,11 @@ public class DBSemesterPlanHandler{
         return sql;
     }
 
+    /**
+     * Method returns teach name from teacher id query
+     * @param teacher_id
+     * @return
+     */
     private String getTeacherNameFromIdQuery(int teacher_id){
         return  "SELECT name FROM teacher WHERE id = " + teacher_id;
     }

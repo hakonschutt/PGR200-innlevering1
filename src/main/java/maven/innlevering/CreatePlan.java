@@ -1,6 +1,5 @@
 package maven.innlevering;
 
-import maven.innlevering.database.DBConnect;
 import java.util.Scanner;
 
 /**
@@ -14,9 +13,8 @@ public class CreatePlan {
 
     /**
      * Calles the necessary methods to evaulate if the user is connected to the correct database
-     * @throws Exception
      */
-    public boolean main() throws Exception {
+    public boolean main() {
         setSemester();
         rc.startSemesterPlan();
         return true;
