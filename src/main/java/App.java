@@ -21,6 +21,9 @@ public class App {
     private boolean canCreateSemesterPlan = false;
     private boolean hasCreatedSemesterPlan = false;
 
+    /**
+     * Initial app method that initiates the entire program.
+     */
     private void start() {
         boolean filesHaveBeenScanned = false;
         try {
@@ -42,7 +45,7 @@ public class App {
             return;
         }
 
-        if( !filesHaveBeenScanned ) scanInputFiles();
+        if( !filesHaveBeenScanned ) uploadTextFilesToDatabase();
 
         try {
             DBValidationHandler handler = new DBValidationHandler();
@@ -61,10 +64,20 @@ public class App {
         }
     }
 
+    /**
+     * Checks if property file exists in the root directory.
+     * @return
+     */
     private boolean checkForPropertyFile(){
         return new File("data.properties").exists();
     }
 
+    /**
+     * Checks if the program can run using the connection in the existing property file.
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
     private boolean useOldConnection() throws IOException, SQLException {
         try (Connection con = connect.getConnection()){
             if(con == null) return false;
@@ -83,7 +96,7 @@ public class App {
     /**
      * Scans the input files from the input directory
      */
-    private void scanInputFiles() {
+    private void uploadTextFilesToDatabase() {
         try {
             FileUploadHandler rf = new FileUploadHandler();
             rf.startInputScan();
@@ -97,6 +110,7 @@ public class App {
 
     /**
      * Prints the possible instructions for the method runApp()
+     * @return
      */
     private boolean printInstructions() {
         System.out.println();
@@ -118,8 +132,9 @@ public class App {
 
     /**
      * searhFiles lets the user search for entries in the database
+     * @return
      */
-    private boolean searchFiles() {
+    private boolean searchForContent() {
         try {
             new SearchContent().main();
         } catch (IOException e){
@@ -133,6 +148,7 @@ public class App {
 
     /**
      * printTable method is used to prompt the user with table options and print from the selected table
+     * @return
      */
     private boolean printTable() {
         try {
@@ -147,9 +163,10 @@ public class App {
     }
 
     /**
-     * printPlan method is used to print the semester plan. It initiates the createPlan class
+     * printSemesterPlan method is used to print the semester plan. It initiates the createSemesterPlan class
+     * @return
      */
-    private boolean createPlan() {
+    private boolean createSemesterPlan() {
         try {
             new SemesterCreator().main();
             hasCreatedSemesterPlan = true;
@@ -162,10 +179,14 @@ public class App {
         System.out.print("Do you want to print the plan? (yes/no) ");
         String ans = sc.nextLine().toLowerCase().replace(" ", "");
 
-        return ans.equals("yes") && printPlan();
+        return ans.equals("yes") && printSemesterPlan();
     }
 
-    private boolean printPlan() {
+    /**
+     * Prints the semester plan currently on the database.
+     * @return
+     */
+    private boolean printSemesterPlan() {
         try {
             new DBSemesterPlanHandler().presentAllSemesterData();
         } catch (IOException e){
@@ -180,6 +201,7 @@ public class App {
     /**
      * RunApp is the runDbValidation method in this class. It directs the application to the correct
      * method based on the users input
+     * @return
      */
     private boolean runApp() {
         System.out.print("What command do you want to execute: ");
@@ -189,14 +211,14 @@ public class App {
             case "intro":
                 return printInstructions();
             case "search":
-                return searchFiles();
+                return searchForContent();
             case "print":
                 return printTable();
             case "create":
-                if(canCreateSemesterPlan) return createPlan();
+                if(canCreateSemesterPlan) return createSemesterPlan();
                 else break;
             case "semester":
-                if(hasCreatedSemesterPlan) return printPlan();
+                if(hasCreatedSemesterPlan) return printSemesterPlan();
                 else break;
             case "exit":
                 return true;

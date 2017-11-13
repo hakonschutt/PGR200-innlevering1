@@ -24,15 +24,17 @@ public class SemesterPresenter {
      * @param room
      * @param block
      * @param subject_id
-     * @throws Exception
      */
     public static void presentData(int week, int day, String room, int block, String subject_id, String teacherName) {
         String line = String.format(SEMESTER_STRING_FORMAT, week, getDayName(day), getBlockTime(block), room, subject_id, teacherName);
         System.out.println(line);
     }
 
+    /**
+     * Presents a line at the end of the semester plan print
+     */
     public static void presentFooter(){
-        String intro = String.format(SEMESTER_STRING_FORMAT, "Week", "Day", "Block", "Room", "Subject", "Teacher");
+        String intro = String.format(SEMESTER_STRING_FORMAT, "", "", "", "", "", "");
         System.out.println(generateLine(intro));
     }
 

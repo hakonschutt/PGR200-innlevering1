@@ -66,6 +66,8 @@ public class DBConnection {
     /**
      * runDbValidation getConnection class. Used throughout the program to get the database connection
      * @return
+     * @throws IOException
+     * @throws SQLException
      */
     public Connection getConnection() throws IOException, SQLException {
         Properties properties = new Properties();

@@ -1,9 +1,15 @@
 package maven.innlevering.exception;
 
 /**
+ * Exception handler class with static methods that can be thrown throughout the program.
+ *
  * Created by hakonschutt on 13/11/2017.
  */
 public class ExceptionHandler {
+    /**
+     * Possible SQLexceptions that can be thrown in the program.
+     * @param exceptionCode
+     */
     public static void sqlException(String exceptionCode){
         switch(exceptionCode){
             case "createDatabase":
@@ -42,6 +48,10 @@ public class ExceptionHandler {
         }
     }
 
+    /**
+     * Possible input exceptions that can be handled in this program.
+     * @param exceptionCode
+     */
     public static void inputException(String exceptionCode){
         switch(exceptionCode){
             case "intMismatch":
@@ -53,6 +63,10 @@ public class ExceptionHandler {
         }
     }
 
+    /**
+     * Possible interrupt exceptions that can be thrown.
+     * @param exceptionCode
+     */
     public static void interruptException(String exceptionCode){
         switch(exceptionCode){
             case "threadJoin":
@@ -64,6 +78,10 @@ public class ExceptionHandler {
         }
     }
 
+    /**
+     * Possible IOExceptions that can be thrown
+     * @param exceptionCode
+     */
     public static void ioException(String exceptionCode){
         switch(exceptionCode){
             case "writeProperties":
@@ -79,6 +97,10 @@ public class ExceptionHandler {
         }
     }
 
+    /**
+     * Possible file exceptions that can be thrown.
+     * @param exceptionCode
+     */
     public static void fileException(String exceptionCode){
         switch(exceptionCode){
             case "fileNotFound":

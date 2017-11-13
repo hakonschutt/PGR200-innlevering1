@@ -1,6 +1,7 @@
 package maven.innlevering.database;
 
-import maven.innlevering.database.DBConnection;
+import maven.innlevering.exception.ExceptionHandler;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,6 +9,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.InputMismatchException;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -24,6 +26,7 @@ public class DBTableContentHandler {
 
     /**
      * Basic constructor that sets the database name.
+     * @throws IOException
      */
     public DBTableContentHandler() throws IOException {
         setDbName();
@@ -58,7 +61,8 @@ public class DBTableContentHandler {
     /**
      * Method is used to return all tables in a String array format
      * @return
-     * @throws Exception
+     * @throws IOException
+     * @throws SQLException
      */
     public String[] getAllTables() throws IOException, SQLException {
         String sql = prepareQuery();
@@ -83,7 +87,8 @@ public class DBTableContentHandler {
      * Method is used to get count of a query. It is used to set array sizes throughout the program
      * @param sql
      * @return
-     * @throws Exception
+     * @throws IOException
+     * @throws SQLException
      */
     public int getCount(String sql) throws IOException, SQLException {
         try (Connection con = db.getConnection();
@@ -133,13 +138,19 @@ public class DBTableContentHandler {
      * Validates if the users choice is within the scope of the size. If it evaluates to true it returns the users choice
      * @param size
      * @return
-     * @throws Exception
      */
     public int userChoice(int size) {
         boolean wrongAns = true;
 
         while(wrongAns){
-            int asw = sc.nextInt();
+            int asw = 0;
+
+            try {
+                asw = sc.nextInt();
+            } catch (InputMismatchException e){
+                ExceptionHandler.inputException("intMismatch");
+                continue;
+            }
 
             if (asw < size + 1 && asw > 0){
                 return asw;
@@ -165,7 +176,6 @@ public class DBTableContentHandler {
      * method returns a query that can be used to get all columns in the current table
      * @param tableName
      * @return
-     * @throws Exception
      */
     public String prepareTableDataQuery( String tableName ) {
         String sql = "SELECT COLUMN_NAME " +

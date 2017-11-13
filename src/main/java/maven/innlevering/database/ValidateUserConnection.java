@@ -25,7 +25,6 @@ public class ValidateUserConnection {
     /**
      * Main method calls the writeDbInfo until the connection is successful
      * @return
-     * @throws Exception
      */
     public boolean runDbValidation() {
         boolean works = false;
@@ -45,6 +44,7 @@ public class ValidateUserConnection {
 
     /**
      * Method askes for user input for database connection
+     * @return
      */
     private boolean writeDbInfo() {
         String[] dbInfo = new String[4];
@@ -62,6 +62,7 @@ public class ValidateUserConnection {
 
     /**
      * Writing user input to property file AFTER checking if the connection works with database
+     * @throws IOException
      */
     private void writeProperties() throws IOException {
         Properties properties = new Properties();
@@ -77,6 +78,8 @@ public class ValidateUserConnection {
 
     /**
      * Method tests the connection with the user input
+     * @param dbInfo
+     * @return
      */
     private boolean connectToDatabase( String[] dbInfo ) {
         connect = new DBConnection(dbInfo[0], dbInfo[1], dbInfo[2], dbInfo[3]);

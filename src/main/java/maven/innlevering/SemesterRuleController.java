@@ -20,13 +20,14 @@ public class SemesterRuleController {
     private int endWeek;
     private int currentWeek;
     private int currentDay;
-    private DBConnection db = new DBConnection();
+    private DBConnection database = new DBConnection();
     private DBSemesterPlanHandler semesterPlanHandler = new DBSemesterPlanHandler();
 
 
     /**
      * Initiate the semester planing
-     * @throws Exception
+     * @throws IOException
+     * @throws SQLException
      */
     public void startSemesterPlan() throws IOException, SQLException {
         System.out.println();
@@ -62,6 +63,11 @@ public class SemesterRuleController {
         System.out.println("\n\nFinished creating semesterplan in " + (currentWeek - startWeek) + " weeks!");
     }
 
+    /**
+     * Prints progress bar to the console when semester plan is being created.
+     * @param total
+     * @param currentDiff
+     */
     public void printProgressBar(int total, int currentDiff){
         String formatForString = "[%-" + ((total * 3)+1) + "s]";
         String progress = "";
@@ -81,6 +87,8 @@ public class SemesterRuleController {
 
     /**
      * Creates a total column on subject table
+     * @throws IOException
+     * @throws SQLException
      */
     private void createTotalColumn() throws IOException, SQLException {
         executeUpdateQuery("ALTER TABLE subject ADD total int(2) DEFAULT 0 NOT NULL");
@@ -88,6 +96,8 @@ public class SemesterRuleController {
 
     /**
      * Deletes total column from subject table
+     * @throws IOException
+     * @throws SQLException
      */
     private void deleteTotalColumn() throws IOException, SQLException {
         executeUpdateQuery("ALTER TABLE subject DROP COLUMN total");
@@ -97,6 +107,8 @@ public class SemesterRuleController {
      * Creates isInWeek column on subject table.
      * This is used to filter out subjects that has allready
      * occurred this week.
+     * @throws IOException
+     * @throws SQLException
      */
     private void createInWeekColumn() throws IOException, SQLException {
         executeUpdateQuery("ALTER TABLE subject ADD isInWeek" + currentWeek + " int(1) DEFAULT 0 NOT NULL");
@@ -104,13 +116,17 @@ public class SemesterRuleController {
 
     /**
      * Deletes the isInWeek column when the week is over
+     * @throws IOException
+     * @throws SQLException
      */
     private void deleteInWeekColumn() throws IOException, SQLException {
         executeUpdateQuery("ALTER TABLE subject DROP COLUMN isInWeek" + currentWeek);
     }
 
     /**
-     * Creates columns in field_of_study and teacher to make sure study and teachers dont have two lecture on the same day
+     * Creates columns in field_of_study and teacher to make sure study and teachers don't have two lecture on the same day
+     * @throws IOException
+     * @throws SQLException
      */
     private void createFieldsForDay() throws IOException, SQLException {
         executeUpdateQuery("ALTER TABLE field_of_study ADD isOn" + currentDay + " int(1) DEFAULT 0 NOT NULL");
@@ -119,18 +135,22 @@ public class SemesterRuleController {
 
     /**
      * Deletes columns isOn"day" after day is over
+     * @throws IOException
+     * @throws SQLException
      */
-    private void deleteFieldForDay() throws IOException, SQLException {
+    private void deleteFieldsForDay() throws IOException, SQLException {
         executeUpdateQuery("ALTER TABLE field_of_study DROP COLUMN isOn" + currentDay);
         executeUpdateQuery("ALTER TABLE teacher DROP COLUMN isOn" + currentDay);
     }
 
     /**
-     * General method to execute alle update queries implementet in this class
+     * General method to execute alle update queries implemented in this class
      * @param sql
+     * @throws IOException
+     * @throws SQLException
      */
     private void executeUpdateQuery(String sql) throws IOException, SQLException {
-        try (Connection con = db.getConnection();
+        try (Connection con = database.getConnection();
              Statement stmt = con.createStatement()) {
             stmt.executeUpdate(sql);
         }
@@ -141,7 +161,9 @@ public class SemesterRuleController {
      * For loop is used to run through the 2 possible blocks
      * 1 = 9 - 13 AND 2 = 13 - 17
      * @param day
-     * @throws Exception
+     * @return
+     * @throws IOException
+     * @throws SQLException
      */
     private boolean checkSingleDay(int day) throws IOException, SQLException {
         String sql = getPossibleSubjectsQuery(day);
@@ -150,7 +172,7 @@ public class SemesterRuleController {
         if(subjects != null){
             createFieldsForDay();
             checkIfLecturesCanOccur(subjects);
-            deleteFieldForDay();
+            deleteFieldsForDay();
             return false;
         }
         return true;
@@ -190,10 +212,12 @@ public class SemesterRuleController {
      * General class to use with rooms and subjects that returns name and id in a HashMap
      * @param sql
      * @return
+     * @throws IOException
+     * @throws SQLException
      */
     private HashMap getItemInHashMap(String sql) throws IOException, SQLException {
         HashMap<String, Integer> hash = new HashMap<>();
-        try (Connection con = db.getConnection();
+        try (Connection con = database.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
 
@@ -212,11 +236,12 @@ public class SemesterRuleController {
      * it check if field of study and teacher can attand. If this results to true it calls the
      * SemesterPresenter class filling the parameters with the current information passed through.
      * @param subjects
-     * @throws Exception
+     * @throws IOException
+     * @throws SQLException
      */
     private void checkIfLecturesCanOccur(HashMap subjects) throws IOException, SQLException {
         HashMap<String, Integer> rooms;
-        for(int j = 1; j < 3; j++){
+        for(int j = 1; j <= 2; j++){
             String roomSql = getPossibleRooms();
             rooms = getItemInHashMap(roomSql);
             Iterator ro = rooms.entrySet().iterator();
@@ -249,6 +274,8 @@ public class SemesterRuleController {
      * After checkIfLEcturesCanOccure loops valuates to true it updates the fields so total is increased and other
      * neccessary calls
      * @param subject
+     * @throws IOException
+     * @throws SQLException
      */
     private void updateFields(String subject) throws IOException, SQLException {
         executeUpdateQuery("UPDATE subject SET total = total + 1 WHERE subject_id = '" + subject + "'");
@@ -261,6 +288,7 @@ public class SemesterRuleController {
      * Evaluates if teacher can have a lecture on the current day with current subject.
      * @param subject
      * @return
+     * @throws IOException
      * @throws SQLException
      */
     private boolean checkIfTeacherHasLecture(String subject) throws IOException, SQLException {
@@ -274,9 +302,10 @@ public class SemesterRuleController {
     }
 
     /**
-     * Evaulates if a field of study can have a lecture on the current day
+     * Evaulates if a field of study can have a lecture on the current day.
      * @param subject
      * @return
+     * @throws IOException
      * @throws SQLException
      */
     private boolean checkIfStudyHasLecture(String subject) throws IOException, SQLException {
@@ -297,10 +326,11 @@ public class SemesterRuleController {
      * General execute Query method to be called on to receive the number of items in query.
      * @param sql
      * @return
+     * @throws IOException
      * @throws SQLException
      */
     private int executeCountQuery(String sql) throws IOException, SQLException {
-        try (Connection con = db.getConnection();
+        try (Connection con = database.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
             if(!res.next()) throw new SQLException();

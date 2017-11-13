@@ -15,25 +15,26 @@ import java.sql.Statement;
  * Created by hakonschutt on 01/10/2017.
  */
 public class PrintTableContent {
-    private DBConnection db = new DBConnection();
-    private DBTableContentHandler oh;
+    private DBConnection database = new DBConnection();
+    private DBTableContentHandler tableHandler;
 
     /**
      * Main method initiate neccassary output methods to receive user data
      * Using this data to start print method for this class
-     * @throws Exception
+     * @throws IOException
+     * @throws SQLException
      */
     public void main() throws IOException, SQLException {
-        oh = new DBTableContentHandler();
-        String[] tables = oh.getAllTables();
-        oh.printTables(tables);
+        tableHandler = new DBTableContentHandler();
+        String[] tables = tableHandler.getAllTables();
+        tableHandler.printTables(tables);
 
         System.out.println("Which table do you want to search from?");
-        int userInput = oh.userChoice(tables.length);
+        int userInput = tableHandler.userChoice(tables.length);
 
-        String tableName = oh.prepareTable( tables, userInput );
-        int size = oh.getCount( oh.getTableCountQuery( tableName ) );
-        String query = oh.prepareTableDataQuery( tableName );
+        String tableName = tableHandler.prepareTable( tables, userInput );
+        int size = tableHandler.getCount( tableHandler.getTableCountQuery( tableName ) );
+        String query = tableHandler.prepareTableDataQuery( tableName );
 
         prepareTableQuery(tableName, query, size);
     }
@@ -43,13 +44,14 @@ public class PrintTableContent {
      * @param tableName
      * @param sql
      * @param size
-     * @throws Exception
+     * @throws IOException
+     * @throws SQLException
      */
     private void prepareTableQuery(String tableName, String sql, int size) throws IOException, SQLException {
         String[] data = new String[ size ];
         String finalSQL = "SELECT";
 
-        try (Connection con = db.getConnection();
+        try (Connection con = database.getConnection();
              Statement stmt = con.createStatement()) {
 
             ResultSet res = stmt.executeQuery(sql);
@@ -79,6 +81,8 @@ public class PrintTableContent {
      * Print the content of the table based on sql parsed over, and column names received from outputHandler
      * @param sql
      * @param columnName
+     * @throws IOException
+     * @throws SQLException
      */
     private void printTableContent(String sql, String[] columnName) throws IOException, SQLException {
         for(int i = 0; i < columnName.length; i++){
@@ -90,7 +94,7 @@ public class PrintTableContent {
         }
         System.out.println();
 
-        try (Connection con = db.getConnection();
+        try (Connection con = database.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
             if(!res.next()) {

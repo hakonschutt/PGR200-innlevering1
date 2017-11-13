@@ -15,6 +15,8 @@ public class DBSemesterPlanHandler{
 
     /**
      * Creates semester plan table from semester plan query.
+     * @throws IOException
+     * @throws SQLException
      */
     public void createTableForSemester() throws IOException, SQLException {
         dropSemesterTable();
@@ -26,6 +28,8 @@ public class DBSemesterPlanHandler{
 
     /**
      * Drops semester plan table if it exists.
+     * @throws IOException
+     * @throws SQLException
      */
     private void dropSemesterTable() throws IOException, SQLException {
         String sql = "DROP TABLE IF EXISTS `semester_plan`";
@@ -38,6 +42,8 @@ public class DBSemesterPlanHandler{
 
     /**
      * Prints all semester plan data to the console.
+     * @throws IOException
+     * @throws SQLException
      */
     public void presentAllSemesterData() throws IOException, SQLException {
         SemesterPresenter.presentHeader();
@@ -93,6 +99,8 @@ public class DBSemesterPlanHandler{
      * @param room_id
      * @param block
      * @param subject_id
+     * @throws IOException
+     * @throws SQLException
      */
     public void uploadToTable(int week, int day, String room_id, int block, String subject_id) throws IOException, SQLException {
         String sql = insertIntoSemesterPlanerQuery();
@@ -111,6 +119,10 @@ public class DBSemesterPlanHandler{
         }
     }
 
+    /**
+     * Inserts data into semester plan table.
+     * @return
+     */
     private String insertIntoSemesterPlanerQuery() {
         String sql = "INSERT INTO `semester_plan` (`week`, `day`, `room`, `block`, `subject_id`, `teacher_id`)" +
                     "VALUES (?,?,?,?,?,?)";
@@ -122,6 +134,8 @@ public class DBSemesterPlanHandler{
      * Method returns a teacher name from the teacher id
      * @param teacher_id
      * @return
+     * @throws IOException
+     * @throws SQLException
      */
     public String getTeachNameFromID(int teacher_id) throws IOException, SQLException {
         String sql = getTeacherNameFromIdQuery(teacher_id);
@@ -141,6 +155,8 @@ public class DBSemesterPlanHandler{
      * Method returns a teacher id from the subject id input.
      * @param subjectID
      * @return
+     * @throws IOException
+     * @throws SQLException
      */
     public int getTeacherIdBySubjectId(String subjectID) throws IOException, SQLException {
         String sql = getTeacherIdQuery(subjectID);

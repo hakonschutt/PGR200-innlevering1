@@ -39,6 +39,7 @@ public class DBUploadAsThread implements Runnable {
      * Creates query to create table from the input file
      * @param fileName
      * @throws IOException
+     * @throws SQLException
      */
     private void createQuery(String fileName) throws IOException, SQLException {
         String file = "input/" + fileName;
@@ -68,6 +69,8 @@ public class DBUploadAsThread implements Runnable {
     /**
      * General execute create query that is used to create tables
      * @param sql
+     * @throws IOException
+     * @throws SQLException
      */
     private void executeCreate(String sql) throws IOException, SQLException{
         try (Connection con = db.getConnection();
@@ -80,6 +83,7 @@ public class DBUploadAsThread implements Runnable {
      * Creates insert Query from the current file
      * @param filename
      * @throws IOException
+     * @throws SQLException
      */
     private void insertQuery(String filename) throws IOException, SQLException {
         String file = "input/" + filename;
@@ -125,6 +129,8 @@ public class DBUploadAsThread implements Runnable {
      * Executes insert query for table information.
      * @param sql
      * @param var
+     * @throws IOException
+     * @throws SQLException
      */
     private void executeInsert(String sql, String[] var) throws IOException, SQLException {
         try (Connection con = db.getConnection();

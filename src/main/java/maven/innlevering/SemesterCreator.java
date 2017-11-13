@@ -10,11 +10,13 @@ import java.util.Scanner;
  * Created by hakonschutt on 01/10/2017.
  */
 public class SemesterCreator {
-    private Scanner sc;
     private SemesterRuleController rc = new SemesterRuleController();
 
     /**
      * Calles the necessary methods to evaulate if the user is connected to the correct database
+     * @return
+     * @throws IOException
+     * @throws SQLException
      */
     public boolean main() throws IOException, SQLException {
         setSemester();
@@ -26,7 +28,8 @@ public class SemesterCreator {
      * Method lets the user set a semester start and end
      */
     private void setSemester(){
-        sc = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
+
         boolean correct = false;
 
         while(!correct){

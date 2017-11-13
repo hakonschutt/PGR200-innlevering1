@@ -18,30 +18,31 @@ import java.util.Scanner;
  * based on table and column
  */
 public class SearchContent {
-    private DBConnection db = new DBConnection();
-    private DBTableContentHandler oh;
+    private DBConnection database = new DBConnection();
+    private DBTableContentHandler tableHandler;
     private Scanner sc = new Scanner(System.in);
 
     /**
      * Initiate all necessary methods for the searchFiles class
-     * @throws Exception
+     * @throws IOException
+     * @throws SQLException
      */
     public void main() throws IOException, SQLException {
-        oh = new DBTableContentHandler();
-        String[] tables = oh.getAllTables();
-        oh.printTables(tables);
+        tableHandler = new DBTableContentHandler();
+        String[] tables = tableHandler.getAllTables();
+        tableHandler.printTables(tables);
 
         System.out.println("Which table do you want to search from?");
-        int userInput = oh.userChoice(tables.length);
-        String tableName = oh.prepareTable( tables, userInput );
-        int size = oh.getCount( oh.getTableCountQuery( tableName ) );
-        String colSql = oh.prepareTableDataQuery( tableName );
+        int userInput = tableHandler.userChoice(tables.length);
+        String tableName = tableHandler.prepareTable( tables, userInput );
+        int size = tableHandler.getCount( tableHandler.getTableCountQuery( tableName ) );
+        String colSql = tableHandler.prepareTableDataQuery( tableName );
 
         String[] columns = getAllColumns(colSql, size);
-        oh.printTables(columns);
+        tableHandler.printTables(columns);
 
         System.out.println("Which column do you want to search from?");
-        int userColumn = oh.userChoice( size );
+        int userColumn = tableHandler.userChoice( size );
 
         String searchString = userSearchString(columns[userColumn - 1]);
 
@@ -54,12 +55,13 @@ public class SearchContent {
      * @param sql
      * @param size
      * @return
-     * @throws Exception
+     * @throws IOException
+     * @throws SQLException
      */
     public String[] getAllColumns(String sql, int size) throws IOException, SQLException {
         String[] tables = new String[ size ];
 
-        try (Connection con = db.getConnection();
+        try (Connection con = database.getConnection();
              Statement stmt = con.createStatement()) {
             int i = 0;
             ResultSet res = stmt.executeQuery(sql);
@@ -118,6 +120,8 @@ public class SearchContent {
      * @param sql
      * @param columnName
      * @param searchString
+     * @throws IOException
+     * @throws SQLException
      */
     private void printTableContent(String sql, String[] columnName, String searchString) throws IOException, SQLException {
         for(int i = 0; i < columnName.length; i++){
@@ -131,7 +135,7 @@ public class SearchContent {
 
         searchString = "%" + searchString + "%";
 
-        try (Connection con = db.getConnection();
+        try (Connection con = database.getConnection();
              PreparedStatement ps = con.prepareStatement(sql + "?")) {
             ps.setString(1, searchString);
             ResultSet rs = ps.executeQuery();

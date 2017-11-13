@@ -15,6 +15,7 @@ public class DBValidationHandler {
      * Deletes the database if the user wants to overwrite the current database
      * @param con
      * @param dbName
+     * @throws SQLException
      */
     public void overWriteDatabase( Connection con, String dbName ) throws SQLException {
         try ( Statement stmt = con.createStatement() ){
@@ -27,6 +28,7 @@ public class DBValidationHandler {
      * Creates a new database if the user has entered a new database name or want to overwrite the current database
      * @param con
      * @param newDbName
+     * @throws SQLException
      */
     public void createDataBase( Connection con, String newDbName ) throws SQLException {
         try (Statement stmt = con.createStatement()){
@@ -39,7 +41,7 @@ public class DBValidationHandler {
      * @param con
      * @param databaseName
      * @return
-     * @throws Exception
+     * @throws SQLException
      */
     public boolean validateIfDBExists( Connection con, String databaseName ) throws SQLException {
         try (Statement stmt = con.createStatement();
@@ -55,6 +57,8 @@ public class DBValidationHandler {
     /**
      * Validates if the database contain a semester plan table.
      * @return
+     * @throws IOException
+     * @throws SQLException
      */
     public boolean validateIfSemesterPlanExists() throws IOException, SQLException {
         DBTableContentHandler oh = new DBTableContentHandler();
@@ -72,7 +76,8 @@ public class DBValidationHandler {
     /**
      * Method validates if tables used in semester planing is present in database
      * @return
-     * @throws Exception
+     * @throws IOException
+     * @throws SQLException
      */
     public boolean validateTables() throws IOException, SQLException {
         DBTableContentHandler oh = new DBTableContentHandler();
@@ -103,6 +108,12 @@ public class DBValidationHandler {
         return count;
     }
 
+    /**
+     * Fixes foreign keys on table so everything works after thread has run the upload.
+     * @param fileName
+     * @throws IOException
+     * @throws SQLException
+     */
     public void fixForeignKeysForTable(String fileName) throws IOException, SQLException {
         String file = "input/" + fileName;
         
@@ -131,6 +142,12 @@ public class DBValidationHandler {
         }
     }
 
+    /**
+     * Executes the alter that fixes the foreign key issue.
+     * @param sql
+     * @throws IOException
+     * @throws SQLException
+     */
     public void executeUpdate(String sql) throws IOException, SQLException {
         DBConnection db = new DBConnection();
         try (Connection con = db.getConnection();

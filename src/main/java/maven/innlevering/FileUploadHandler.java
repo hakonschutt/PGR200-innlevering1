@@ -14,9 +14,10 @@ import java.util.ArrayList;
  * Created by hakonschutt on 26/09/2017.
  */
 public class FileUploadHandler {
-
     /**
      * Method initiate the thread job
+     * @throws IOException
+     * @throws SQLException
      */
     public void startInputScan() throws IOException, SQLException {
         String[] files = getAllFiles();
@@ -41,6 +42,12 @@ public class FileUploadHandler {
         System.out.println("All jobs are completed.... ");
     }
 
+    /**
+     * Alter tables and uploads foreign keys from text file after thread has run.
+     * @param files
+     * @throws IOException
+     * @throws SQLException
+     */
     public void uploadForeignKeys(String[] files) throws IOException, SQLException {
         DBValidationHandler handler = new DBValidationHandler();
 
@@ -49,6 +56,10 @@ public class FileUploadHandler {
 
     }
 
+    /**
+     * Retrieves all files from input directory
+     * @return
+     */
     private String[] getAllFiles() {
         File folder = new File("input/");
         File[] orgFile = folder.listFiles();
@@ -65,6 +76,11 @@ public class FileUploadHandler {
         return trimStringArray(files);
     }
 
+    /**
+     * Removes null from array of files.
+     * @param array
+     * @return
+     */
     private String[] trimStringArray(String[] array){
         ArrayList<String> list = new ArrayList<>();
 
