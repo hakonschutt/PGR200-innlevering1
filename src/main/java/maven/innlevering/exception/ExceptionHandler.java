@@ -18,17 +18,24 @@ public class ExceptionHandler {
             case "noValidation":
                 System.out.println("Unable to validate if database exists");
                 break;
-
-
-
-
-
-
-
-
-
-
-
+            case "outdatedConnection":
+                System.out.println("Unable to use old connection!");
+                break;
+            case "upload":
+                System.out.println("Unabel to upload to database.");
+                break;
+            case "search":
+                System.out.println("Unable to search for content.");
+                break;
+            case "print":
+                System.out.println("Unable to print content.");
+                break;
+            case "create":
+                System.out.println("Unable to create semester plan.");
+                break;
+            case "semesterPrint":
+                System.out.println("Unable to print semester plan.");
+                break;
             default:
                 System.out.println("Unknown sqlException exception");
                 break;
@@ -40,8 +47,6 @@ public class ExceptionHandler {
             case "intMismatch":
                 System.out.println("The input is not av valid integer.");
                 break;
-
-
             default:
                 System.out.println("Unknown sqlException exception");
                 break;
@@ -53,8 +58,6 @@ public class ExceptionHandler {
             case "threadJoin":
                 System.out.println("Unable to join threads from upload.");
                 break;
-
-
             default:
                 System.out.println("Unknown interrupted exception");
                 break;
@@ -66,7 +69,9 @@ public class ExceptionHandler {
             case "writeProperties":
                 System.out.println("Unable to write to property file.");
                 break;
-
+            case "readProperties":
+                System.out.println("Unable to read from property file.");
+                break;
 
             default:
                 System.out.println("Unknown IO exception");

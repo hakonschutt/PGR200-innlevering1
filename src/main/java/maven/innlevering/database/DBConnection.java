@@ -48,7 +48,7 @@ public class DBConnection {
      * @return
      * @throws SQLException
      */
-    public Connection testConnection (boolean withDatabaseConnection) throws SQLException {
+    public Connection verifyConnectionWithUserInput(boolean withDatabaseConnection) throws SQLException {
         MysqlDataSource ds = new MysqlDataSource();
 
         if(withDatabaseConnection)

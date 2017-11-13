@@ -1,5 +1,7 @@
 package maven.innlevering;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 /**
@@ -14,7 +16,7 @@ public class SemesterCreator {
     /**
      * Calles the necessary methods to evaulate if the user is connected to the correct database
      */
-    public boolean main() throws Exception {
+    public boolean main() throws IOException, SQLException {
         setSemester();
         rc.startSemesterPlan();
         return true;

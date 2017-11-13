@@ -81,7 +81,7 @@ public class ValidateUserConnection {
     private boolean connectToDatabase( String[] dbInfo ) {
         connect = new DBConnection(dbInfo[0], dbInfo[1], dbInfo[2], dbInfo[3]);
 
-        try (Connection con = connect.testConnection(false )){
+        try (Connection con = connect.verifyConnectionWithUserInput(false )){
             boolean dbExists = handler.validateIfDBExists(con, dbInfo[3]);
 
             if(!dbExists){

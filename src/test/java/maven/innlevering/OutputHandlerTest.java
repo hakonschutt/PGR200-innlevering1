@@ -29,14 +29,14 @@ public class OutputHandlerTest {
 
     @Test
     public void checkConnection() throws Exception {
-        Connection con = connect.testConnection(true);
+        Connection con = connect.verifyConnectionWithUserInput(true);
 
         assertNotNull(con);
     }
 
     @Test
     public void checkConnectionWithoutDatabase() throws Exception {
-        Connection con = connect.testConnection(false);
+        Connection con = connect.verifyConnectionWithUserInput(false);
 
         assertNotNull(con);
     }

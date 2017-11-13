@@ -3,8 +3,10 @@ import maven.innlevering.database.DBValidationHandler;
 import maven.innlevering.database.ValidateUserConnection;
 import maven.innlevering.database.DBConnection;
 import maven.innlevering.database.DBSemesterPlanHandler;
+import maven.innlevering.exception.ExceptionHandler;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -16,52 +18,55 @@ import java.util.Scanner;
 public class App {
     private DBConnection connect = new DBConnection();
     private Scanner sc = new Scanner( System.in );
-    private boolean canCreateSemesterPlan;
-    private boolean hasCreatedSemesterPlan;
+    private boolean canCreateSemesterPlan = false;
+    private boolean hasCreatedSemesterPlan = false;
 
-    private void start() throws Exception {
-        boolean filesHaveBeenScanned = checkForPropertyFile() && useOldConnection();
+    private void start() {
+        boolean filesHaveBeenScanned = false;
+        try {
+            filesHaveBeenScanned = checkForPropertyFile() && useOldConnection();
+        } catch (IOException | SQLException e){
+            ExceptionHandler.sqlException("outdatedConnection");
+        }
+
         boolean quit = false;
-
 
         if (!filesHaveBeenScanned) filesHaveBeenScanned = new ValidateUserConnection().runDbValidation();
 
+
+
         try (Connection con = connect.getConnection()){
-            if(con == null) throw new SQLException();
-
+            if(con == null) return;
             System.out.println( "Successful connection!" );
+        } catch ( IOException | SQLException e ){
+            return;
+        }
 
-            if( !filesHaveBeenScanned ) scanInputFiles();
+        if( !filesHaveBeenScanned ) scanInputFiles();
 
+        try {
             DBValidationHandler handler = new DBValidationHandler();
 
             hasCreatedSemesterPlan = handler.validateIfSemesterPlanExists();
             canCreateSemesterPlan = handler.validateTables();
-        } catch ( SQLException e ){
-            System.out.println("Unable to connect to database.");
-            quit = true;
+        } catch (IOException e){
+            ExceptionHandler.ioException("readProperties");
+        } catch (SQLException e){
+            ExceptionHandler.sqlException("noValidation");
         }
 
-        if(!quit) printInstructions();
+        printInstructions();
 
         while( !quit ){
             quit = runApp();
-            /*try (Connection con = connect.getConnection()){
-                quit = con == null || runApp();
-            } catch (SQLException e){
-                System.out.println("Lost connection to database.");
-                break;
-            }*/
         }
-
-        System.out.println("Quiting program...");
     }
 
     private boolean checkForPropertyFile(){
         return new File("data.properties").exists();
     }
 
-    private boolean useOldConnection() throws Exception {
+    private boolean useOldConnection() throws IOException, SQLException {
         try (Connection con = connect.getConnection()){
             if(con == null) throw new SQLException();
 
@@ -73,18 +78,22 @@ public class App {
                 }
                 System.out.print("Not a valid answer. Try again(yes/no): ");
             }
-        } catch (SQLException e){
-            System.out.println("Unable to use old connection. Setup a new.");
-            return false;
         }
     }
 
     /**
      * Scans the input files from the input directory
      */
-    private void scanInputFiles() throws Exception {
-        FileUploadHandler rf = new FileUploadHandler();
-        rf.startInputScan();
+    private void scanInputFiles() {
+        try {
+            FileUploadHandler rf = new FileUploadHandler();
+            rf.startInputScan();
+        } catch (IOException e){
+            ExceptionHandler.ioException("readProperties");
+        } catch (SQLException e){
+            ExceptionHandler.sqlException("upload");
+        }
+
     }
 
     /**
@@ -111,9 +120,14 @@ public class App {
     /**
      * searhFiles lets the user search for entries in the database
      */
-    private boolean searchFiles() throws Exception {
-        SearchContent search = new SearchContent();
-        search.main();
+    private boolean searchFiles() {
+        try {
+            new SearchContent().main();
+        } catch (IOException e){
+            ExceptionHandler.ioException("readProperties");
+        } catch (SQLException e){
+            ExceptionHandler.sqlException("search");
+        }
 
         return false;
     }
@@ -121,9 +135,14 @@ public class App {
     /**
      * printTable method is used to prompt the user with table options and print from the selected table
      */
-    private boolean printTable() throws Exception {
-        PrintTableContent pt = new PrintTableContent();
-        pt.main();
+    private boolean printTable() {
+        try {
+            new PrintTableContent().main();
+        } catch (IOException e){
+            ExceptionHandler.ioException("readProperties");
+        } catch (SQLException e){
+            ExceptionHandler.sqlException("print");
+        }
 
         return false;
     }
@@ -131,23 +150,31 @@ public class App {
     /**
      * printPlan method is used to print the semester plan. It initiates the createPlan class
      */
-    private boolean createPlan() throws Exception {
-        SemesterCreator createPlan = new SemesterCreator();
-        createPlan.main();
-        hasCreatedSemesterPlan = true;
+    private boolean createPlan() {
+        try {
+            new SemesterCreator().main();
+            hasCreatedSemesterPlan = true;
+        } catch (IOException e){
+            ExceptionHandler.ioException("readProperties");
+        } catch (SQLException e){
+            ExceptionHandler.sqlException("create");
+        }
 
         System.out.print("Do you want to print the plan? (yes/no) ");
         String ans = sc.nextLine().toLowerCase().replace(" ", "");
-        if(ans.equals("yes")){
-            return printPlan();
-        }
 
-        return false;
+        return ans.equals("yes") && printPlan();
     }
 
-    private boolean printPlan() throws Exception {
-        DBSemesterPlanHandler db = new DBSemesterPlanHandler();
-        db.presentAllSemesterData();
+    private boolean printPlan() {
+        try {
+            new DBSemesterPlanHandler().presentAllSemesterData();
+        } catch (IOException e){
+            ExceptionHandler.ioException("readProperties");
+        } catch (SQLException e){
+            ExceptionHandler.sqlException("semesterPrint");
+        }
+
         return false;
     }
 
@@ -155,7 +182,7 @@ public class App {
      * RunApp is the runDbValidation method in this class. It directs the application to the correct
      * method based on the users input
      */
-    private boolean runApp() throws Exception {
+    private boolean runApp() {
         System.out.print("What command do you want to execute: ");
         String asw = sc.nextLine().trim();
         System.out.println();
@@ -185,7 +212,8 @@ public class App {
     /**
      * Main app method that calls all methods used to initiate the program
      */
-    public static void main( String[] args ) throws Exception {
+    public static void main( String[] args ) {
         new App().start();
+        System.out.println("Quiting program...");
     }
 }
