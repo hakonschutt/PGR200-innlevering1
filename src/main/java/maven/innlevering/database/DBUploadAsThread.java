@@ -1,6 +1,9 @@
 package maven.innlevering.database;
 
+import maven.innlevering.exception.ExceptionHandler;
+
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
@@ -12,7 +15,7 @@ import java.sql.*;
  */
 public class DBUploadAsThread implements Runnable {
     private String file;
-    private DBConnect db = new DBConnect();
+    private DBConnection db = new DBConnection();
 
     public DBUploadAsThread(String file) {
         this.file = file;
@@ -27,10 +30,9 @@ public class DBUploadAsThread implements Runnable {
             createQuery(file);
             insertQuery(file);
             System.out.println("Finished importing " + file);
-        } catch (Exception e){
+        } catch (IOException | SQLException e){
             System.out.println("Unable to finish thread job for " + file);
         }
-
     }
 
     /**
@@ -38,7 +40,7 @@ public class DBUploadAsThread implements Runnable {
      * @param fileName
      * @throws IOException
      */
-    private void createQuery(String fileName) {
+    private void createQuery(String fileName) throws IOException, SQLException {
         String file = "input/" + fileName;
         try (BufferedReader in = new BufferedReader(new FileReader(file))){
             String table = in.readLine();
@@ -58,8 +60,8 @@ public class DBUploadAsThread implements Runnable {
 
             executeCreate(sql);
 
-        }catch(IOException e){
-            System.out.println("Unable to read from " + fileName);
+        } catch (FileNotFoundException e){
+            ExceptionHandler.fileException("fileNotFound");
         }
     }
 
@@ -67,12 +69,10 @@ public class DBUploadAsThread implements Runnable {
      * General execute create query that is used to create tables
      * @param sql
      */
-    private void executeCreate(String sql){
+    private void executeCreate(String sql) throws IOException, SQLException{
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             stmt.executeUpdate(sql);
-        } catch (Exception e) {
-            System.out.println("Unable to execute create.");
         }
     }
 
@@ -81,7 +81,7 @@ public class DBUploadAsThread implements Runnable {
      * @param filename
      * @throws IOException
      */
-    private void insertQuery(String filename) throws Exception {
+    private void insertQuery(String filename) throws IOException, SQLException {
         String file = "input/" + filename;
         try (BufferedReader in = new BufferedReader(new FileReader(file))){
             String db = in.readLine();
@@ -116,8 +116,8 @@ public class DBUploadAsThread implements Runnable {
 
                 executeInsert(sql, var);
             }
-        } catch (IOException e) {
-            throw new IOException("Unable to read from " + filename);
+        } catch (FileNotFoundException e) {
+            ExceptionHandler.fileException("fileNotFound");
         }
     }
 
@@ -126,15 +126,13 @@ public class DBUploadAsThread implements Runnable {
      * @param sql
      * @param var
      */
-    private void executeInsert(String sql, String[] var) throws Exception {
+    private void executeInsert(String sql, String[] var) throws IOException, SQLException {
         try (Connection con = db.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             for (int i = 0; i < var.length; i++){
                 ps.setObject(i + 1, var[i]);
             }
             ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new SQLException("Unable to execute insertion of data.");
         }
     }
 }

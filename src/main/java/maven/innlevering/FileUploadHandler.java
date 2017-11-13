@@ -1,21 +1,24 @@
 package maven.innlevering;
 
-import maven.innlevering.database.DBHandler;
+import maven.innlevering.database.DBValidationHandler;
 import maven.innlevering.database.DBUploadAsThread;
+import maven.innlevering.exception.ExceptionHandler;
+
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
  * Class is used to start thread jobs. It goes through the list of files and asign a file to each thread.
  * Created by hakonschutt on 26/09/2017.
  */
-public class Inputhandler {
+public class FileUploadHandler {
 
     /**
      * Method initiate the thread job
      */
-    public void startInputScan() throws Exception {
+    public void startInputScan() throws IOException, SQLException {
         String[] files = getAllFiles();
         Thread[] threads = new Thread[files.length];
 
@@ -28,9 +31,8 @@ public class Inputhandler {
         try {
             for (int i = 0; i < threads.length; i++)
                 threads[i].join();
-
-        } catch (Exception e) {
-            throw new Exception("Unable to join threads from file upload.");
+        } catch (InterruptedException e) {
+            ExceptionHandler.interruptException("threadJoin");
         }
 
         uploadForeignKeys(files);
@@ -39,15 +41,15 @@ public class Inputhandler {
         System.out.println("All jobs are completed.... ");
     }
 
-    public void uploadForeignKeys(String[] files) throws Exception {
-        DBHandler handler = new DBHandler();
+    public void uploadForeignKeys(String[] files) throws IOException, SQLException {
+        DBValidationHandler handler = new DBValidationHandler();
 
         for (int i = 0; i < files.length; i++)
             handler.fixForeignKeysForTable(files[i]);
 
     }
 
-    private String[] getAllFiles() throws IOException {
+    private String[] getAllFiles() {
         File folder = new File("input/");
         File[] orgFile = folder.listFiles();
         String[] files = new String[orgFile.length];

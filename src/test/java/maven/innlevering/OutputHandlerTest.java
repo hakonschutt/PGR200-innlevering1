@@ -1,6 +1,6 @@
 package maven.innlevering;
 
-import maven.innlevering.database.DBConnect;
+import maven.innlevering.database.DBConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,14 +14,14 @@ import static org.junit.Assert.assertNotNull;
  */
 public class OutputHandlerTest {
     private Connection con;
-    private OutputHandler oh;
-    private DBConnect connect;
+    private TableContentHandler oh;
+    private DBConnection connect;
     Connection connection;
 
     @Before
     public void setUp() throws Exception {
-        oh = new OutputHandler();
-        connect = new DBConnect("root", "root", "localhost", "westerdal");
+        oh = new TableContentHandler();
+        connect = new DBConnection("root", "root", "localhost", "westerdal");
     }
 
     @After
@@ -61,7 +61,7 @@ public class OutputHandlerTest {
     }
 
     @Test
-    public void testPrepateTable() throws Exception {
+    public void testPrepareTable() throws Exception {
         String[] ent = {"test", "hello", "world", "!!"};
         int userchoice = 2;
 

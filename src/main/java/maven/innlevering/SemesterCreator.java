@@ -3,13 +3,13 @@ package maven.innlevering;
 import java.util.Scanner;
 
 /**
- * CreatePlan is used to start the semesterplaning.
+ * SemesterCreator is used to start the semesterplaning.
  * It askes the user for start and end point of the semester
  * Created by hakonschutt on 01/10/2017.
  */
-public class CreatePlan {
+public class SemesterCreator {
     private Scanner sc;
-    private RuleController rc = new RuleController();
+    private SemesterRuleController rc = new SemesterRuleController();
 
     /**
      * Calles the necessary methods to evaulate if the user is connected to the correct database

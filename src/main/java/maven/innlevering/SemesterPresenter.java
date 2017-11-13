@@ -1,9 +1,9 @@
 package maven.innlevering;
 /**
- * The Presenter class is used to present the semester plan
+ * The SemesterPresenter class is used to present the semester plan
  * Created by hakonschutt on 26/09/2017.
  */
-public class Presenter {
+public class SemesterPresenter {
     private static final String SEMESTER_STRING_FORMAT = "| %-8S| %-8S| %-20S| %-10S| %-15S| %-25S|";
 
     /**

@@ -1,18 +1,16 @@
 package maven.innlevering.database;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 import java.sql.*;
-import maven.innlevering.OutputHandler;
+import maven.innlevering.TableContentHandler;
 
 /**
  * Class is used to controll database overwriting and creating.
  * Created by hakonschutt on 22/09/2017.
  */
-public class DBHandler {
+public class DBValidationHandler {
 
     /**
      * Deletes the database if the user wants to overwrite the current database
@@ -23,8 +21,6 @@ public class DBHandler {
         try ( Statement stmt = con.createStatement() ){
             stmt.executeUpdate("DROP DATABASE " + dbName +  "");
             createDataBase( con, dbName );
-        } catch ( SQLException e ){
-            throw new SQLException("Unable to drop database : " + dbName);
         }
     }
 
@@ -36,8 +32,6 @@ public class DBHandler {
     public void createDataBase( Connection con, String newDbName ) throws SQLException {
         try (Statement stmt = con.createStatement()){
             stmt.executeUpdate("CREATE DATABASE " + newDbName +  "");
-        } catch ( SQLException e ){
-            throw new SQLException("Unable to create table : " + newDbName);
         }
     }
 
@@ -56,9 +50,6 @@ public class DBHandler {
                                      + databaseName + "'")){
 
             return res.next();
-
-        } catch ( SQLException e ){
-            throw new SQLException("Unable to validate database : " + databaseName);
         }
     }
 
@@ -66,8 +57,8 @@ public class DBHandler {
      * Validates if the database contain a semester plan table.
      * @return
      */
-    public boolean validateIfSemesterPlanExists() throws Exception {
-        OutputHandler oh = new OutputHandler();
+    public boolean validateIfSemesterPlanExists() throws IOException, SQLException {
+        TableContentHandler oh = new TableContentHandler();
         String[] tables = oh.getAllTables();
 
         for(int i = 0; i < tables.length; i++){
@@ -84,8 +75,8 @@ public class DBHandler {
      * @return
      * @throws Exception
      */
-    public boolean validateTables() throws Exception {
-        OutputHandler oh = new OutputHandler();
+    public boolean validateTables() throws IOException, SQLException {
+        TableContentHandler oh = new TableContentHandler();
         String[] tables = oh.getAllTables();
         int total = checkForTables(tables);
 
@@ -113,7 +104,7 @@ public class DBHandler {
         return count;
     }
 
-    public void fixForeignKeysForTable(String fileName) throws Exception {
+    public void fixForeignKeysForTable(String fileName) throws IOException, SQLException {
         String file = "input/" + fileName;
         
         try (BufferedReader in = new BufferedReader(new FileReader(file))){
@@ -135,20 +126,17 @@ public class DBHandler {
                         sql += ", ";
                     }
                 }
+
                 executeUpdate(sql);
             }
-        } catch (IOException e) {
-            throw new IOException("Unable to read from file : " + fileName);
         }
     }
 
-    public void executeUpdate(String sql) throws Exception {
-        DBConnect db = new DBConnect();
+    public void executeUpdate(String sql) throws IOException, SQLException {
+        DBConnection db = new DBConnection();
         try (Connection con = db.getConnection();
                 Statement stmt = con.createStatement()){
              stmt.executeUpdate(sql);
-        } catch ( SQLException e ){
-            System.out.println("Unable to add foreign key");
         }
     }
 }

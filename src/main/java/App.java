@@ -1,7 +1,7 @@
 import maven.innlevering.*;
-import maven.innlevering.database.DBHandler;
-import maven.innlevering.database.DBConnectValidation;
-import maven.innlevering.database.DBConnect;
+import maven.innlevering.database.DBValidationHandler;
+import maven.innlevering.database.ValidateUserConnection;
+import maven.innlevering.database.DBConnection;
 import maven.innlevering.database.DBSemesterPlanHandler;
 
 import java.io.File;
@@ -10,11 +10,11 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 /**
- * App class is the applications main class. It is where the use is asked to choose from a string of options
+ * App class is the applications runDbValidation class. It is where the use is asked to choose from a string of options
  * Ths user can execute semester print, search and table print.
  */
 public class App {
-    private DBConnect connect = new DBConnect();
+    private DBConnection connect = new DBConnection();
     private Scanner sc = new Scanner( System.in );
     private boolean canCreateSemesterPlan;
     private boolean hasCreatedSemesterPlan;
@@ -24,7 +24,7 @@ public class App {
         boolean quit = false;
 
 
-        if (!filesHaveBeenScanned) filesHaveBeenScanned = new DBConnectValidation().main();
+        if (!filesHaveBeenScanned) filesHaveBeenScanned = new ValidateUserConnection().runDbValidation();
 
         try (Connection con = connect.getConnection()){
             if(con == null) throw new SQLException();
@@ -33,7 +33,7 @@ public class App {
 
             if( !filesHaveBeenScanned ) scanInputFiles();
 
-            DBHandler handler = new DBHandler();
+            DBValidationHandler handler = new DBValidationHandler();
 
             hasCreatedSemesterPlan = handler.validateIfSemesterPlanExists();
             canCreateSemesterPlan = handler.validateTables();
@@ -83,7 +83,7 @@ public class App {
      * Scans the input files from the input directory
      */
     private void scanInputFiles() throws Exception {
-        Inputhandler rf = new Inputhandler();
+        FileUploadHandler rf = new FileUploadHandler();
         rf.startInputScan();
     }
 
@@ -112,7 +112,7 @@ public class App {
      * searhFiles lets the user search for entries in the database
      */
     private boolean searchFiles() throws Exception {
-        SearchFiles search = new SearchFiles();
+        SearchContent search = new SearchContent();
         search.main();
 
         return false;
@@ -122,7 +122,7 @@ public class App {
      * printTable method is used to prompt the user with table options and print from the selected table
      */
     private boolean printTable() throws Exception {
-        PrintTables pt = new PrintTables();
+        PrintTableContent pt = new PrintTableContent();
         pt.main();
 
         return false;
@@ -132,7 +132,7 @@ public class App {
      * printPlan method is used to print the semester plan. It initiates the createPlan class
      */
     private boolean createPlan() throws Exception {
-        CreatePlan createPlan = new CreatePlan();
+        SemesterCreator createPlan = new SemesterCreator();
         createPlan.main();
         hasCreatedSemesterPlan = true;
 
@@ -152,7 +152,7 @@ public class App {
     }
 
     /**
-     * RunApp is the main method in this class. It directs the application to the correct
+     * RunApp is the runDbValidation method in this class. It directs the application to the correct
      * method based on the users input
      */
     private boolean runApp() throws Exception {

@@ -1,7 +1,8 @@
 package maven.innlevering.database;
 
-import maven.innlevering.Presenter;
+import maven.innlevering.SemesterPresenter;
 
+import java.io.IOException;
 import java.sql.*;
 
 /**
@@ -10,40 +11,36 @@ import java.sql.*;
  * Created by hakonschutt on 12/11/2017.
  */
 public class DBSemesterPlanHandler{
-    private DBConnect db = new DBConnect();
+    private DBConnection db = new DBConnection();
 
     /**
      * Creates semester plan table from semester plan query.
      */
-    public void createTableForSemester() throws Exception {
+    public void createTableForSemester() throws IOException, SQLException {
         dropSemesterTable();
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             stmt.executeUpdate(createTableSQL());
-        } catch (SQLException e) {
-            throw new SQLException("Unable to create semester table.");
         }
     }
 
     /**
      * Drops semester plan table if it exists.
      */
-    private void dropSemesterTable() throws Exception {
+    private void dropSemesterTable() throws IOException, SQLException {
         String sql = "DROP TABLE IF EXISTS `semester_plan`";
 
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             stmt.executeUpdate(sql);
-        } catch (SQLException e) {
-            throw new SQLException("Unable to drop existing table.");
         }
     }
 
     /**
      * Prints all semester plan data to the console.
      */
-    public void presentAllSemesterData() throws Exception {
-        Presenter.presentHeader();
+    public void presentAllSemesterData() throws IOException, SQLException {
+        SemesterPresenter.presentHeader();
         String sql = getDataQuery();
 
         try (Connection con = db.getConnection();
@@ -54,13 +51,11 @@ public class DBSemesterPlanHandler{
             }
             do {
                 String teacher = getTeachNameFromID(res.getInt("teacher_id"));
-                Presenter.presentData(res.getInt("week"), res.getInt("day"), res.getString("room"), res.getInt("block"), res.getString("subject_id"), teacher);
+                SemesterPresenter.presentData(res.getInt("week"), res.getInt("day"), res.getString("room"), res.getInt("block"), res.getString("subject_id"), teacher);
             } while (res.next());
-        } catch (SQLException e){
-            throw new SQLException("Unable to get semester plan");
         }
 
-        Presenter.presentFooter();
+        SemesterPresenter.presentFooter();
         System.out.println();
     }
 
@@ -99,7 +94,7 @@ public class DBSemesterPlanHandler{
      * @param block
      * @param subject_id
      */
-    public void uploadToTable(int week, int day, String room_id, int block, String subject_id) throws Exception {
+    public void uploadToTable(int week, int day, String room_id, int block, String subject_id) throws IOException, SQLException {
         String sql = insertIntoSemesterPlanerQuery();
         int teacher_id = getTeacherIdBySubjectId(subject_id);
 
@@ -113,8 +108,6 @@ public class DBSemesterPlanHandler{
             ps.setInt(6, teacher_id);
 
             ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new SQLException("Unable to upload information to semester table.");
         }
     }
 
@@ -126,32 +119,11 @@ public class DBSemesterPlanHandler{
     }
 
     /**
-     * Executes a query for teachers name based of Subject ID
-     * @param subjectID
-     * @return
-     */
-    public String getTeachBySubjectID(String subjectID) throws Exception {
-        String sql = getTeacherNameQuery(subjectID);
-        try (Connection con = db.getConnection();
-             Statement stmt = con.createStatement()) {
-            ResultSet res = stmt.executeQuery(sql);
-            if(!res.next()) {
-                throw new SQLException("No tables where found");
-            }
-            do {
-                return res.getString(1);
-            } while (res.next());
-        } catch (SQLException e){
-            throw new SQLException("Unable to query for teachers name from subject id: " + subjectID);
-        }
-    }
-
-    /**
      * Method returns a teacher name from the teacher id
      * @param teacher_id
      * @return
      */
-    public String getTeachNameFromID(int teacher_id) throws Exception {
+    public String getTeachNameFromID(int teacher_id) throws IOException, SQLException {
         String sql = getTeacherNameFromIdQuery(teacher_id);
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
@@ -162,8 +134,6 @@ public class DBSemesterPlanHandler{
             do {
                 return res.getString(1);
             } while (res.next());
-        } catch (SQLException e){
-            throw new SQLException("Unable to query for teacher name from teacher id: " + teacher_id);
         }
     }
 
@@ -172,7 +142,7 @@ public class DBSemesterPlanHandler{
      * @param subjectID
      * @return
      */
-    public int getTeacherIdBySubjectId(String subjectID) throws Exception {
+    public int getTeacherIdBySubjectId(String subjectID) throws IOException, SQLException {
         String sql = getTeacherIdQuery(subjectID);
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
@@ -183,24 +153,7 @@ public class DBSemesterPlanHandler{
             do {
                 return res.getInt(1);
             } while (res.next());
-        } catch (SQLException e){
-            throw new SQLException("Unable to query for teachers id from subject id: " + subjectID);
         }
-    }
-
-    /**
-     * GetTeacherName takes in a subject parameter and returns the teachers name
-     * @param subject
-     * @return
-     */
-    private String getTeacherNameQuery(String subject) {
-        String sql= "SELECT t.name " +
-                "FROM teacher as t " +
-                "JOIN teacher_subject as ts " +
-                "ON ts.teacher_id = t.id " +
-                "WHERE ts.subject_id = '" + subject + "'";
-
-        return sql;
     }
 
     /**

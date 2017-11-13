@@ -1,44 +1,40 @@
 package maven.innlevering;
 
-import maven.innlevering.database.DBConnect;
+import maven.innlevering.database.DBConnection;
+
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Scanner;
 
 /**
- * Print table class uses OutputHandler to get user information about which table to print.
+ * Print table class uses TableContentHandler to get user information about which table to print.
  * The class is used to printing the content of a table in the database
  * Created by hakonschutt on 01/10/2017.
  */
-public class PrintTables {
-    private DBConnect db = new DBConnect();
-    private OutputHandler oh;
-    private Scanner sc = new Scanner(System.in);
+public class PrintTableContent {
+    private DBConnection db = new DBConnection();
+    private TableContentHandler oh;
 
     /**
      * Main method initiate neccassary output methods to receive user data
      * Using this data to start print method for this class
      * @throws Exception
      */
-    public void main() throws Exception {
-        try {
-            oh = new OutputHandler();
-            String[] tables = oh.getAllTables();
-            oh.printTables(tables);
+    public void main() throws IOException, SQLException {
+        oh = new TableContentHandler();
+        String[] tables = oh.getAllTables();
+        oh.printTables(tables);
 
-            System.out.println("Which table do you want to search from?");
-            int userInput = oh.userChoice(tables.length);
+        System.out.println("Which table do you want to search from?");
+        int userInput = oh.userChoice(tables.length);
 
-            String tableName = oh.prepareTable( tables, userInput );
-            int size = oh.getCount( oh.getTableCountQuery( tableName ) );
-            String query = oh.prepareTableDataQuery( tableName );
+        String tableName = oh.prepareTable( tables, userInput );
+        int size = oh.getCount( oh.getTableCountQuery( tableName ) );
+        String query = oh.prepareTableDataQuery( tableName );
 
-            prepareTableQuery(tableName, query, size);
-        } catch (Exception e){
-            throw new Exception("Unable to print table content.");
-        }
+        prepareTableQuery(tableName, query, size);
     }
 
     /**
@@ -48,7 +44,7 @@ public class PrintTables {
      * @param size
      * @throws Exception
      */
-    private void prepareTableQuery(String tableName, String sql, int size) throws Exception {
+    private void prepareTableQuery(String tableName, String sql, int size) throws IOException, SQLException {
         String[] data = new String[ size ];
         String finalSQL = "SELECT";
 
@@ -71,8 +67,6 @@ public class PrintTables {
 
                 i++;
             } while (res.next());
-        } catch (SQLException e ){
-            throw new SQLException("Unable to execute table query");
         }
 
         finalSQL += " FROM " + tableName;
@@ -85,7 +79,7 @@ public class PrintTables {
      * @param sql
      * @param columnName
      */
-    private void printTableContent(String sql, String[] columnName) throws Exception {
+    private void printTableContent(String sql, String[] columnName) throws IOException, SQLException {
         for(int i = 0; i < columnName.length; i++){
             System.out.printf("%-20S", columnName[i]);
         }

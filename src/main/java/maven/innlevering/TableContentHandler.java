@@ -1,7 +1,8 @@
 package maven.innlevering;
 
-import maven.innlevering.database.DBConnect;
+import maven.innlevering.database.DBConnection;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -11,12 +12,12 @@ import java.util.Properties;
 import java.util.Scanner;
 
 /**
- * OutputHandler is used to generate table data.
- * Is is used for ruleController, SearchFiles and PrintTable.
+ * TableContentHandler is used to generate table data.
+ * Is is used for ruleController, SearchContent and PrintTable.
  * Created by hakonschutt on 29/09/2017.
  */
-public class OutputHandler {
-    private DBConnect db = new DBConnect();
+public class TableContentHandler {
+    private DBConnection db = new DBConnection();
     private String dbName;
     private Scanner sc = new Scanner(System.in);
 
@@ -24,7 +25,7 @@ public class OutputHandler {
     /**
      * Basic constructor that sets the database name.
      */
-    public OutputHandler() throws Exception {
+    public TableContentHandler() throws IOException {
         setDbName();
     }
 
@@ -37,14 +38,12 @@ public class OutputHandler {
     /**
      * Sets the database name based on property file
      */
-    public void setDbName() throws Exception {
+    public void setDbName() throws IOException {
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream("data.properties")) {
             properties.load(input);
 
             this.dbName = properties.getProperty("db");
-        } catch (Exception e){
-            throw new Exception("Unable to read from property file.");
         }
     }
 
@@ -61,7 +60,7 @@ public class OutputHandler {
      * @return
      * @throws Exception
      */
-    public String[] getAllTables() throws Exception {
+    public String[] getAllTables() throws IOException, SQLException {
         String sql = prepareQuery();
         String[] tables = new String[getCount(getDBCountQuery())];
 
@@ -76,8 +75,6 @@ public class OutputHandler {
                 tables[i] = res.getString(1);
                 i++;
             } while (res.next());
-        } catch (SQLException e){
-            throw new SQLException("Unable to query for tables.");
         }
         return tables;
     }
@@ -88,7 +85,7 @@ public class OutputHandler {
      * @return
      * @throws Exception
      */
-    public int getCount(String sql) throws Exception {
+    public int getCount(String sql) throws IOException, SQLException {
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
@@ -96,8 +93,6 @@ public class OutputHandler {
                 throw new SQLException("No tables where found");
             }
             return res.getInt("total");
-        } catch (SQLException e ){
-            throw new SQLException("Unable to execute count");
         }
     }
 

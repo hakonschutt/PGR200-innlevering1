@@ -3,6 +3,7 @@ package maven.innlevering.database;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,7 +13,7 @@ import java.util.Properties;
  * Main Connection class. All classes implements this classes getConnection.
  * Created by hakonschutt on 27/09/2017.
  */
-public class DBConnect {
+public class DBConnection {
     private String user;
     private String pass;
     private String host;
@@ -22,7 +23,7 @@ public class DBConnect {
      * Empty constructor if the user is not testing, and doesnt want to set
      * the table data but use the variables from property file
      */
-    public DBConnect(){}
+    public DBConnection(){}
 
     /**
      * Second constructor that lets the user set custom user, pass, host and dbname.
@@ -32,7 +33,7 @@ public class DBConnect {
      * @param host
      * @param dbName
      */
-    public DBConnect(String user, String pass, String host, String dbName) {
+    public DBConnection(String user, String pass, String host, String dbName) {
         this.user = user;
         this.pass = pass;
         this.host = host;
@@ -46,32 +47,27 @@ public class DBConnect {
      * @param withDatabaseConnection
      * @return
      * @throws SQLException
-     * @throws FileNotFoundException
      */
     public Connection testConnection (boolean withDatabaseConnection) throws SQLException {
-        try {
-            MysqlDataSource ds = new MysqlDataSource();
+        MysqlDataSource ds = new MysqlDataSource();
 
-            if(withDatabaseConnection)
-                ds.setDatabaseName(this.dbName);
+        if(withDatabaseConnection)
+            ds.setDatabaseName(this.dbName);
 
-            ds.setServerName(this.host);
-            ds.setUser(this.user);
-            ds.setPassword(this.pass);
+        ds.setServerName(this.host);
+        ds.setUser(this.user);
+        ds.setPassword(this.pass);
 
-            Connection connect = ds.getConnection();
+        Connection connect = ds.getConnection();
 
-            return connect;
-        } catch (SQLException e){
-            throw new SQLException("Unable to create a connection " + (withDatabaseConnection ? "with" : "without") + " the database");
-        }
+        return connect;
     }
 
     /**
-     * main getConnection class. Used throughout the program to get the database connection
+     * runDbValidation getConnection class. Used throughout the program to get the database connection
      * @return
      */
-    public Connection getConnection() throws Exception {
+    public Connection getConnection() throws IOException, SQLException {
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream("data.properties")) {
             MysqlDataSource ds = new MysqlDataSource();
@@ -85,9 +81,8 @@ public class DBConnect {
             Connection connect = ds.getConnection();
 
             return connect;
-
-        } catch (Exception e){
-            throw new Exception("Unable to establish connection from property entries.");
+        } catch (FileNotFoundException e){
+            throw new FileNotFoundException("Not able to locate property file");
         }
     }
 
