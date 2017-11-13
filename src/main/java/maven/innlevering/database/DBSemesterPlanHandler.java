@@ -15,34 +15,34 @@ public class DBSemesterPlanHandler{
     /**
      * Creates semester plan table from semester plan query.
      */
-    public void createTableForSemester(){
+    public void createTableForSemester() throws Exception {
         dropSemesterTable();
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             stmt.executeUpdate(createTableSQL());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            throw new SQLException("Unable to create semester table.");
         }
     }
 
     /**
      * Drops semester plan table if it exists.
      */
-    private void dropSemesterTable() {
+    private void dropSemesterTable() throws Exception {
         String sql = "DROP TABLE IF EXISTS `semester_plan`";
 
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             stmt.executeUpdate(sql);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            throw new SQLException("Unable to drop existing table.");
         }
     }
 
     /**
      * Prints all semester plan data to the console.
      */
-    public void presentAllSemesterData(){
+    public void presentAllSemesterData() throws Exception {
         Presenter.presentHeader();
         String sql = getDataQuery();
 
@@ -56,8 +56,8 @@ public class DBSemesterPlanHandler{
                 String teacher = getTeachNameFromID(res.getInt("teacher_id"));
                 Presenter.presentData(res.getInt("week"), res.getInt("day"), res.getString("room"), res.getInt("block"), res.getString("subject_id"), teacher);
             } while (res.next());
-        } catch (Exception e){
-            System.out.println("Unable to get semester plan");
+        } catch (SQLException e){
+            throw new SQLException("Unable to get semester plan");
         }
 
         Presenter.presentFooter();
@@ -99,7 +99,7 @@ public class DBSemesterPlanHandler{
      * @param block
      * @param subject_id
      */
-    public void uploadToTable(int week, int day, String room_id, int block, String subject_id){
+    public void uploadToTable(int week, int day, String room_id, int block, String subject_id) throws Exception {
         String sql = insertIntoSemesterPlanerQuery();
         int teacher_id = getTeacherIdBySubjectId(subject_id);
 
@@ -114,7 +114,7 @@ public class DBSemesterPlanHandler{
 
             ps.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Unable to upload information to semester table.");
+            throw new SQLException("Unable to upload information to semester table.");
         }
     }
 
@@ -130,7 +130,7 @@ public class DBSemesterPlanHandler{
      * @param subjectID
      * @return
      */
-    public String getTeachBySubjectID(String subjectID) {
+    public String getTeachBySubjectID(String subjectID) throws Exception {
         String sql = getTeacherNameQuery(subjectID);
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
@@ -142,11 +142,8 @@ public class DBSemesterPlanHandler{
                 return res.getString(1);
             } while (res.next());
         } catch (SQLException e){
-            System.out.println("Unable to query for teachers name from subject id: " + subjectID);
+            throw new SQLException("Unable to query for teachers name from subject id: " + subjectID);
         }
-
-
-        return null;
     }
 
     /**
@@ -154,7 +151,7 @@ public class DBSemesterPlanHandler{
      * @param teacher_id
      * @return
      */
-    public String getTeachNameFromID(int teacher_id){
+    public String getTeachNameFromID(int teacher_id) throws Exception {
         String sql = getTeacherNameFromIdQuery(teacher_id);
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
@@ -166,10 +163,8 @@ public class DBSemesterPlanHandler{
                 return res.getString(1);
             } while (res.next());
         } catch (SQLException e){
-            System.out.println("Unable to query for teacher name from teacher id: " + teacher_id);
+            throw new SQLException("Unable to query for teacher name from teacher id: " + teacher_id);
         }
-
-        return null;
     }
 
     /**
@@ -177,7 +172,7 @@ public class DBSemesterPlanHandler{
      * @param subjectID
      * @return
      */
-    public int getTeacherIdBySubjectId(String subjectID) {
+    public int getTeacherIdBySubjectId(String subjectID) throws Exception {
         String sql = getTeacherIdQuery(subjectID);
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
@@ -189,10 +184,8 @@ public class DBSemesterPlanHandler{
                 return res.getInt(1);
             } while (res.next());
         } catch (SQLException e){
-            System.out.println("Unable to query for teachers id from subject id: " + subjectID);
+            throw new SQLException("Unable to query for teachers id from subject id: " + subjectID);
         }
-
-        return -1;
     }
 
     /**

@@ -24,7 +24,7 @@ public class OutputHandler {
     /**
      * Basic constructor that sets the database name.
      */
-    public OutputHandler() {
+    public OutputHandler() throws Exception {
         setDbName();
     }
 
@@ -37,14 +37,14 @@ public class OutputHandler {
     /**
      * Sets the database name based on property file
      */
-    public void setDbName() {
+    public void setDbName() throws Exception {
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream("data.properties")) {
             properties.load(input);
 
             this.dbName = properties.getProperty("db");
         } catch (Exception e){
-            System.out.println("Unable to read from property file.");
+            throw new Exception("Unable to read from property file.");
         }
     }
 
@@ -61,7 +61,7 @@ public class OutputHandler {
      * @return
      * @throws Exception
      */
-    public String[] getAllTables() {
+    public String[] getAllTables() throws Exception {
         String sql = prepareQuery();
         String[] tables = new String[getCount(getDBCountQuery())];
 
@@ -77,7 +77,7 @@ public class OutputHandler {
                 i++;
             } while (res.next());
         } catch (SQLException e){
-            System.out.println("Unable to connect with current connection");
+            throw new SQLException("Unable to query for tables.");
         }
         return tables;
     }
@@ -88,7 +88,7 @@ public class OutputHandler {
      * @return
      * @throws Exception
      */
-    public int getCount(String sql) {
+    public int getCount(String sql) throws Exception {
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
@@ -97,8 +97,7 @@ public class OutputHandler {
             }
             return res.getInt("total");
         } catch (SQLException e ){
-            System.out.println("Unable to connect with current connection");
-            return -1;
+            throw new SQLException("Unable to execute count");
         }
     }
 

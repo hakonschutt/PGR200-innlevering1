@@ -1,7 +1,6 @@
 package maven.innlevering.database;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
@@ -24,9 +23,14 @@ public class DBUploadAsThread implements Runnable {
      */
     @Override
     public void run() {
-        createQuery(file);
-        insertQuery(file);
-        System.out.println("Finished importing " + file);
+        try {
+            createQuery(file);
+            insertQuery(file);
+            System.out.println("Finished importing " + file);
+        } catch (Exception e){
+            System.out.println("Unable to finish thread job for " + file);
+        }
+
     }
 
     /**
@@ -42,7 +46,7 @@ public class DBUploadAsThread implements Runnable {
             String[] dataType = in.readLine().split("/");
             String[] dataSize = in.readLine().split("/");
             String PK = in.readLine();
-            in.readLine(); // Skips foreign key.
+            in.readLine();
 
             String sql;
 
@@ -77,7 +81,7 @@ public class DBUploadAsThread implements Runnable {
      * @param filename
      * @throws IOException
      */
-    private void insertQuery(String filename) {
+    private void insertQuery(String filename) throws Exception {
         String file = "input/" + filename;
         try (BufferedReader in = new BufferedReader(new FileReader(file))){
             String db = in.readLine();
@@ -113,7 +117,7 @@ public class DBUploadAsThread implements Runnable {
                 executeInsert(sql, var);
             }
         } catch (IOException e) {
-            System.out.println("Unable to read from " + filename);
+            throw new IOException("Unable to read from " + filename);
         }
     }
 
@@ -122,7 +126,7 @@ public class DBUploadAsThread implements Runnable {
      * @param sql
      * @param var
      */
-    private void executeInsert(String sql, String[] var){
+    private void executeInsert(String sql, String[] var) throws Exception {
         try (Connection con = db.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             for (int i = 0; i < var.length; i++){
@@ -130,7 +134,7 @@ public class DBUploadAsThread implements Runnable {
             }
             ps.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Unable to execute insertion of data.");
+            throw new SQLException("Unable to execute insertion of data.");
         }
     }
 }

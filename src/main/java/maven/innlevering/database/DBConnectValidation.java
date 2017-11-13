@@ -4,7 +4,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -24,7 +23,7 @@ public class DBConnectValidation {
      * @return
      * @throws Exception
      */
-    public boolean main() {
+    public boolean main() throws IOException {
         boolean works = false;
         while ( !works ){
             works = writeDBinfo();
@@ -55,7 +54,7 @@ public class DBConnectValidation {
     /**
      * Writing user input to property file AFTER checking if the connection works with database
      */
-    private void writeProperties() {
+    private void writeProperties() throws IOException {
         Properties properties = new Properties();
         try (OutputStream outputStream = new FileOutputStream("data.properties")) {
             properties.setProperty("user", connect.getUser());
@@ -65,7 +64,7 @@ public class DBConnectValidation {
 
             properties.store(outputStream, null);
         } catch (IOException e){
-            System.out.println("Unable to write to property file. Make sure its not deleted.");
+            throw new IOException("Unable to write to property file.");
         }
     }
 
@@ -89,8 +88,7 @@ public class DBConnectValidation {
 
         } catch (Exception e){
             System.out.println("Unable to connect with the current information");
-            System.out.println("Try again: ");
-            System.out.println();
+            System.out.print("Try again: ");
 
             return false;
         }
@@ -110,7 +108,7 @@ public class DBConnectValidation {
     /**
      * User input IF the database already exists
      */
-    private void userInputForConnectionTest( Connection con, String dbName ) {
+    private void userInputForConnectionTest( Connection con, String dbName ) throws Exception {
         userInputForConnectionInstruction();
         int asw = sc.nextInt();
         switch(asw){
@@ -136,7 +134,7 @@ public class DBConnectValidation {
     /**
      * Lets the user change the database name IF the database already exists
      */
-    private void changeDatabaseName( Connection con ) {
+    private void changeDatabaseName( Connection con ) throws Exception {
         System.out.print( "Whats the new name:" );
         Scanner sc = new Scanner( System.in );
         String newDbName = sc.nextLine();

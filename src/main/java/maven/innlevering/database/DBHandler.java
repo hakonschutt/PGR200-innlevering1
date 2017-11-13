@@ -19,12 +19,12 @@ public class DBHandler {
      * @param con
      * @param dbName
      */
-    public void overWriteDatabase( Connection con, String dbName ){
+    public void overWriteDatabase( Connection con, String dbName ) throws SQLException {
         try ( Statement stmt = con.createStatement() ){
             stmt.executeUpdate("DROP DATABASE " + dbName +  "");
             createDataBase( con, dbName );
         } catch ( SQLException e ){
-            System.out.println("Unable to drop database : " + dbName);
+            throw new SQLException("Unable to drop database : " + dbName);
         }
     }
 
@@ -33,11 +33,11 @@ public class DBHandler {
      * @param con
      * @param newDbName
      */
-    public void createDataBase( Connection con, String newDbName ){
+    public void createDataBase( Connection con, String newDbName ) throws SQLException {
         try (Statement stmt = con.createStatement()){
             stmt.executeUpdate("CREATE DATABASE " + newDbName +  "");
         } catch ( SQLException e ){
-            System.out.println("Unable to create table : " + newDbName);
+            throw new SQLException("Unable to create table : " + newDbName);
         }
     }
 
@@ -48,7 +48,7 @@ public class DBHandler {
      * @return
      * @throws Exception
      */
-    public boolean validateIfDBExists( Connection con, String databaseName ) {
+    public boolean validateIfDBExists( Connection con, String databaseName ) throws SQLException {
         try (Statement stmt = con.createStatement();
              ResultSet res =
                      stmt.executeQuery(
@@ -58,8 +58,7 @@ public class DBHandler {
             return res.next();
 
         } catch ( SQLException e ){
-            System.out.println("Unable to validate database : " + databaseName);
-            return false;
+            throw new SQLException("Unable to validate database : " + databaseName);
         }
     }
 
@@ -67,7 +66,7 @@ public class DBHandler {
      * Validates if the database contain a semester plan table.
      * @return
      */
-    public boolean validateIfSemesterPlanExists() {
+    public boolean validateIfSemesterPlanExists() throws Exception {
         OutputHandler oh = new OutputHandler();
         String[] tables = oh.getAllTables();
 
@@ -85,7 +84,7 @@ public class DBHandler {
      * @return
      * @throws Exception
      */
-    public boolean validateTables() {
+    public boolean validateTables() throws Exception {
         OutputHandler oh = new OutputHandler();
         String[] tables = oh.getAllTables();
         int total = checkForTables(tables);
@@ -114,7 +113,7 @@ public class DBHandler {
         return count;
     }
 
-    public void fixForeignKeysForTable(String fileName) {
+    public void fixForeignKeysForTable(String fileName) throws Exception {
         String file = "input/" + fileName;
         
         try (BufferedReader in = new BufferedReader(new FileReader(file))){
@@ -139,11 +138,11 @@ public class DBHandler {
                 executeUpdate(sql);
             }
         } catch (IOException e) {
-            System.out.println("Unable to read from file : " + fileName);
+            throw new IOException("Unable to read from file : " + fileName);
         }
     }
 
-    public void executeUpdate(String sql){
+    public void executeUpdate(String sql) throws Exception {
         DBConnect db = new DBConnect();
         try (Connection con = db.getConnection();
                 Statement stmt = con.createStatement()){

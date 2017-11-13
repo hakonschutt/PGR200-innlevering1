@@ -3,6 +3,7 @@ package maven.innlevering;
 import maven.innlevering.database.DBHandler;
 import maven.innlevering.database.DBUploadAsThread;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -14,7 +15,7 @@ public class Inputhandler {
     /**
      * Method initiate the thread job
      */
-    public void startInputScan() {
+    public void startInputScan() throws Exception {
         String[] files = getAllFiles();
         Thread[] threads = new Thread[files.length];
 
@@ -29,7 +30,7 @@ public class Inputhandler {
                 threads[i].join();
 
         } catch (Exception e) {
-            System.out.println("Unable to join threads");
+            throw new Exception("Unable to join threads from file upload.");
         }
 
         uploadForeignKeys(files);
@@ -38,7 +39,7 @@ public class Inputhandler {
         System.out.println("All jobs are completed.... ");
     }
 
-    public void uploadForeignKeys(String[] files){
+    public void uploadForeignKeys(String[] files) throws Exception {
         DBHandler handler = new DBHandler();
 
         for (int i = 0; i < files.length; i++)
@@ -46,7 +47,7 @@ public class Inputhandler {
 
     }
 
-    private String[] getAllFiles(){
+    private String[] getAllFiles() throws IOException {
         File folder = new File("input/");
         File[] orgFile = folder.listFiles();
         String[] files = new String[orgFile.length];

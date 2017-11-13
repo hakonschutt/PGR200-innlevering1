@@ -14,7 +14,7 @@ public class CreatePlan {
     /**
      * Calles the necessary methods to evaulate if the user is connected to the correct database
      */
-    public boolean main() {
+    public boolean main() throws Exception {
         setSemester();
         rc.startSemesterPlan();
         return true;

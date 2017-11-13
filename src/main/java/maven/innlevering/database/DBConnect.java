@@ -48,7 +48,7 @@ public class DBConnect {
      * @throws SQLException
      * @throws FileNotFoundException
      */
-    public Connection testConnection (boolean withDatabaseConnection) {
+    public Connection testConnection (boolean withDatabaseConnection) throws SQLException {
         try {
             MysqlDataSource ds = new MysqlDataSource();
 
@@ -63,8 +63,7 @@ public class DBConnect {
 
             return connect;
         } catch (SQLException e){
-            System.out.println("Unable to create a connection " + (withDatabaseConnection ? "with" : "without") + " the database");
-            return null;
+            throw new SQLException("Unable to create a connection " + (withDatabaseConnection ? "with" : "without") + " the database");
         }
     }
 
@@ -72,7 +71,7 @@ public class DBConnect {
      * main getConnection class. Used throughout the program to get the database connection
      * @return
      */
-    public Connection getConnection(){
+    public Connection getConnection() throws Exception {
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream("data.properties")) {
             MysqlDataSource ds = new MysqlDataSource();
@@ -88,8 +87,7 @@ public class DBConnect {
             return connect;
 
         } catch (Exception e){
-            System.out.println("Unable to establish connection from property entries.");
-            return null;
+            throw new Exception("Unable to establish connection from property entries.");
         }
     }
 

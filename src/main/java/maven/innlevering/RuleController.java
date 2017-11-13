@@ -27,33 +27,38 @@ public class RuleController {
      * Initiate the semester planing
      * @throws Exception
      */
-    public void startSemesterPlan() {
-        try {
-            System.out.println();
-            semesterPlanHandler.createTableForSemester();
+    public void startSemesterPlan() throws Exception {
+        System.out.println();
+        semesterPlanHandler.createTableForSemester();
 
-            createTotalColumn();
+        createTotalColumn();
 
-            int diff = endWeek - startWeek;
+        int diff = endWeek - startWeek;
+        boolean finished = false;
 
-            currentWeek = startWeek;
-            while(currentWeek <= endWeek){
-                printProgressBar(diff, currentWeek - startWeek);
-                createInWeekColumn();
-                int i = 1;
-                while(i <= 5){
-                    currentDay = i;
-                    checkSingleDay(i);
-                    i++;
-                }
-                deleteInWeekColumn();
-                currentWeek++;
+        currentWeek = startWeek;
+        while(currentWeek <= endWeek){
+            createInWeekColumn();
+            int i = 1;
+            while(i <= 5){
+                currentDay = i;
+                boolean tempQuit = checkSingleDay(i);
+                if(finished || tempQuit)
+                    finished = tempQuit;
+
+                i++;
             }
-            deleteTotalColumn();
-            System.out.println("\n\nFinished creating semesterplan!");
-        } catch (Exception e){
-            System.out.println("Unable to finished semester plan.");
+            deleteInWeekColumn();
+
+            if(!finished){
+                currentWeek++;
+                printProgressBar(diff, currentWeek - startWeek);
+            } else {
+                break;
+            }
         }
+        deleteTotalColumn();
+        System.out.println("\n\nFinished creating semesterplan in " + (currentWeek - startWeek) + " weeks!");
     }
 
     public void printProgressBar(int total, int currentDiff){
@@ -76,14 +81,14 @@ public class RuleController {
     /**
      * Creates a total column on subject table
      */
-    private void createTotalColumn(){
+    private void createTotalColumn() throws Exception {
         executeUpdateQuery("ALTER TABLE subject ADD total int(2) DEFAULT 0 NOT NULL");
     }
 
     /**
      * Deletes total column from subject table
      */
-    private void deleteTotalColumn(){
+    private void deleteTotalColumn() throws Exception {
         executeUpdateQuery("ALTER TABLE subject DROP COLUMN total");
     }
 
@@ -92,19 +97,19 @@ public class RuleController {
      * This is used to filter out subjects that has allready
      * occurred this week.
      */
-    private void createInWeekColumn(){ executeUpdateQuery("ALTER TABLE subject ADD isInWeek" + currentWeek + " int(1) DEFAULT 0 NOT NULL"); }
+    private void createInWeekColumn() throws Exception { executeUpdateQuery("ALTER TABLE subject ADD isInWeek" + currentWeek + " int(1) DEFAULT 0 NOT NULL"); }
 
     /**
      * Deletes the isInWeek column when the week is over
      */
-    private void deleteInWeekColumn(){
+    private void deleteInWeekColumn() throws Exception {
         executeUpdateQuery("ALTER TABLE subject DROP COLUMN isInWeek" + currentWeek);
     }
 
     /**
      * Creates columns in field_of_study and teacher to make sure study and teachers dont have two lecture on the same day
      */
-    private void createFieldsForDay(){
+    private void createFieldsForDay() throws Exception {
         executeUpdateQuery("ALTER TABLE field_of_study ADD isOn" + currentDay + " int(1) DEFAULT 0 NOT NULL");
         executeUpdateQuery("ALTER TABLE teacher ADD isOn" + currentDay + " int(1) DEFAULT 0 NOT NULL");
     }
@@ -112,7 +117,7 @@ public class RuleController {
     /**
      * Deletes columns isOn"day" after day is over
      */
-    private void deleteFieldForDay(){
+    private void deleteFieldForDay() throws Exception {
         executeUpdateQuery("ALTER TABLE field_of_study DROP COLUMN isOn" + currentDay);
         executeUpdateQuery("ALTER TABLE teacher DROP COLUMN isOn" + currentDay);
     }
@@ -121,12 +126,12 @@ public class RuleController {
      * General method to execute alle update queries implementet in this class
      * @param sql
      */
-    private void executeUpdateQuery(String sql){
+    private void executeUpdateQuery(String sql) throws Exception {
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
-            int res = stmt.executeUpdate(sql);
+            stmt.executeUpdate(sql);
         } catch (SQLException e){
-            System.out.println("Unable to execute update query.");
+            throw new SQLException("Unable to execute update query.");
         }
     }
 
@@ -137,16 +142,17 @@ public class RuleController {
      * @param day
      * @throws Exception
      */
-    private void checkSingleDay(int day) {
-        try {
-            String sql = getPossibleSubjectsQuery(day);
-            HashMap<String, Integer> subjects = getItemInHashMap(sql);
+    private boolean checkSingleDay(int day) throws Exception {
+        String sql = getPossibleSubjectsQuery(day);
+        HashMap<String, Integer> subjects = getItemInHashMap(sql);
+
+        if(subjects != null){
             createFieldsForDay();
             checkIfLecturesCanOccur(subjects);
             deleteFieldForDay();
-        } catch (Exception e){
-            System.out.println("Unable ");
+            return false;
         }
+        return true;
     }
 
     /**
@@ -184,18 +190,20 @@ public class RuleController {
      * @param sql
      * @return
      */
-    private HashMap getItemInHashMap(String sql){
+    private HashMap getItemInHashMap(String sql) throws Exception {
         HashMap<String, Integer> hash = new HashMap<>();
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
-            if(!res.next()) {
-                throw new SQLException("No tables where found");
-            }
+
+            if(!res.next()) return null;
+
             do {
                 hash.put(res.getString(1), res.getInt(2));
             } while (res.next());
-        } catch (SQLException e){}
+        } catch (SQLException e){
+            throw new SQLException("Unable to create hashmap from query.");
+        }
 
         return hash;
     }
@@ -208,33 +216,37 @@ public class RuleController {
      * @throws Exception
      */
     private void checkIfLecturesCanOccur(HashMap subjects) throws Exception {
-        HashMap<String, Integer> rooms;
-        for(int j = 1; j < 3; j++){
-            String roomSql = getPossibleRooms();
-            rooms = getItemInHashMap(roomSql);
-            Iterator ro = rooms.entrySet().iterator();
-            while (ro.hasNext()) {
-                Map.Entry room = (Map.Entry)ro.next();
-                int room_kap = (int) room.getValue();
-                String room_name = (String) room.getKey();
+        try {
+            HashMap<String, Integer> rooms;
+            for(int j = 1; j < 3; j++){
+                String roomSql = getPossibleRooms();
+                rooms = getItemInHashMap(roomSql);
+                Iterator ro = rooms.entrySet().iterator();
+                while (ro.hasNext()) {
+                    Map.Entry room = (Map.Entry)ro.next();
+                    int room_kap = (int) room.getValue();
+                    String room_name = (String) room.getKey();
 
-                Iterator su = subjects.entrySet().iterator();
-                while ( su.hasNext() ) {
-                    Map.Entry subject = (Map.Entry)su.next();
-                    int subject_ant = (int) subject.getValue();
-                    String subject_id = (String) subject.getKey();
+                    Iterator su = subjects.entrySet().iterator();
+                    while ( su.hasNext() ) {
+                        Map.Entry subject = (Map.Entry)su.next();
+                        int subject_ant = (int) subject.getValue();
+                        String subject_id = (String) subject.getKey();
 
-                    if( room_kap >= subject_ant && subject_ant * 2 >= room_kap ){
-                        if(checkIfTeacherHasLecture( subject_id ) && checkIfStudyHasLecture( subject_id )) {
-                            updateFields(subject_id);
-                            semesterPlanHandler.uploadToTable(currentWeek, currentDay, room_name, j, subject_id);
-                            su.remove();
-                            break;
+                        if( room_kap >= subject_ant && subject_ant * 2 >= room_kap ){
+                            if(checkIfTeacherHasLecture( subject_id ) && checkIfStudyHasLecture( subject_id )) {
+                                updateFields(subject_id);
+                                semesterPlanHandler.uploadToTable(currentWeek, currentDay, room_name, j, subject_id);
+                                su.remove();
+                                break;
+                            }
                         }
                     }
+                    ro.remove();
                 }
-                ro.remove();
             }
+        } catch (Exception e){
+            throw new Exception("Unable to check if lecture can occur.");
         }
     }
 
@@ -243,7 +255,7 @@ public class RuleController {
      * neccessary calls
      * @param subject
      */
-    private void updateFields(String subject){
+    private void updateFields(String subject) throws Exception {
         executeUpdateQuery("UPDATE subject SET total = total + 1 WHERE subject_id = '" + subject + "'");
         executeUpdateQuery("UPDATE subject SET isInWeek" + currentWeek + " = 1 WHERE subject_id = '" + subject + "'");
         executeUpdateQuery("UPDATE teacher SET isON" + currentDay + " = 1 WHERE id IN (SELECT teacher_id FROM teacher_subject WHERE subject_id = '" + subject + "' )");
@@ -256,7 +268,7 @@ public class RuleController {
      * @return
      * @throws SQLException
      */
-    private boolean checkIfTeacherHasLecture(String subject) {
+    private boolean checkIfTeacherHasLecture(String subject) throws Exception {
         String sql= "SELECT COUNT(*) as total " +
                     "FROM teacher as t " +
                     "JOIN teacher_subject as ts " +
@@ -272,7 +284,7 @@ public class RuleController {
      * @return
      * @throws SQLException
      */
-    private boolean checkIfStudyHasLecture(String subject) {
+    private boolean checkIfStudyHasLecture(String subject) throws Exception {
         String sql= "SELECT COUNT(*) as total " +
                     "FROM field_of_study " +
                     "WHERE isOn" + currentDay + " = 0 AND study_id IN " +
@@ -292,15 +304,14 @@ public class RuleController {
      * @return
      * @throws SQLException
      */
-    private int executeCountQuery(String sql) {
+    private int executeCountQuery(String sql) throws Exception {
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
             if(!res.next()) throw new SQLException();
             return res.getInt("total");
         } catch (SQLException e ){
-            System.out.println("Unable to execute count.");
-            return -1;
+            throw new SQLException("Unable to execute count.");
         }
     }
 

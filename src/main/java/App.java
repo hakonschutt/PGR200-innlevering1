@@ -19,7 +19,7 @@ public class App {
     private boolean canCreateSemesterPlan;
     private boolean hasCreatedSemesterPlan;
 
-    private void start() {
+    private void start() throws Exception {
         boolean filesHaveBeenScanned = checkForPropertyFile() && useOldConnection();
         boolean quit = false;
 
@@ -61,7 +61,7 @@ public class App {
         return new File("data.properties").exists();
     }
 
-    private boolean useOldConnection(){
+    private boolean useOldConnection() throws Exception {
         try (Connection con = connect.getConnection()){
             if(con == null) throw new SQLException();
 
@@ -82,7 +82,7 @@ public class App {
     /**
      * Scans the input files from the input directory
      */
-    private void scanInputFiles() {
+    private void scanInputFiles() throws Exception {
         Inputhandler rf = new Inputhandler();
         rf.startInputScan();
     }
@@ -90,7 +90,7 @@ public class App {
     /**
      * Prints the possible instructions for the method runApp()
      */
-    private boolean printInstructions(){
+    private boolean printInstructions() {
         System.out.println();
         System.out.println("-------------------------------------------");
         System.out.println(String.format("%-10s %-25s", "Command", "Instruction"));
@@ -111,7 +111,7 @@ public class App {
     /**
      * searhFiles lets the user search for entries in the database
      */
-    private boolean searchFiles() {
+    private boolean searchFiles() throws Exception {
         SearchFiles search = new SearchFiles();
         search.main();
 
@@ -121,7 +121,7 @@ public class App {
     /**
      * printTable method is used to prompt the user with table options and print from the selected table
      */
-    private boolean printTable() {
+    private boolean printTable() throws Exception {
         PrintTables pt = new PrintTables();
         pt.main();
 
@@ -131,7 +131,7 @@ public class App {
     /**
      * printPlan method is used to print the semester plan. It initiates the createPlan class
      */
-    private boolean createPlan() {
+    private boolean createPlan() throws Exception {
         CreatePlan createPlan = new CreatePlan();
         createPlan.main();
         hasCreatedSemesterPlan = true;
@@ -145,7 +145,7 @@ public class App {
         return false;
     }
 
-    private boolean printPlan() {
+    private boolean printPlan() throws Exception {
         DBSemesterPlanHandler db = new DBSemesterPlanHandler();
         db.presentAllSemesterData();
         return false;
@@ -155,7 +155,7 @@ public class App {
      * RunApp is the main method in this class. It directs the application to the correct
      * method based on the users input
      */
-    private boolean runApp() {
+    private boolean runApp() throws Exception {
         System.out.print("What command do you want to execute: ");
         String asw = sc.nextLine().trim();
         System.out.println();

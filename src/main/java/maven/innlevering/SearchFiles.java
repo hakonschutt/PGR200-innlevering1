@@ -16,14 +16,14 @@ import java.util.Scanner;
  */
 public class SearchFiles {
     private DBConnect db = new DBConnect();
-    private OutputHandler oh = new OutputHandler();
+    private OutputHandler oh;
     private Scanner sc = new Scanner(System.in);
 
     /**
      * Initiate all necessary methods for the searchFiles class
      * @throws Exception
      */
-    public void main() {
+    public void main() throws Exception {
         try {
             oh = new OutputHandler();
             String[] tables = oh.getAllTables();
@@ -46,7 +46,7 @@ public class SearchFiles {
             String newSql = prepareQuerySearch( tableName, columns[ userColumn - 1 ], columns );
             printTableContent(newSql, columns, searchString );
         } catch (Exception e){
-            System.out.println("Unable to search for content.");
+            throw new Exception("Unable to search for content.");
         }
 
     }
@@ -58,7 +58,7 @@ public class SearchFiles {
      * @return
      * @throws Exception
      */
-    public String[] getAllColumns(String sql, int size) {
+    public String[] getAllColumns(String sql, int size) throws Exception {
         String[] tables = new String[ size ];
 
         try (Connection con = db.getConnection();
@@ -73,7 +73,7 @@ public class SearchFiles {
                 i++;
             } while (res.next());
         } catch (SQLException e){
-            System.out.println("Unable to query for tables.");
+            throw new SQLException("Unable to query for tables.");
         }
         return tables;
     }
@@ -122,7 +122,7 @@ public class SearchFiles {
      * @param columnName
      * @param searchString
      */
-    private void printTableContent(String sql, String[] columnName, String searchString){
+    private void printTableContent(String sql, String[] columnName, String searchString) throws Exception {
         for(int i = 0; i < columnName.length; i++){
             System.out.printf("%-20S", columnName[i]);
         }
@@ -148,7 +148,7 @@ public class SearchFiles {
                 System.out.println();
             } while (rs.next());
         } catch (SQLException e) {
-            System.out.println("Unable to query for table content");
+            throw new SQLException("Unable to query for table content");
         }
         System.out.println();
     }

@@ -22,7 +22,7 @@ public class PrintTables {
      * Using this data to start print method for this class
      * @throws Exception
      */
-    public void main() {
+    public void main() throws Exception {
         try {
             oh = new OutputHandler();
             String[] tables = oh.getAllTables();
@@ -37,7 +37,7 @@ public class PrintTables {
 
             prepareTableQuery(tableName, query, size);
         } catch (Exception e){
-            System.out.println("Unable to print table content.");
+            throw new Exception("Unable to print table content.");
         }
     }
 
@@ -48,7 +48,7 @@ public class PrintTables {
      * @param size
      * @throws Exception
      */
-    private void prepareTableQuery(String tableName, String sql, int size) {
+    private void prepareTableQuery(String tableName, String sql, int size) throws Exception {
         String[] data = new String[ size ];
         String finalSQL = "SELECT";
 
@@ -72,7 +72,7 @@ public class PrintTables {
                 i++;
             } while (res.next());
         } catch (SQLException e ){
-            System.out.println("Unable to execute table query");
+            throw new SQLException("Unable to execute table query");
         }
 
         finalSQL += " FROM " + tableName;
@@ -85,7 +85,7 @@ public class PrintTables {
      * @param sql
      * @param columnName
      */
-    private void printTableContent(String sql, String[] columnName){
+    private void printTableContent(String sql, String[] columnName) throws Exception {
         for(int i = 0; i < columnName.length; i++){
             System.out.printf("%-20S", columnName[i]);
         }
@@ -108,7 +108,7 @@ public class PrintTables {
                 System.out.println();
             } while (res.next());
         } catch (SQLException e) {
-            System.out.println("Unable to print table content.");
+            throw new SQLException("Unable to print table content.");
         }
     }
 }
