@@ -1,6 +1,7 @@
 package maven.innlevering;
 
 import maven.innlevering.database.DBConnection;
+import maven.innlevering.database.DBTableContentHandler;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;
@@ -18,7 +19,7 @@ import java.util.Scanner;
  */
 public class SearchContent {
     private DBConnection db = new DBConnection();
-    private TableContentHandler oh;
+    private DBTableContentHandler oh;
     private Scanner sc = new Scanner(System.in);
 
     /**
@@ -26,7 +27,7 @@ public class SearchContent {
      * @throws Exception
      */
     public void main() throws IOException, SQLException {
-        oh = new TableContentHandler();
+        oh = new DBTableContentHandler();
         String[] tables = oh.getAllTables();
         oh.printTables(tables);
 

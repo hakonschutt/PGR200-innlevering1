@@ -1,6 +1,7 @@
 package maven.innlevering;
 
 import maven.innlevering.database.DBConnection;
+import maven.innlevering.database.DBTableContentHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,13 +15,13 @@ import static org.junit.Assert.assertNotNull;
  */
 public class OutputHandlerTest {
     private Connection con;
-    private TableContentHandler oh;
+    private DBTableContentHandler oh;
     private DBConnection connect;
     Connection connection;
 
     @Before
     public void setUp() throws Exception {
-        oh = new TableContentHandler();
+        oh = new DBTableContentHandler();
         connect = new DBConnection("root", "root", "localhost", "westerdal");
     }
 

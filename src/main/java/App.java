@@ -46,7 +46,6 @@ public class App {
 
         try {
             DBValidationHandler handler = new DBValidationHandler();
-
             hasCreatedSemesterPlan = handler.validateIfSemesterPlanExists();
             canCreateSemesterPlan = handler.validateTables();
         } catch (IOException e){
@@ -68,7 +67,7 @@ public class App {
 
     private boolean useOldConnection() throws IOException, SQLException {
         try (Connection con = connect.getConnection()){
-            if(con == null) throw new SQLException();
+            if(con == null) return false;
 
             System.out.print("Do you want to continue with the old connection(yes/no): ");
             while(true){

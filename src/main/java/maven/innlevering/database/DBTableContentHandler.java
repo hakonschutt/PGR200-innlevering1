@@ -1,4 +1,4 @@
-package maven.innlevering;
+package maven.innlevering.database;
 
 import maven.innlevering.database.DBConnection;
 import java.io.FileInputStream;
@@ -12,11 +12,11 @@ import java.util.Properties;
 import java.util.Scanner;
 
 /**
- * TableContentHandler is used to generate table data.
+ * DBTableContentHandler is used to generate table data.
  * Is is used for ruleController, SearchContent and PrintTable.
  * Created by hakonschutt on 29/09/2017.
  */
-public class TableContentHandler {
+public class DBTableContentHandler {
     private DBConnection db = new DBConnection();
     private String dbName;
     private Scanner sc = new Scanner(System.in);
@@ -25,7 +25,7 @@ public class TableContentHandler {
     /**
      * Basic constructor that sets the database name.
      */
-    public TableContentHandler() throws IOException {
+    public DBTableContentHandler() throws IOException {
         setDbName();
     }
 

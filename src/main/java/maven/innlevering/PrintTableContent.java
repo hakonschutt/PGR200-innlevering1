@@ -1,6 +1,7 @@
 package maven.innlevering;
 
 import maven.innlevering.database.DBConnection;
+import maven.innlevering.database.DBTableContentHandler;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -9,13 +10,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Print table class uses TableContentHandler to get user information about which table to print.
+ * Print table class uses DBTableContentHandler to get user information about which table to print.
  * The class is used to printing the content of a table in the database
  * Created by hakonschutt on 01/10/2017.
  */
 public class PrintTableContent {
     private DBConnection db = new DBConnection();
-    private TableContentHandler oh;
+    private DBTableContentHandler oh;
 
     /**
      * Main method initiate neccassary output methods to receive user data
@@ -23,7 +24,7 @@ public class PrintTableContent {
      * @throws Exception
      */
     public void main() throws IOException, SQLException {
-        oh = new TableContentHandler();
+        oh = new DBTableContentHandler();
         String[] tables = oh.getAllTables();
         oh.printTables(tables);
 

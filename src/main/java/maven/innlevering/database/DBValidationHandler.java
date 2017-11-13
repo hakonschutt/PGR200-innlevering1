@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
-import maven.innlevering.TableContentHandler;
 
 /**
  * Class is used to controll database overwriting and creating.
@@ -58,7 +57,7 @@ public class DBValidationHandler {
      * @return
      */
     public boolean validateIfSemesterPlanExists() throws IOException, SQLException {
-        TableContentHandler oh = new TableContentHandler();
+        DBTableContentHandler oh = new DBTableContentHandler();
         String[] tables = oh.getAllTables();
 
         for(int i = 0; i < tables.length; i++){
@@ -76,7 +75,7 @@ public class DBValidationHandler {
      * @throws Exception
      */
     public boolean validateTables() throws IOException, SQLException {
-        TableContentHandler oh = new TableContentHandler();
+        DBTableContentHandler oh = new DBTableContentHandler();
         String[] tables = oh.getAllTables();
         int total = checkForTables(tables);
 
