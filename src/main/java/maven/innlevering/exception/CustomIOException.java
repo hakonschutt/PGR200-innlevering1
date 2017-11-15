@@ -15,6 +15,8 @@ public class CustomIOException extends IOException {
         switch(exceptionCode){
             case "readProperties":
                 return "Unable to read from property file.";
+            case "readFile":
+                return "Unable to read from given the given file";
             default:
                 return "Unknown IOException";
         }

@@ -1,6 +1,8 @@
 package maven.innlevering.database;
 
-import maven.innlevering.exception.ExceptionHandler;
+import maven.innlevering.exception.CustomFileNotFoundException;
+import maven.innlevering.exception.CustomIOException;
+import maven.innlevering.exception.CustomSQLException;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -30,18 +32,19 @@ public class DBUploadAsThread implements Runnable {
             createQuery(file);
             insertQuery(file);
             System.out.println("Finished importing " + file);
-        } catch (IOException | SQLException e){
-            System.out.println("Unable to finish thread job for " + file);
+        } catch (CustomFileNotFoundException | CustomIOException | CustomSQLException e){
+            System.out.println("Unable to finish import of " + file + ". " + e.getMessage());
         }
     }
 
     /**
      * Creates query to create table from the input file
      * @param fileName
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
-    private void createQuery(String fileName) throws IOException, SQLException {
+    private void createQuery(String fileName) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String file = "input/" + fileName;
         try (BufferedReader in = new BufferedReader(new FileReader(file))){
             String table = in.readLine();
@@ -62,30 +65,36 @@ public class DBUploadAsThread implements Runnable {
             executeCreate(sql);
 
         } catch (FileNotFoundException e){
-            ExceptionHandler.fileException("fileNotFound");
+            throw new CustomFileNotFoundException(CustomFileNotFoundException.getErrorMessage("fileNotFound"));
+        } catch (IOException e){
+            throw new CustomIOException(CustomIOException.getErrorMessage("readFile"));
         }
     }
 
     /**
      * General execute create query that is used to create tables
      * @param sql
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
-    private void executeCreate(String sql) throws IOException, SQLException{
+    private void executeCreate(String sql) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             stmt.executeUpdate(sql);
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("createTableQuery"));
         }
     }
 
     /**
      * Creates insert Query from the current file
      * @param filename
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
-    private void insertQuery(String filename) throws IOException, SQLException {
+    private void insertQuery(String filename) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String file = "input/" + filename;
         try (BufferedReader in = new BufferedReader(new FileReader(file))){
             String db = in.readLine();
@@ -121,7 +130,9 @@ public class DBUploadAsThread implements Runnable {
                 executeInsert(sql, var);
             }
         } catch (FileNotFoundException e) {
-            ExceptionHandler.fileException("fileNotFound");
+            throw new CustomFileNotFoundException(CustomFileNotFoundException.getErrorMessage("fileNotFound"));
+        } catch (IOException e){
+            throw new CustomIOException(CustomIOException.getErrorMessage("readFile"));
         }
     }
 
@@ -129,16 +140,19 @@ public class DBUploadAsThread implements Runnable {
      * Executes insert query for table information.
      * @param sql
      * @param var
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
-    private void executeInsert(String sql, String[] var) throws IOException, SQLException {
+    private void executeInsert(String sql, String[] var) throws CustomFileNotFoundException, CustomIOException, CustomSQLException{
         try (Connection con = db.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             for (int i = 0; i < var.length; i++){
                 ps.setObject(i + 1, var[i]);
             }
             ps.executeUpdate();
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("insertDataToTableQuery"));
         }
     }
 }

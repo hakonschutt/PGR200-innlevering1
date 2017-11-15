@@ -15,6 +15,8 @@ public class CustomFileNotFoundException extends FileNotFoundException {
         switch(exceptionCode){
             case "NoProperty":
                 return "Unable to locate property file. Make sure its not deleted.";
+            case "fileNotFound":
+                return "Unable locate chosen file.";
             default:
                 return "Unknown FileNotFoundException";
         }

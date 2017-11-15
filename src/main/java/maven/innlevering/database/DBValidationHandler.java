@@ -1,6 +1,11 @@
 package maven.innlevering.database;
 
+import maven.innlevering.exception.CustomFileNotFoundException;
+import maven.innlevering.exception.CustomIOException;
+import maven.innlevering.exception.CustomSQLException;
+
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
@@ -17,10 +22,12 @@ public class DBValidationHandler {
      * @param dbName
      * @throws SQLException
      */
-    public void overWriteDatabase( Connection con, String dbName ) throws SQLException {
+    public void overWriteDatabase( Connection con, String dbName ) throws CustomSQLException {
         try ( Statement stmt = con.createStatement() ){
             stmt.executeUpdate("DROP DATABASE " + dbName +  "");
             createDataBase( con, dbName );
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("overwriteDatabase"));
         }
     }
 
@@ -30,9 +37,11 @@ public class DBValidationHandler {
      * @param newDbName
      * @throws SQLException
      */
-    public void createDataBase( Connection con, String newDbName ) throws SQLException {
+    public void createDataBase( Connection con, String newDbName ) throws CustomSQLException {
         try (Statement stmt = con.createStatement()){
             stmt.executeUpdate("CREATE DATABASE " + newDbName +  "");
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("createDatabase"));
         }
     }
 
@@ -43,7 +52,7 @@ public class DBValidationHandler {
      * @return
      * @throws SQLException
      */
-    public boolean validateIfDBExists( Connection con, String databaseName ) throws SQLException {
+    public boolean validateIfDBExists( Connection con, String databaseName ) throws CustomSQLException {
         try (Statement stmt = con.createStatement();
              ResultSet res =
                      stmt.executeQuery(
@@ -51,6 +60,8 @@ public class DBValidationHandler {
                                      + databaseName + "'")){
 
             return res.next();
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("noValidation"));
         }
     }
 
@@ -60,7 +71,7 @@ public class DBValidationHandler {
      * @throws IOException
      * @throws SQLException
      */
-    public boolean validateIfSemesterPlanExists() throws IOException, SQLException {
+    public boolean validateIfSemesterPlanExists() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         DBTableContentHandler oh = new DBTableContentHandler();
         String[] tables = oh.getAllTables();
 
@@ -79,7 +90,7 @@ public class DBValidationHandler {
      * @throws IOException
      * @throws SQLException
      */
-    public boolean validateTables() throws IOException, SQLException {
+    public boolean validateTables() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         DBTableContentHandler oh = new DBTableContentHandler();
         String[] tables = oh.getAllTables();
         int total = checkForTables(tables);
@@ -114,7 +125,7 @@ public class DBValidationHandler {
      * @throws IOException
      * @throws SQLException
      */
-    public void fixForeignKeysForTable(String fileName) throws IOException, SQLException {
+    public void fixForeignKeysForTable(String fileName) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String file = "input/" + fileName;
         
         try (BufferedReader in = new BufferedReader(new FileReader(file))){
@@ -139,6 +150,10 @@ public class DBValidationHandler {
 
                 executeUpdate(sql);
             }
+        } catch (FileNotFoundException e){
+            throw new CustomFileNotFoundException(CustomFileNotFoundException.getErrorMessage("fileNotFound"));
+        } catch (IOException e){
+            throw new CustomIOException(CustomIOException.getErrorMessage("readFile"));
         }
     }
 
@@ -148,11 +163,13 @@ public class DBValidationHandler {
      * @throws IOException
      * @throws SQLException
      */
-    public void executeUpdate(String sql) throws IOException, SQLException {
+    public void executeUpdate(String sql) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         DBConnection db = new DBConnection();
         try (Connection con = db.getConnection();
                 Statement stmt = con.createStatement()){
              stmt.executeUpdate(sql);
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("executeUpdateFK"));
         }
     }
 }

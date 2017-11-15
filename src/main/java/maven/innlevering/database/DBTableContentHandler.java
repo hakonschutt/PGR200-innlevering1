@@ -1,8 +1,12 @@
 package maven.innlevering.database;
 
+import maven.innlevering.exception.CustomFileNotFoundException;
+import maven.innlevering.exception.CustomIOException;
+import maven.innlevering.exception.CustomSQLException;
 import maven.innlevering.exception.ExceptionHandler;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -28,7 +32,7 @@ public class DBTableContentHandler {
      * Basic constructor that sets the database name.
      * @throws IOException
      */
-    public DBTableContentHandler() throws IOException {
+    public DBTableContentHandler() throws CustomFileNotFoundException, CustomIOException {
         setDbName();
     }
 
@@ -41,12 +45,18 @@ public class DBTableContentHandler {
     /**
      * Sets the database name based on property file
      */
-    public void setDbName() throws IOException {
-        Properties properties = new Properties();
+    public void setDbName() throws CustomFileNotFoundException, CustomIOException {
         try (InputStream input = new FileInputStream("data.properties")) {
+            Properties properties = new Properties();
+
             properties.load(input);
 
             this.dbName = properties.getProperty("db");
+
+        } catch (FileNotFoundException e){
+            throw new CustomFileNotFoundException(CustomFileNotFoundException.getErrorMessage("NoProperty"));
+        } catch (IOException e){
+            throw new CustomIOException(CustomIOException.getErrorMessage("readProperties"));
         }
     }
 
@@ -64,7 +74,7 @@ public class DBTableContentHandler {
      * @throws IOException
      * @throws SQLException
      */
-    public String[] getAllTables() throws IOException, SQLException {
+    public String[] getAllTables() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String sql = prepareQuery();
         String[] tables = new String[getCount(getDBCountQuery())];
 
@@ -79,7 +89,10 @@ public class DBTableContentHandler {
                 tables[i] = res.getString(1);
                 i++;
             } while (res.next());
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("queryTables"));
         }
+
         return tables;
     }
 
@@ -90,7 +103,7 @@ public class DBTableContentHandler {
      * @throws IOException
      * @throws SQLException
      */
-    public int getCount(String sql) throws IOException, SQLException {
+    public int getCount(String sql) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
@@ -98,6 +111,8 @@ public class DBTableContentHandler {
                 throw new SQLException("No tables where found");
             }
             return res.getInt("total");
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("count"));
         }
     }
 
@@ -148,7 +163,7 @@ public class DBTableContentHandler {
             try {
                 asw = sc.nextInt();
             } catch (InputMismatchException e){
-                ExceptionHandler.inputException("intMismatch");
+                System.out.println("The input is not av valid integer. Try again.");
                 continue;
             }
 

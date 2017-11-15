@@ -106,9 +106,6 @@ public class ExceptionHandler {
             case "fileNotFound":
                 System.out.println("Unable find chosen file.");
                 break;
-            case "notAbleToRead":
-                System.out.println("Unable to read from given file.");
-                break;
             default:
                 System.out.println("Unknown File exception");
                 break;
