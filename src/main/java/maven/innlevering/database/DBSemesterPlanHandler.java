@@ -1,6 +1,9 @@
 package maven.innlevering.database;
 
 import maven.innlevering.SemesterPresenter;
+import maven.innlevering.exception.CustomFileNotFoundException;
+import maven.innlevering.exception.CustomIOException;
+import maven.innlevering.exception.CustomSQLException;
 
 import java.io.IOException;
 import java.sql.*;
@@ -18,11 +21,13 @@ public class DBSemesterPlanHandler{
      * @throws IOException
      * @throws SQLException
      */
-    public void createTableForSemester() throws IOException, SQLException {
+    public void createTableForSemester() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         dropSemesterTable();
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             stmt.executeUpdate(createTableSQL());
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("createSemester"));
         }
     }
 
@@ -31,12 +36,14 @@ public class DBSemesterPlanHandler{
      * @throws IOException
      * @throws SQLException
      */
-    private void dropSemesterTable() throws IOException, SQLException {
+    private void dropSemesterTable() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String sql = "DROP TABLE IF EXISTS `semester_plan`";
 
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
             stmt.executeUpdate(sql);
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("dropSemester"));
         }
     }
 
@@ -45,7 +52,7 @@ public class DBSemesterPlanHandler{
      * @throws IOException
      * @throws SQLException
      */
-    public void presentAllSemesterData() throws IOException, SQLException {
+    public void presentAllSemesterData() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         SemesterPresenter.presentHeader();
         String sql = getDataQuery();
 
@@ -59,6 +66,8 @@ public class DBSemesterPlanHandler{
                 String teacher = getTeachNameFromID(res.getInt("teacher_id"));
                 SemesterPresenter.presentData(res.getInt("week"), res.getInt("day"), res.getString("room"), res.getInt("block"), res.getString("subject_id"), teacher);
             } while (res.next());
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("querySemester"));
         }
 
         SemesterPresenter.presentFooter();
@@ -102,7 +111,7 @@ public class DBSemesterPlanHandler{
      * @throws IOException
      * @throws SQLException
      */
-    public void uploadToTable(int week, int day, String room_id, int block, String subject_id) throws IOException, SQLException {
+    public void uploadToTable(int week, int day, String room_id, int block, String subject_id) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String sql = insertIntoSemesterPlanerQuery();
         int teacher_id = getTeacherIdBySubjectId(subject_id);
 
@@ -116,6 +125,8 @@ public class DBSemesterPlanHandler{
             ps.setInt(6, teacher_id);
 
             ps.executeUpdate();
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("uploadSemester"));
         }
     }
 
@@ -137,7 +148,7 @@ public class DBSemesterPlanHandler{
      * @throws IOException
      * @throws SQLException
      */
-    public String getTeachNameFromID(int teacher_id) throws IOException, SQLException {
+    public String getTeachNameFromID(int teacher_id) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String sql = getTeacherNameFromIdQuery(teacher_id);
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
@@ -148,6 +159,8 @@ public class DBSemesterPlanHandler{
             do {
                 return res.getString(1);
             } while (res.next());
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("teacher"));
         }
     }
 
@@ -158,7 +171,7 @@ public class DBSemesterPlanHandler{
      * @throws IOException
      * @throws SQLException
      */
-    public int getTeacherIdBySubjectId(String subjectID) throws IOException, SQLException {
+    public int getTeacherIdBySubjectId(String subjectID) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String sql = getTeacherIdQuery(subjectID);
         try (Connection con = db.getConnection();
              Statement stmt = con.createStatement()) {
@@ -169,6 +182,8 @@ public class DBSemesterPlanHandler{
             do {
                 return res.getInt(1);
             } while (res.next());
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("teacher"));
         }
     }
 

@@ -1,13 +1,12 @@
 package maven.innlevering.database;
 
+import maven.innlevering.exception.CustomIOException;
 import maven.innlevering.exception.CustomSQLException;
-import maven.innlevering.exception.ExceptionHandler;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Properties;
 import java.util.Scanner;
@@ -36,8 +35,8 @@ public class ValidateUserConnection {
 
         try{
             writeProperties();
-        } catch (IOException e){
-            ExceptionHandler.ioException("writeProperties");
+        } catch (CustomIOException e){
+            System.out.println(e.getMessage());
         }
 
         return hasScanned;
@@ -65,7 +64,7 @@ public class ValidateUserConnection {
      * Writing user input to property file AFTER checking if the connection works with database
      * @throws IOException
      */
-    private void writeProperties() throws IOException {
+    private void writeProperties() throws CustomIOException {
         Properties properties = new Properties();
         try (OutputStream outputStream = new FileOutputStream("data.properties")) {
             properties.setProperty("user", connect.getUser());
@@ -74,6 +73,8 @@ public class ValidateUserConnection {
             properties.setProperty("db", connect.getDbName());
 
             properties.store(outputStream, null);
+        } catch (IOException e){
+            throw new CustomIOException(CustomIOException.getErrorMessage("writeProperties"));
         }
     }
 
@@ -85,16 +86,16 @@ public class ValidateUserConnection {
     private boolean connectToDatabase( String[] dbInfo ) {
         connect = new DBConnection(dbInfo[0], dbInfo[1], dbInfo[2], dbInfo[3]);
 
-        try (Connection con = connect.verifyConnectionWithUserInput(false )){
+        try {
+            Connection con = connect.verifyConnectionWithUserInput(false );
             boolean dbExists = handler.validateIfDBExists(con, dbInfo[3]);
 
             if(!dbExists){
 
                 try {
                     handler.createDataBase(con, dbInfo[3]);
-                } catch (SQLException e) {
-                    throw new CustomSQLException("createDatabase");
-                    //ExceptionHandler.sqlException("createDatabase");
+                } catch (CustomSQLException e) {
+                    System.out.println(e.getMessage());
                 }
                 System.out.println("Creating database: " + dbInfo[3]);
 
@@ -103,8 +104,8 @@ public class ValidateUserConnection {
             }
             return true;
 
-        } catch (SQLException e){
-            ExceptionHandler.sqlException("wrongDBInformation");
+        } catch (CustomSQLException e) {
+            System.out.println(e.getMessage());
         }
 
         System.out.print("Try again: ");
@@ -132,7 +133,7 @@ public class ValidateUserConnection {
         try {
             asw = sc.nextInt();
         } catch (InputMismatchException e){
-            ExceptionHandler.inputException("intMismatch");
+            System.out.println("The input is not av valid integer.");
         }
 
         switch(asw){
@@ -147,8 +148,8 @@ public class ValidateUserConnection {
                 try {
                     handler.overWriteDatabase( con, dbName );
                     System.out.print( "Overwriting database " + dbName );
-                } catch (SQLException e){
-                    ExceptionHandler.sqlException("overwriteDatabase");
+                } catch (CustomSQLException e){
+                    System.out.println(e.getMessage());
                 }
                 break;
             default:
@@ -171,8 +172,8 @@ public class ValidateUserConnection {
         boolean dbExists = false;
         try {
             dbExists = handler.validateIfDBExists( con, newDbName );
-        } catch (SQLException e){
-            ExceptionHandler.sqlException("noValidation");
+        } catch (CustomSQLException e){
+            System.out.println(e.getMessage());
         }
 
 
@@ -180,8 +181,8 @@ public class ValidateUserConnection {
             try {
                 handler.createDataBase( con, newDbName );
                 System.out.print( "Creating database: " + newDbName );
-            } catch (SQLException e){
-                ExceptionHandler.sqlException("createDatabase");
+            } catch (CustomSQLException e){
+                System.out.println(e.getMessage());
             }
             connect.setDbName( newDbName );
         } else {

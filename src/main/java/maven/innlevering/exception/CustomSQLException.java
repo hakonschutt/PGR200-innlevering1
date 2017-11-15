@@ -29,6 +29,16 @@ public class CustomSQLException extends SQLException {
                 return "Unable to query for count to construct content";
             case "overwriteDatabase":
                 return "Unable to overwrite the current database";
+            case "dropSemester":
+                return "Unable to delete current semester table";
+            case "createSemester":
+                return "Unable to create new semester table";
+            case "querySemester":
+                return "Unable to retrieve semester plan information.";
+            case "uploadSemester":
+                return "Unable to upload new semester details.";
+            case "teacher":
+                return "Unable to get teacher information";
             case "createDatabase":
                 return "Unable to create the given database";
             case "noValidation":
