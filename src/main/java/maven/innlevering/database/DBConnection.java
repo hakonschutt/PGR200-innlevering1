@@ -1,6 +1,9 @@
 package maven.innlevering.database;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import com.sun.tools.internal.ws.processor.generator.CustomExceptionGenerator;
+import maven.innlevering.exception.CustomFileNotFoundException;
+import maven.innlevering.exception.CustomIOException;
 import maven.innlevering.exception.CustomSQLException;
 
 import java.io.FileInputStream;
@@ -51,24 +54,22 @@ public class DBConnection {
      * @return
      * @throws SQLException
      */
-    public Connection verifyConnectionWithUserInput(boolean withDatabaseConnection) throws SQLException {
-        MysqlDataSource ds = new MysqlDataSource();
+    public Connection verifyConnectionWithUserInput(boolean withDatabaseConnection) throws CustomSQLException {
+        try {
+            MysqlDataSource ds = new MysqlDataSource();
 
-        if(withDatabaseConnection)
-            ds.setDatabaseName(this.dbName);
+            if(withDatabaseConnection)
+                ds.setDatabaseName(this.dbName);
 
-        ds.setServerName(this.host);
-        ds.setUser(this.user);
-        ds.setPassword(this.pass);
-        Connection connect = ds.getConnection();
+            ds.setServerName(this.host);
+            ds.setUser(this.user);
+            ds.setPassword(this.pass);
+            Connection connect = ds.getConnection();
 
-        return connect;
-
-        /*try {
-
+            return connect;
         } catch (SQLException e){
-            throw new CustomSQLException(CustomSQLException.getErrorMessage("createDatabase"));
-        }*/
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("userConnection"));
+        }
     }
 
     /**
@@ -77,7 +78,7 @@ public class DBConnection {
      * @throws IOException
      * @throws SQLException
      */
-    public Connection getConnection() throws IOException, SQLException {
+    public Connection getConnection() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         Properties properties = new Properties();
         try (InputStream input = new FileInputStream("data.properties")) {
             MysqlDataSource ds = new MysqlDataSource();
@@ -92,7 +93,11 @@ public class DBConnection {
 
             return connect;
         } catch (FileNotFoundException e){
-            throw new FileNotFoundException("Not able to locate property file");
+            throw new CustomFileNotFoundException(CustomFileNotFoundException.getErrorMessage("NoProperty"));
+        } catch (IOException e){
+            throw new CustomIOException(CustomIOException.getErrorMessage("readProperties"));
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("connection"));
         }
     }
 
