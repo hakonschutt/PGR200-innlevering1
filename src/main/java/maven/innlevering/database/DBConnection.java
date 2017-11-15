@@ -1,6 +1,8 @@
 package maven.innlevering.database;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import maven.innlevering.exception.CustomSQLException;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.util.Properties;
 
 /**
  * Main Connection class. All classes implements this classes getConnection.
+ *
  * Created by hakonschutt on 27/09/2017.
  */
 public class DBConnection {
@@ -27,7 +30,7 @@ public class DBConnection {
 
     /**
      * Second constructor that lets the user set custom user, pass, host and dbname.
-     * Primarily used for testing.
+     * Primarily used for verifying user connection before writing properties.
      * @param user
      * @param pass
      * @param host
@@ -57,14 +60,19 @@ public class DBConnection {
         ds.setServerName(this.host);
         ds.setUser(this.user);
         ds.setPassword(this.pass);
-
         Connection connect = ds.getConnection();
 
         return connect;
+
+        /*try {
+
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("createDatabase"));
+        }*/
     }
 
     /**
-     * runDbValidation getConnection class. Used throughout the program to get the database connection
+     * DBConnection getConnection. Used throughout the program to get the database connection
      * @return
      * @throws IOException
      * @throws SQLException
@@ -88,36 +96,11 @@ public class DBConnection {
         }
     }
 
-    /**
-     * Returns username for database connection
-     * @return
-     */
     public String getUser() { return user; }
-
-    /**
-     * Returns password for database connection
-     * @return
-     */
     public String getPass() { return pass; }
-
-    /**
-     * Returns host name for database connection
-     * @return
-     */
     public String getHost() { return host; }
-
-    /**
-     * Returns database name within current connection
-     * @return
-     */
     public String getDbName() {
         return dbName;
     }
-
-    /**
-     * Set the current database
-     * This is only used in testing.
-     * @param dbName
-     */
     public void setDbName(String dbName) { this.dbName = dbName; }
 }

@@ -1,5 +1,6 @@
 package maven.innlevering.database;
 
+import maven.innlevering.exception.CustomSQLException;
 import maven.innlevering.exception.ExceptionHandler;
 
 import java.io.FileOutputStream;
@@ -92,7 +93,8 @@ public class ValidateUserConnection {
                 try {
                     handler.createDataBase(con, dbInfo[3]);
                 } catch (SQLException e) {
-                    ExceptionHandler.sqlException("createDatabase");
+                    throw new CustomSQLException("createDatabase");
+                    //ExceptionHandler.sqlException("createDatabase");
                 }
                 System.out.println("Creating database: " + dbInfo[3]);
 

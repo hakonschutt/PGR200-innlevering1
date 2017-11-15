@@ -23,7 +23,7 @@ You are able to do some operations when connection to a database without the nec
 The program is coded extremely dynamic. This lets you add as meny columns as you want, and the program will still run 
  
 Here are the main promp for the program. This is the instructions allowed in the program. 
-If the necessary tables are not present create and semester wont be an option. The semester command will not be present until after you have initiated the create command and finished the process. 
+If the necessary tables are not present, create and semester wont be an option. The semester command will not be present until after you have initiated the create command and finished the process. 
  
     -------------------------------------------
     Command    Instruction              

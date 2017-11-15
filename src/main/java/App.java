@@ -3,6 +3,7 @@ import maven.innlevering.database.DBValidationHandler;
 import maven.innlevering.database.ValidateUserConnection;
 import maven.innlevering.database.DBConnection;
 import maven.innlevering.database.DBSemesterPlanHandler;
+import maven.innlevering.exception.CustomSQLException;
 import maven.innlevering.exception.ExceptionHandler;
 
 import java.io.File;
@@ -105,7 +106,6 @@ public class App {
         } catch (SQLException e){
             ExceptionHandler.sqlException("upload");
         }
-
     }
 
     /**
