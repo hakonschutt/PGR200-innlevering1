@@ -21,10 +21,9 @@ import static org.junit.Assert.assertEquals;
  * Created by hakonschutt on 16/11/2017.
  */
 public class DBConnectionTest {
-    @Before
-    public void setUp() throws Exception {
 
-    }
+    @Before
+    public void setUp() throws Exception {}
 
     @After
     public void tearDown() throws Exception {}
