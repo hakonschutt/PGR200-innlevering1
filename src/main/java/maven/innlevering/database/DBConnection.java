@@ -1,7 +1,6 @@
 package maven.innlevering.database;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
-import com.sun.tools.internal.ws.processor.generator.CustomExceptionGenerator;
 import maven.innlevering.exception.CustomFileNotFoundException;
 import maven.innlevering.exception.CustomIOException;
 import maven.innlevering.exception.CustomSQLException;
