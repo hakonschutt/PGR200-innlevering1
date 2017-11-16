@@ -17,7 +17,6 @@ public class OutputHandlerTest {
     private Connection con;
     private DBTableContentHandler oh;
     private DBConnection connect;
-    Connection connection;
 
     @Before
     public void setUp() throws Exception {
@@ -27,20 +26,6 @@ public class OutputHandlerTest {
 
     @After
     public void tearDown() throws Exception {}
-
-    @Test
-    public void checkConnection() throws Exception {
-        Connection con = connect.verifyConnectionWithUserInput(true);
-
-        assertNotNull(con);
-    }
-
-    @Test
-    public void checkConnectionWithoutDatabase() throws Exception {
-        Connection con = connect.verifyConnectionWithUserInput(false);
-
-        assertNotNull(con);
-    }
 
     @Test
     public void testGetAlleTables() throws Exception {
@@ -54,11 +39,7 @@ public class OutputHandlerTest {
     public void testGetCount() throws Exception {
         String sql = "SELECT COUNT(*) as total FROM room";
 
-        try {
-            assertEquals(oh.getCount(sql), 4);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        assertEquals(oh.getCount(sql), 4);
     }
 
     @Test

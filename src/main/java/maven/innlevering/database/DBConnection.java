@@ -89,9 +89,8 @@ public class DBConnection {
             ds.setUser(properties.getProperty("user"));
             ds.setPassword(properties.getProperty("pass"));
 
-            Connection connect = ds.getConnection();
+            return ds.getConnection();
 
-            return connect;
         } catch (FileNotFoundException e){
             throw new CustomFileNotFoundException(CustomFileNotFoundException.getErrorMessage("NoProperty"));
         } catch (IOException e){
