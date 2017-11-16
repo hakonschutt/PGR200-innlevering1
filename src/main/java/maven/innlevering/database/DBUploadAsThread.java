@@ -19,6 +19,9 @@ public class DBUploadAsThread implements Runnable {
     private String file;
     private DBConnection db = new DBConnection();
 
+    //Used for testing.
+    public DBUploadAsThread() {}
+
     public DBUploadAsThread(String file) {
         this.file = file;
     }
@@ -44,7 +47,7 @@ public class DBUploadAsThread implements Runnable {
      * @throws CustomIOException
      * @throws CustomSQLException
      */
-    private void createQuery(String fileName) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
+    public void createQuery(String fileName) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String file = "input/" + fileName;
         try (BufferedReader in = new BufferedReader(new FileReader(file))){
             String table = in.readLine();
@@ -94,7 +97,7 @@ public class DBUploadAsThread implements Runnable {
      * @throws CustomIOException
      * @throws CustomSQLException
      */
-    private void insertQuery(String filename) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
+    public void insertQuery(String filename) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String file = "input/" + filename;
         try (BufferedReader in = new BufferedReader(new FileReader(file))){
             String db = in.readLine();

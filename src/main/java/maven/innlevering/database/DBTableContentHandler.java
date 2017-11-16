@@ -112,7 +112,7 @@ public class DBTableContentHandler {
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
             if(!res.next()) {
-                throw new SQLException("No tables where found");
+                return 0;
             }
             return res.getInt("total");
         } catch (SQLException e){

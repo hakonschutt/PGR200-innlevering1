@@ -24,7 +24,7 @@ public class DBValidationHandler {
      */
     public void overWriteDatabase( Connection con, String dbName ) throws CustomSQLException {
         try ( Statement stmt = con.createStatement() ){
-            stmt.executeUpdate("DROP DATABASE " + dbName +  "");
+            stmt.executeUpdate("DROP DATABASE IF EXISTS " + dbName +  "");
             createDataBase( con, dbName );
         } catch (SQLException e){
             throw new CustomSQLException(CustomSQLException.getErrorMessage("overwriteDatabase"));
