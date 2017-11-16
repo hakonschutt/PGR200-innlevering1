@@ -7,8 +7,6 @@ import maven.innlevering.exception.CustomIOException;
 import maven.innlevering.exception.CustomSQLException;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -66,7 +64,7 @@ public class FileUploadHandler {
      * Retrieves all files from input directory
      * @return
      */
-    private String[] getAllFiles() {
+    public String[] getAllFiles() {
         File folder = new File("input/");
         File[] orgFile = folder.listFiles();
         String[] files = new String[orgFile.length];
