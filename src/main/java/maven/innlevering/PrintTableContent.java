@@ -24,8 +24,9 @@ public class PrintTableContent {
     /**
      * Main method initiate neccassary output methods to receive user data
      * Using this data to start print method for this class
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public void main() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         tableHandler = new DBTableContentHandler();
@@ -47,8 +48,9 @@ public class PrintTableContent {
      * @param tableName
      * @param sql
      * @param size
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     private void prepareTableQuery(String tableName, String sql, int size) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String[] data = new String[ size ];
@@ -86,8 +88,9 @@ public class PrintTableContent {
      * Print the content of the table based on sql parsed over, and column names received from outputHandler
      * @param sql
      * @param columnName
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     private void printTableContent(String sql, String[] columnName) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         for(int i = 0; i < columnName.length; i++){

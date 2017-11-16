@@ -52,7 +52,7 @@ public class DBConnection {
      * It tests if it can access the database with the user information.
      * @param withDatabaseConnection
      * @return
-     * @throws SQLException
+     * @throws CustomSQLException
      */
     public Connection verifyConnectionWithUserInput(boolean withDatabaseConnection) throws CustomSQLException {
         try {
@@ -75,8 +75,9 @@ public class DBConnection {
     /**
      * DBConnection getConnection. Used throughout the program to get the database connection
      * @return
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public Connection getConnection() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         Properties properties = new Properties();

@@ -6,10 +6,8 @@ import maven.innlevering.database.DBSemesterPlanHandler;
 import maven.innlevering.exception.CustomFileNotFoundException;
 import maven.innlevering.exception.CustomIOException;
 import maven.innlevering.exception.CustomSQLException;
-import maven.innlevering.exception.ExceptionHandler;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -29,11 +27,12 @@ public class App {
      * Initial app method that initiates the entire program.
      */
     private void start() {
+
         boolean filesHaveBeenScanned = false;
         try {
             filesHaveBeenScanned = checkForPropertyFile() && useOldConnection();
         } catch ( CustomFileNotFoundException | CustomIOException | CustomSQLException e ){
-            ExceptionHandler.sqlException("outdatedConnection");
+            System.out.println(e.getMessage());
         }
 
         boolean quit = false;
@@ -78,8 +77,9 @@ public class App {
     /**
      * Checks if the program can run using the connection in the existing property file.
      * @return
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     private boolean useOldConnection() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         try (Connection con = connect.getConnection()){

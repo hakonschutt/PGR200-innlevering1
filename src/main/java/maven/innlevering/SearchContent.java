@@ -27,8 +27,9 @@ public class SearchContent {
 
     /**
      * Initiate all necessary methods for the searchFiles class
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public void main() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         tableHandler = new DBTableContentHandler();
@@ -58,8 +59,9 @@ public class SearchContent {
      * @param sql
      * @param size
      * @return
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public String[] getAllColumns(String sql, int size) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String[] tables = new String[ size ];
@@ -125,8 +127,9 @@ public class SearchContent {
      * @param sql
      * @param columnName
      * @param searchString
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     private void printTableContent(String sql, String[] columnName, String searchString) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         for(int i = 0; i < columnName.length; i++){

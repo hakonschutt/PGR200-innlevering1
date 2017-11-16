@@ -19,8 +19,9 @@ public class SemesterCreator {
     /**
      * Calles the necessary methods to evaulate if the user is connected to the correct database
      * @return
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public boolean main() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         setSemester();

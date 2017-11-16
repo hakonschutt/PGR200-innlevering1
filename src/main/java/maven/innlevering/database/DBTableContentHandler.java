@@ -3,7 +3,6 @@ package maven.innlevering.database;
 import maven.innlevering.exception.CustomFileNotFoundException;
 import maven.innlevering.exception.CustomIOException;
 import maven.innlevering.exception.CustomSQLException;
-import maven.innlevering.exception.ExceptionHandler;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -30,7 +29,8 @@ public class DBTableContentHandler {
 
     /**
      * Basic constructor that sets the database name.
-     * @throws IOException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
      */
     public DBTableContentHandler() throws CustomFileNotFoundException, CustomIOException {
         setDbName();
@@ -44,6 +44,8 @@ public class DBTableContentHandler {
 
     /**
      * Sets the database name based on property file
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
      */
     public void setDbName() throws CustomFileNotFoundException, CustomIOException {
         try (InputStream input = new FileInputStream("data.properties")) {
@@ -71,8 +73,9 @@ public class DBTableContentHandler {
     /**
      * Method is used to return all tables in a String array format
      * @return
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public String[] getAllTables() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String sql = prepareQuery();
@@ -100,8 +103,9 @@ public class DBTableContentHandler {
      * Method is used to get count of a query. It is used to set array sizes throughout the program
      * @param sql
      * @return
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public int getCount(String sql) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         try (Connection con = db.getConnection();

@@ -62,7 +62,7 @@ public class ValidateUserConnection {
 
     /**
      * Writing user input to property file AFTER checking if the connection works with database
-     * @throws IOException
+     * @throws CustomIOException
      */
     private void writeProperties() throws CustomIOException {
         Properties properties = new Properties();

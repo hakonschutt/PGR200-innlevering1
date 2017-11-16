@@ -20,7 +20,7 @@ public class DBValidationHandler {
      * Deletes the database if the user wants to overwrite the current database
      * @param con
      * @param dbName
-     * @throws SQLException
+     * @throws CustomSQLException
      */
     public void overWriteDatabase( Connection con, String dbName ) throws CustomSQLException {
         try ( Statement stmt = con.createStatement() ){
@@ -35,7 +35,7 @@ public class DBValidationHandler {
      * Creates a new database if the user has entered a new database name or want to overwrite the current database
      * @param con
      * @param newDbName
-     * @throws SQLException
+     * @throws CustomSQLException
      */
     public void createDataBase( Connection con, String newDbName ) throws CustomSQLException {
         try (Statement stmt = con.createStatement()){
@@ -50,7 +50,7 @@ public class DBValidationHandler {
      * @param con
      * @param databaseName
      * @return
-     * @throws SQLException
+     * @throws CustomSQLException
      */
     public boolean validateIfDBExists( Connection con, String databaseName ) throws CustomSQLException {
         try (Statement stmt = con.createStatement();
@@ -68,8 +68,9 @@ public class DBValidationHandler {
     /**
      * Validates if the database contain a semester plan table.
      * @return
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public boolean validateIfSemesterPlanExists() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         DBTableContentHandler oh = new DBTableContentHandler();
@@ -87,8 +88,9 @@ public class DBValidationHandler {
     /**
      * Method validates if tables used in semester planing is present in database
      * @return
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public boolean validateTables() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         DBTableContentHandler oh = new DBTableContentHandler();
@@ -122,8 +124,9 @@ public class DBValidationHandler {
     /**
      * Fixes foreign keys on table so everything works after thread has run the upload.
      * @param fileName
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public void fixForeignKeysForTable(String fileName) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String file = "input/" + fileName;
@@ -160,8 +163,9 @@ public class DBValidationHandler {
     /**
      * Executes the alter that fixes the foreign key issue.
      * @param sql
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public void executeUpdate(String sql) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         DBConnection db = new DBConnection();

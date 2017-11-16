@@ -2,6 +2,11 @@ package maven.innlevering.exception;
 
 /**
  * Exception handler class with static methods that can be thrown throughout the program.
+ * This is the old Exception class. It is kept in the program til illistrate an alternativ method of exception handling
+ *
+ * This case run on the client side completely. This made all the exception messages extremely inaccurate.
+ *
+ * The current method producess 100% custom messages based on where the exception is thrown
  *
  * Created by hakonschutt on 13/11/2017.
  */

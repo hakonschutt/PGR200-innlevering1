@@ -4,8 +4,6 @@ import maven.innlevering.SemesterPresenter;
 import maven.innlevering.exception.CustomFileNotFoundException;
 import maven.innlevering.exception.CustomIOException;
 import maven.innlevering.exception.CustomSQLException;
-
-import java.io.IOException;
 import java.sql.*;
 
 /**
@@ -18,8 +16,9 @@ public class DBSemesterPlanHandler{
 
     /**
      * Creates semester plan table from semester plan query.
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public void createTableForSemester() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         dropSemesterTable();
@@ -33,8 +32,9 @@ public class DBSemesterPlanHandler{
 
     /**
      * Drops semester plan table if it exists.
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     private void dropSemesterTable() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String sql = "DROP TABLE IF EXISTS `semester_plan`";
@@ -49,8 +49,9 @@ public class DBSemesterPlanHandler{
 
     /**
      * Prints all semester plan data to the console.
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public void presentAllSemesterData() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         SemesterPresenter.presentHeader();
@@ -108,8 +109,9 @@ public class DBSemesterPlanHandler{
      * @param room_id
      * @param block
      * @param subject_id
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public void uploadToTable(int week, int day, String room_id, int block, String subject_id) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String sql = insertIntoSemesterPlanerQuery();
@@ -145,8 +147,9 @@ public class DBSemesterPlanHandler{
      * Method returns a teacher name from the teacher id
      * @param teacher_id
      * @return
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public String getTeachNameFromID(int teacher_id) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String sql = getTeacherNameFromIdQuery(teacher_id);
@@ -168,8 +171,9 @@ public class DBSemesterPlanHandler{
      * Method returns a teacher id from the subject id input.
      * @param subjectID
      * @return
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public int getTeacherIdBySubjectId(String subjectID) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String sql = getTeacherIdQuery(subjectID);

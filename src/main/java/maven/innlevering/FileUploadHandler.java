@@ -5,7 +5,6 @@ import maven.innlevering.database.DBUploadAsThread;
 import maven.innlevering.exception.CustomFileNotFoundException;
 import maven.innlevering.exception.CustomIOException;
 import maven.innlevering.exception.CustomSQLException;
-import maven.innlevering.exception.ExceptionHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,10 +16,12 @@ import java.util.ArrayList;
  * Created by hakonschutt on 26/09/2017.
  */
 public class FileUploadHandler {
+
     /**
      * Method initiate the thread job
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public void startInputScan() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String[] files = getAllFiles();
@@ -49,8 +50,9 @@ public class FileUploadHandler {
     /**
      * Alter tables and uploads foreign keys from text file after thread has run.
      * @param files
-     * @throws IOException
-     * @throws SQLException
+     * @throws CustomFileNotFoundException
+     * @throws CustomIOException
+     * @throws CustomSQLException
      */
     public void uploadForeignKeys(String[] files) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         DBValidationHandler handler = new DBValidationHandler();
