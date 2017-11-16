@@ -33,7 +33,7 @@ public class PrintTableContent {
         String[] tables = tableHandler.getAllTables();
         tableHandler.printTables(tables);
 
-        System.out.println("Which table do you want to search from?");
+        System.out.println("Which table do you want to print?");
         int userInput = tableHandler.userChoice(tables.length);
 
         String tableName = tableHandler.prepareTable( tables, userInput );

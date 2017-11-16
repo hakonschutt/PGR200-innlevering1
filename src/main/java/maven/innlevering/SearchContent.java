@@ -91,10 +91,7 @@ public class SearchContent {
      */
     private String userSearchString(String columnName){
         System.out.print("Search in " + columnName + ": ");
-        String searchString = sc.nextLine();
-        System.out.println();
-
-        return searchString;
+        return sc.nextLine();
     }
 
     /**

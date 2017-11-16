@@ -165,7 +165,8 @@ public class DBTableContentHandler {
             int asw = 0;
 
             try {
-                asw = sc.nextInt();
+                String temp = sc.nextLine();
+                asw = Integer.parseInt(temp);
             } catch (InputMismatchException e){
                 System.out.println("The input is not av valid integer. Try again.");
                 continue;

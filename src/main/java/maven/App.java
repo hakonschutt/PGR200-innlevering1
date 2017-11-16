@@ -198,7 +198,7 @@ public class App {
      * method based on the users input
      * @return
      */
-    private boolean runApp() {
+    public boolean runApp() {
         System.out.print("What command do you want to execute: ");
         String asw = sc.nextLine().trim();
         System.out.println();
