@@ -1,27 +1,21 @@
 package maven.innlevering;
 
-import maven.innlevering.database.DBConnection;
 import maven.innlevering.database.DBTableContentHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import java.sql.Connection;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 
 /**
  * Created by hakonschutt on 02/10/2017.
  */
 public class OutputHandlerTest {
-    private Connection con;
     private DBTableContentHandler oh;
-    private DBConnection connect;
 
     @Before
     public void setUp() throws Exception {
         oh = new DBTableContentHandler();
-        connect = new DBConnection("root", "root", "localhost", "westerdal");
     }
 
     @After

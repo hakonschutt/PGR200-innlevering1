@@ -36,7 +36,7 @@ public class DBSemesterPlanHandler{
      * @throws CustomIOException
      * @throws CustomSQLException
      */
-    private void dropSemesterTable() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
+    public void dropSemesterTable() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String sql = "DROP TABLE IF EXISTS `semester_plan`";
 
         try (Connection con = db.getConnection();
@@ -79,7 +79,7 @@ public class DBSemesterPlanHandler{
      * Returns a get data query for printing out database content from semester plan.
      * @return
      */
-    public String getDataQuery(){
+    private String getDataQuery(){
         return "SELECT week, day, room, block, subject_id, teacher_id FROM semester_plan";
     }
 
@@ -87,7 +87,7 @@ public class DBSemesterPlanHandler{
      * Returns a create semester plan table query.
      * @return
      */
-    public String createTableSQL(){
+    private String createTableSQL(){
         String sql = "CREATE TABLE `semester_plan` (" +
                     "`week` int(2) unsigned NOT NULL," +
                     "`day` int(1) NOT NULL," +
