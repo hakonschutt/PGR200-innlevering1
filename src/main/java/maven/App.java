@@ -27,7 +27,7 @@ public class App {
     /**
      * Initial app method that initiates the entire program.
      */
-    private void start() {
+    public void start() {
 
         boolean filesHaveBeenScanned = false;
         try {
