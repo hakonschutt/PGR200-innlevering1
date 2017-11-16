@@ -1,5 +1,9 @@
 package maven.innlevering;
 
+import maven.innlevering.exception.CustomFileNotFoundException;
+import maven.innlevering.exception.CustomIOException;
+import maven.innlevering.exception.CustomSQLException;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -18,7 +22,7 @@ public class SemesterCreator {
      * @throws IOException
      * @throws SQLException
      */
-    public boolean main() throws IOException, SQLException {
+    public boolean main() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         setSemester();
         rc.startSemesterPlan();
         return true;

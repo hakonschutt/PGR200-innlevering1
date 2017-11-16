@@ -2,6 +2,9 @@ package maven.innlevering;
 
 import maven.innlevering.database.DBValidationHandler;
 import maven.innlevering.database.DBUploadAsThread;
+import maven.innlevering.exception.CustomFileNotFoundException;
+import maven.innlevering.exception.CustomIOException;
+import maven.innlevering.exception.CustomSQLException;
 import maven.innlevering.exception.ExceptionHandler;
 
 import java.io.File;
@@ -19,7 +22,7 @@ public class FileUploadHandler {
      * @throws IOException
      * @throws SQLException
      */
-    public void startInputScan() throws IOException, SQLException {
+    public void startInputScan() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String[] files = getAllFiles();
         Thread[] threads = new Thread[files.length];
 
@@ -30,10 +33,11 @@ public class FileUploadHandler {
         }
 
         try {
-            for (int i = 0; i < threads.length; i++)
+            for (int i = 0; i < threads.length; i++){
                 threads[i].join();
+            }
         } catch (InterruptedException e) {
-            ExceptionHandler.interruptException("threadJoin");
+            System.out.println("Unable to join threads from upload.");
         }
 
         uploadForeignKeys(files);
@@ -48,7 +52,7 @@ public class FileUploadHandler {
      * @throws IOException
      * @throws SQLException
      */
-    public void uploadForeignKeys(String[] files) throws IOException, SQLException {
+    public void uploadForeignKeys(String[] files) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         DBValidationHandler handler = new DBValidationHandler();
 
         for (int i = 0; i < files.length; i++)

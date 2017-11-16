@@ -2,6 +2,9 @@ package maven.innlevering;
 
 import maven.innlevering.database.DBConnection;
 import maven.innlevering.database.DBTableContentHandler;
+import maven.innlevering.exception.CustomFileNotFoundException;
+import maven.innlevering.exception.CustomIOException;
+import maven.innlevering.exception.CustomSQLException;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -24,7 +27,7 @@ public class PrintTableContent {
      * @throws IOException
      * @throws SQLException
      */
-    public void main() throws IOException, SQLException {
+    public void main() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         tableHandler = new DBTableContentHandler();
         String[] tables = tableHandler.getAllTables();
         tableHandler.printTables(tables);
@@ -47,7 +50,7 @@ public class PrintTableContent {
      * @throws IOException
      * @throws SQLException
      */
-    private void prepareTableQuery(String tableName, String sql, int size) throws IOException, SQLException {
+    private void prepareTableQuery(String tableName, String sql, int size) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String[] data = new String[ size ];
         String finalSQL = "SELECT";
 
@@ -70,6 +73,8 @@ public class PrintTableContent {
 
                 i++;
             } while (res.next());
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("prepareQuery"));
         }
 
         finalSQL += " FROM " + tableName;
@@ -84,7 +89,7 @@ public class PrintTableContent {
      * @throws IOException
      * @throws SQLException
      */
-    private void printTableContent(String sql, String[] columnName) throws IOException, SQLException {
+    private void printTableContent(String sql, String[] columnName) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         for(int i = 0; i < columnName.length; i++){
             System.out.printf("%-20S", columnName[i]);
         }
@@ -107,7 +112,7 @@ public class PrintTableContent {
                 System.out.println();
             } while (res.next());
         } catch (SQLException e) {
-            throw new SQLException("Unable to print table content.");
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("printTable"));
         }
     }
 }

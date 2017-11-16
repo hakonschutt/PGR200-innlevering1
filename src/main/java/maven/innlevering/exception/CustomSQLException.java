@@ -27,6 +27,10 @@ public class CustomSQLException extends SQLException {
                 return "Unable to execute update of foreign keys";
             case "count":
                 return "Unable to query for count to construct content";
+            case "hash":
+                return "Unabel to construct for hashmap for semester builder";
+            case "update":
+                return "Unable to excute update query";
             case "overwriteDatabase":
                 return "Unable to overwrite the current database";
             case "dropSemester":
@@ -39,8 +43,16 @@ public class CustomSQLException extends SQLException {
                 return "Unable to upload new semester details.";
             case "teacher":
                 return "Unable to get teacher information";
+            case "executeQuery":
+                return "Unable to execute query";
             case "createDatabase":
                 return "Unable to create the given database";
+            case "printTable":
+                return "Unable to print table content.";
+            case "prepareQuery":
+                return "Unable to prepare query";
+            case "retrieveColumns":
+                return "Unable to retrieve columns.";
             case "noValidation":
                 return "Unable to validate if database exists";
             default:

@@ -2,6 +2,9 @@ package maven.innlevering;
 
 import maven.innlevering.database.DBConnection;
 import maven.innlevering.database.DBTableContentHandler;
+import maven.innlevering.exception.CustomFileNotFoundException;
+import maven.innlevering.exception.CustomIOException;
+import maven.innlevering.exception.CustomSQLException;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;
@@ -27,7 +30,7 @@ public class SearchContent {
      * @throws IOException
      * @throws SQLException
      */
-    public void main() throws IOException, SQLException {
+    public void main() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         tableHandler = new DBTableContentHandler();
         String[] tables = tableHandler.getAllTables();
         tableHandler.printTables(tables);
@@ -58,7 +61,7 @@ public class SearchContent {
      * @throws IOException
      * @throws SQLException
      */
-    public String[] getAllColumns(String sql, int size) throws IOException, SQLException {
+    public String[] getAllColumns(String sql, int size) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String[] tables = new String[ size ];
 
         try (Connection con = database.getConnection();
@@ -72,6 +75,8 @@ public class SearchContent {
                 tables[i] = res.getString(1);
                 i++;
             } while (res.next());
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("retrieveColumns"));
         }
 
         return tables;
@@ -123,7 +128,7 @@ public class SearchContent {
      * @throws IOException
      * @throws SQLException
      */
-    private void printTableContent(String sql, String[] columnName, String searchString) throws IOException, SQLException {
+    private void printTableContent(String sql, String[] columnName, String searchString) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         for(int i = 0; i < columnName.length; i++){
             System.out.printf("%-20S", columnName[i]);
         }
@@ -148,6 +153,8 @@ public class SearchContent {
                 }
                 System.out.println();
             } while (rs.next());
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("printTable"));
         }
         System.out.println();
     }

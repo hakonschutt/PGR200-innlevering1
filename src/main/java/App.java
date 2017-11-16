@@ -3,10 +3,13 @@ import maven.innlevering.database.DBValidationHandler;
 import maven.innlevering.database.ValidateUserConnection;
 import maven.innlevering.database.DBConnection;
 import maven.innlevering.database.DBSemesterPlanHandler;
+import maven.innlevering.exception.CustomFileNotFoundException;
+import maven.innlevering.exception.CustomIOException;
 import maven.innlevering.exception.CustomSQLException;
 import maven.innlevering.exception.ExceptionHandler;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -29,7 +32,7 @@ public class App {
         boolean filesHaveBeenScanned = false;
         try {
             filesHaveBeenScanned = checkForPropertyFile() && useOldConnection();
-        } catch (IOException | SQLException e){
+        } catch ( CustomFileNotFoundException | CustomIOException | CustomSQLException e ){
             ExceptionHandler.sqlException("outdatedConnection");
         }
 
@@ -37,12 +40,13 @@ public class App {
 
         if (!filesHaveBeenScanned) filesHaveBeenScanned = new ValidateUserConnection().runDbValidation();
 
-
-
-        try (Connection con = connect.getConnection()){
+        try {
+            Connection con = connect.getConnection();
             if(con == null) return;
             System.out.println( "Successful connection!" );
-        } catch ( IOException | SQLException e ){
+
+        } catch ( CustomFileNotFoundException | CustomIOException | CustomSQLException e ){
+            System.out.println(e.getMessage());
             return;
         }
 
@@ -52,10 +56,8 @@ public class App {
             DBValidationHandler handler = new DBValidationHandler();
             hasCreatedSemesterPlan = handler.validateIfSemesterPlanExists();
             canCreateSemesterPlan = handler.validateTables();
-        } catch (IOException e){
-            ExceptionHandler.ioException("readProperties");
-        } catch (SQLException e){
-            ExceptionHandler.sqlException("noValidation");
+        } catch (CustomFileNotFoundException | CustomIOException | CustomSQLException e ){
+            System.out.println(e.getMessage());
         }
 
         printInstructions();
@@ -79,7 +81,7 @@ public class App {
      * @throws IOException
      * @throws SQLException
      */
-    private boolean useOldConnection() throws IOException, SQLException {
+    private boolean useOldConnection() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         try (Connection con = connect.getConnection()){
             if(con == null) return false;
 
@@ -91,6 +93,8 @@ public class App {
                 }
                 System.out.print("Not a valid answer. Try again(yes/no): ");
             }
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("connection"));
         }
     }
 
@@ -101,10 +105,8 @@ public class App {
         try {
             FileUploadHandler rf = new FileUploadHandler();
             rf.startInputScan();
-        } catch (IOException e){
-            ExceptionHandler.ioException("readProperties");
-        } catch (SQLException e){
-            ExceptionHandler.sqlException("upload");
+        } catch (CustomFileNotFoundException | CustomIOException | CustomSQLException e){
+            System.out.println(e.getMessage());
         }
     }
 
@@ -137,10 +139,8 @@ public class App {
     private boolean searchForContent() {
         try {
             new SearchContent().main();
-        } catch (IOException e){
-            ExceptionHandler.ioException("readProperties");
-        } catch (SQLException e){
-            ExceptionHandler.sqlException("search");
+        } catch (CustomFileNotFoundException | CustomIOException | CustomSQLException e){
+            System.out.println(e.getMessage());
         }
 
         return false;
@@ -153,10 +153,8 @@ public class App {
     private boolean printTable() {
         try {
             new PrintTableContent().main();
-        } catch (IOException e){
-            ExceptionHandler.ioException("readProperties");
-        } catch (SQLException e){
-            ExceptionHandler.sqlException("print");
+        } catch (CustomFileNotFoundException | CustomIOException | CustomSQLException e){
+            System.out.println(e.getMessage());
         }
 
         return false;
@@ -170,10 +168,8 @@ public class App {
         try {
             new SemesterCreator().main();
             hasCreatedSemesterPlan = true;
-        } catch (IOException e){
-            ExceptionHandler.ioException("readProperties");
-        } catch (SQLException e){
-            ExceptionHandler.sqlException("create");
+        } catch (CustomFileNotFoundException | CustomIOException | CustomSQLException e){
+            System.out.println(e.getMessage());
         }
 
         System.out.print("Do you want to print the plan? (yes/no) ");
@@ -189,10 +185,8 @@ public class App {
     private boolean printSemesterPlan() {
         try {
             new DBSemesterPlanHandler().presentAllSemesterData();
-        } catch (IOException e){
-            ExceptionHandler.ioException("readProperties");
-        } catch (SQLException e){
-            ExceptionHandler.sqlException("semesterPrint");
+        } catch (CustomFileNotFoundException | CustomIOException | CustomSQLException e){
+            System.out.println(e.getMessage());
         }
 
         return false;

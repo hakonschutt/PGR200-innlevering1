@@ -2,6 +2,9 @@ package maven.innlevering;
 
 import maven.innlevering.database.DBConnection;
 import maven.innlevering.database.DBSemesterPlanHandler;
+import maven.innlevering.exception.CustomFileNotFoundException;
+import maven.innlevering.exception.CustomIOException;
+import maven.innlevering.exception.CustomSQLException;
 
 import java.io.IOException;
 import java.sql.*;
@@ -29,7 +32,7 @@ public class SemesterRuleController {
      * @throws IOException
      * @throws SQLException
      */
-    public void startSemesterPlan() throws IOException, SQLException {
+    public void startSemesterPlan() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         System.out.println();
         semesterPlanHandler.createTableForSemester();
 
@@ -90,7 +93,7 @@ public class SemesterRuleController {
      * @throws IOException
      * @throws SQLException
      */
-    private void createTotalColumn() throws IOException, SQLException {
+    private void createTotalColumn() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         executeUpdateQuery("ALTER TABLE subject ADD total int(2) DEFAULT 0 NOT NULL");
     }
 
@@ -99,7 +102,7 @@ public class SemesterRuleController {
      * @throws IOException
      * @throws SQLException
      */
-    private void deleteTotalColumn() throws IOException, SQLException {
+    private void deleteTotalColumn() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         executeUpdateQuery("ALTER TABLE subject DROP COLUMN total");
     }
 
@@ -110,7 +113,7 @@ public class SemesterRuleController {
      * @throws IOException
      * @throws SQLException
      */
-    private void createInWeekColumn() throws IOException, SQLException {
+    private void createInWeekColumn() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         executeUpdateQuery("ALTER TABLE subject ADD isInWeek" + currentWeek + " int(1) DEFAULT 0 NOT NULL");
     }
 
@@ -119,7 +122,7 @@ public class SemesterRuleController {
      * @throws IOException
      * @throws SQLException
      */
-    private void deleteInWeekColumn() throws IOException, SQLException {
+    private void deleteInWeekColumn() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         executeUpdateQuery("ALTER TABLE subject DROP COLUMN isInWeek" + currentWeek);
     }
 
@@ -128,7 +131,7 @@ public class SemesterRuleController {
      * @throws IOException
      * @throws SQLException
      */
-    private void createFieldsForDay() throws IOException, SQLException {
+    private void createFieldsForDay() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         executeUpdateQuery("ALTER TABLE field_of_study ADD isOn" + currentDay + " int(1) DEFAULT 0 NOT NULL");
         executeUpdateQuery("ALTER TABLE teacher ADD isOn" + currentDay + " int(1) DEFAULT 0 NOT NULL");
     }
@@ -138,7 +141,7 @@ public class SemesterRuleController {
      * @throws IOException
      * @throws SQLException
      */
-    private void deleteFieldsForDay() throws IOException, SQLException {
+    private void deleteFieldsForDay() throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         executeUpdateQuery("ALTER TABLE field_of_study DROP COLUMN isOn" + currentDay);
         executeUpdateQuery("ALTER TABLE teacher DROP COLUMN isOn" + currentDay);
     }
@@ -149,10 +152,12 @@ public class SemesterRuleController {
      * @throws IOException
      * @throws SQLException
      */
-    private void executeUpdateQuery(String sql) throws IOException, SQLException {
+    private void executeUpdateQuery(String sql) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         try (Connection con = database.getConnection();
              Statement stmt = con.createStatement()) {
             stmt.executeUpdate(sql);
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("update"));
         }
     }
 
@@ -165,7 +170,7 @@ public class SemesterRuleController {
      * @throws IOException
      * @throws SQLException
      */
-    private boolean checkSingleDay(int day) throws IOException, SQLException {
+    private boolean checkSingleDay(int day) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String sql = getPossibleSubjectsQuery(day);
         HashMap<String, Integer> subjects = getItemInHashMap(sql);
 
@@ -175,6 +180,7 @@ public class SemesterRuleController {
             deleteFieldsForDay();
             return false;
         }
+
         return true;
     }
 
@@ -215,7 +221,7 @@ public class SemesterRuleController {
      * @throws IOException
      * @throws SQLException
      */
-    private HashMap getItemInHashMap(String sql) throws IOException, SQLException {
+    private HashMap getItemInHashMap(String sql) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         HashMap<String, Integer> hash = new HashMap<>();
         try (Connection con = database.getConnection();
              Statement stmt = con.createStatement()) {
@@ -226,6 +232,8 @@ public class SemesterRuleController {
             do {
                 hash.put(res.getString(1), res.getInt(2));
             } while (res.next());
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("hash"));
         }
 
         return hash;
@@ -239,7 +247,7 @@ public class SemesterRuleController {
      * @throws IOException
      * @throws SQLException
      */
-    private void checkIfLecturesCanOccur(HashMap subjects) throws IOException, SQLException {
+    private void checkIfLecturesCanOccur(HashMap subjects) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         HashMap<String, Integer> rooms;
         for(int j = 1; j <= 2; j++){
             String roomSql = getPossibleRooms();
@@ -277,7 +285,7 @@ public class SemesterRuleController {
      * @throws IOException
      * @throws SQLException
      */
-    private void updateFields(String subject) throws IOException, SQLException {
+    private void updateFields(String subject) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         executeUpdateQuery("UPDATE subject SET total = total + 1 WHERE subject_id = '" + subject + "'");
         executeUpdateQuery("UPDATE subject SET isInWeek" + currentWeek + " = 1 WHERE subject_id = '" + subject + "'");
         executeUpdateQuery("UPDATE teacher SET isON" + currentDay + " = 1 WHERE id IN (SELECT teacher_id FROM teacher_subject WHERE subject_id = '" + subject + "' )");
@@ -291,7 +299,7 @@ public class SemesterRuleController {
      * @throws IOException
      * @throws SQLException
      */
-    private boolean checkIfTeacherHasLecture(String subject) throws IOException, SQLException {
+    private boolean checkIfTeacherHasLecture(String subject) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String sql= "SELECT COUNT(*) as total " +
                     "FROM teacher as t " +
                     "JOIN teacher_subject as ts " +
@@ -308,7 +316,7 @@ public class SemesterRuleController {
      * @throws IOException
      * @throws SQLException
      */
-    private boolean checkIfStudyHasLecture(String subject) throws IOException, SQLException {
+    private boolean checkIfStudyHasLecture(String subject) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         String sql= "SELECT COUNT(*) as total " +
                     "FROM field_of_study " +
                     "WHERE isOn" + currentDay + " = 0 AND study_id IN " +
@@ -329,12 +337,14 @@ public class SemesterRuleController {
      * @throws IOException
      * @throws SQLException
      */
-    private int executeCountQuery(String sql) throws IOException, SQLException {
+    private int executeCountQuery(String sql) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
         try (Connection con = database.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
             if(!res.next()) throw new SQLException();
             return res.getInt("total");
+        } catch (SQLException e){
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("count"));
         }
     }
 
