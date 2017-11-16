@@ -1,3 +1,5 @@
+package maven;
+
 import maven.innlevering.*;
 import maven.innlevering.database.DBValidationHandler;
 import maven.innlevering.database.ValidateUserConnection;
@@ -8,13 +10,12 @@ import maven.innlevering.exception.CustomIOException;
 import maven.innlevering.exception.CustomSQLException;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
 
 /**
- * App class is the applications runDbValidation class. It is where the use is asked to choose from a string of options
+ * maven.App class is the applications runDbValidation class. It is where the use is asked to choose from a string of options
  * Ths user can execute semester print, search and table print.
  */
 public class App {

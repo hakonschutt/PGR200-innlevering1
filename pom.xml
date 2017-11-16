@@ -27,7 +27,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>App</mainClass>
+                    <mainClass>maven.App</mainClass>
                 </configuration>
             </plugin>
         </plugins>

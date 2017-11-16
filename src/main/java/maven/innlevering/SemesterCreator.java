@@ -32,7 +32,7 @@ public class SemesterCreator {
     /**
      * Method lets the user set a semester start and end
      */
-    private void setSemester(){
+    public void setSemester(){
         Scanner sc = new Scanner(System.in);
 
         boolean correct = false;
