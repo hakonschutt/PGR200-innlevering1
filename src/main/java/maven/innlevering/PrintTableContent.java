@@ -61,7 +61,7 @@ public class PrintTableContent {
 
             ResultSet res = stmt.executeQuery(sql);
             if(!res.next()) {
-                throw new SQLException("No columns whore found");
+                throw new CustomSQLException(CustomSQLException.getErrorMessage("NoDataFound"));
             }
 
             int i = 0;
@@ -93,21 +93,24 @@ public class PrintTableContent {
      * @throws CustomSQLException
      */
     private void printTableContent(String sql, String[] columnName) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
-        for(int i = 0; i < columnName.length; i++){
-            System.out.printf("%-20S", columnName[i]);
-        }
-        System.out.println();
-        for(int i = 0; i < columnName.length; i++){
-            System.out.printf("%-20S", "--------------------");
-        }
-        System.out.println();
 
         try (Connection con = database.getConnection();
              Statement stmt = con.createStatement()) {
             ResultSet res = stmt.executeQuery(sql);
+
             if(!res.next()) {
-                throw new SQLException("No tables where found");
+                throw new CustomSQLException(CustomSQLException.getErrorMessage("NoDataFound"));
             }
+
+            for(int i = 0; i < columnName.length; i++){
+                System.out.printf("%-20S", columnName[i]);
+            }
+            System.out.println();
+            for(int i = 0; i < columnName.length; i++){
+                System.out.printf("%-20S", "--------------------");
+            }
+            System.out.println();
+
             do {
                 for(int i = 0; i < columnName.length; i++){
                     System.out.printf("%-20S", res.getObject(columnName[i]));
@@ -115,7 +118,7 @@ public class PrintTableContent {
                 System.out.println();
             } while (res.next());
         } catch (SQLException e) {
-            throw new CustomSQLException(CustomSQLException.getErrorMessage("printTable"));
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("NoDataFound"));
         }
     }
 }

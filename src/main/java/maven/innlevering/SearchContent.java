@@ -129,14 +129,6 @@ public class SearchContent {
      * @throws CustomSQLException
      */
     private void printTableContent(String sql, String[] columnName, String searchString) throws CustomFileNotFoundException, CustomIOException, CustomSQLException {
-        for(int i = 0; i < columnName.length; i++){
-            System.out.printf("%-20S", columnName[i]);
-        }
-        System.out.println();
-        for(int i = 0; i < columnName.length; i++){
-            System.out.printf("%-20S", "--------------------");
-        }
-        System.out.println();
 
         searchString = "%" + searchString + "%";
 
@@ -144,9 +136,20 @@ public class SearchContent {
              PreparedStatement ps = con.prepareStatement(sql + "?")) {
             ps.setString(1, searchString);
             ResultSet rs = ps.executeQuery();
+
             if(!rs.next()) {
-                System.out.println("! no data was found !");
+                throw new CustomSQLException(CustomSQLException.getErrorMessage("NoDataFound"));
             }
+
+            for(int i = 0; i < columnName.length; i++){
+                System.out.printf("%-20S", columnName[i]);
+            }
+            System.out.println();
+            for(int i = 0; i < columnName.length; i++){
+                System.out.printf("%-20S", "--------------------");
+            }
+            System.out.println();
+
             do {
                 for(int i = 0; i < columnName.length; i++){
                     System.out.printf("%-20S", rs.getObject(columnName[i]));
@@ -154,7 +157,7 @@ public class SearchContent {
                 System.out.println();
             } while (rs.next());
         } catch (SQLException e){
-            throw new CustomSQLException(CustomSQLException.getErrorMessage("printTable"));
+            throw new CustomSQLException(CustomSQLException.getErrorMessage("NoDataFound"));
         }
         System.out.println();
     }

@@ -63,7 +63,13 @@ public class App {
         printInstructions();
 
         while( !quit ){
-            quit = runApp();
+            try {
+                Connection con = connect.getConnection();
+                quit = con != null && runApp();
+            } catch (CustomFileNotFoundException | CustomIOException | CustomSQLException e){
+                System.out.println(e.getMessage());
+                break;
+            }
         }
     }
 
