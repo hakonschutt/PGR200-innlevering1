@@ -71,7 +71,7 @@ public class SearchContent {
             int i = 0;
             ResultSet res = stmt.executeQuery(sql);
             if(!res.next()) {
-                throw new SQLException("No columns where found");
+                throw new CustomSQLException(CustomSQLException.getErrorMessage("retrieveColumns"));
             }
             do {
                 tables[i] = res.getString(1);

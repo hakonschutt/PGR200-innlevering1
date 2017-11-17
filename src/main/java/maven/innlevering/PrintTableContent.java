@@ -6,7 +6,6 @@ import maven.innlevering.exception.CustomFileNotFoundException;
 import maven.innlevering.exception.CustomIOException;
 import maven.innlevering.exception.CustomSQLException;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;

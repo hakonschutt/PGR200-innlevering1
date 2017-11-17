@@ -27,7 +27,7 @@ public class CustomSQLException extends SQLException {
     public static String getErrorMessage(String exceptionCode){
         switch(exceptionCode){
             case "NoDataFound":
-                return "No data was found!";
+                return "No data was found for the given search.";
             case "userConnection":
                 return "Unable to connect with the input values";
             case "connection":

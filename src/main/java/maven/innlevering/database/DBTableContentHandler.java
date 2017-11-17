@@ -168,14 +168,14 @@ public class DBTableContentHandler {
                 String temp = sc.nextLine();
                 asw = Integer.parseInt(temp);
             } catch (InputMismatchException | NumberFormatException e){
-                System.out.print("The input is not av valid integer. Try again: ");
+                System.err.println("The entry is not av valid integer. Try again: ");
                 continue;
             }
 
             if (asw < size + 1 && asw > 0){
                 return asw;
             } else {
-                System.out.print("Input was out of range. Try again: ");
+                System.err.println("The entry is out of range. Try again: ");
             }
         }
         return -1;

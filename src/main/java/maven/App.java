@@ -33,7 +33,7 @@ public class App {
         try {
             filesHaveBeenScanned = checkForPropertyFile() && useOldConnection();
         } catch ( CustomFileNotFoundException | CustomIOException | CustomSQLException e ){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage() + "\n");
         }
 
         boolean quit = false;
@@ -46,7 +46,7 @@ public class App {
             System.out.println( "Successful connection!" );
 
         } catch ( CustomFileNotFoundException | CustomIOException | CustomSQLException e ){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage() + "\n");
             return;
         }
 
@@ -57,7 +57,7 @@ public class App {
             hasCreatedSemesterPlan = handler.validateIfSemesterPlanExists();
             canCreateSemesterPlan = handler.validateTables();
         } catch (CustomFileNotFoundException | CustomIOException | CustomSQLException e ){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage() + "\n");
         }
 
         printInstructions();
@@ -67,7 +67,7 @@ public class App {
                 Connection con = connect.getConnection();
                 quit = con != null && runApp();
             } catch (CustomFileNotFoundException | CustomIOException | CustomSQLException e){
-                System.out.println(e.getMessage());
+                System.err.println(e.getMessage() + "\n");
                 break;
             }
         }
@@ -113,7 +113,7 @@ public class App {
             FileUploadHandler rf = new FileUploadHandler();
             rf.startInputScan();
         } catch (CustomFileNotFoundException | CustomIOException | CustomSQLException e){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage() + "\n");
         }
     }
 
@@ -147,7 +147,7 @@ public class App {
         try {
             new SearchContent().main();
         } catch (CustomFileNotFoundException | CustomIOException | CustomSQLException e){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage() + "\n");
         }
 
         return false;
@@ -161,7 +161,7 @@ public class App {
         try {
             new PrintTableContent().main();
         } catch (CustomFileNotFoundException | CustomIOException | CustomSQLException e){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage() + "\n");
         }
 
         return false;
@@ -176,7 +176,7 @@ public class App {
             new SemesterCreator().main();
             hasCreatedSemesterPlan = true;
         } catch (CustomFileNotFoundException | CustomIOException | CustomSQLException e){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage() + "\n");
         }
 
         System.out.print("Do you want to print the plan? (yes/no) ");
@@ -193,7 +193,7 @@ public class App {
         try {
             new DBSemesterPlanHandler().presentAllSemesterData();
         } catch (CustomFileNotFoundException | CustomIOException | CustomSQLException e){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage() + "\n");
         }
 
         return false;
@@ -207,7 +207,6 @@ public class App {
     public boolean runApp() {
         System.out.print("What command do you want to execute: ");
         String asw = sc.nextLine().trim();
-        System.out.println();
         switch (asw) {
             case "intro":
                 return printInstructions();
@@ -227,7 +226,7 @@ public class App {
                 break;
         }
 
-        System.out.println("Not a valid command. Try again!");
+        System.err.println("Not a valid command. Try again!\n");
         return false;
     }
 
@@ -236,6 +235,6 @@ public class App {
      */
     public static void main( String[] args ) {
         new App().start();
-        System.out.println("Quiting program...");
+        System.out.println("\nQuiting program...");
     }
 }

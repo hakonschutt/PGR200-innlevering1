@@ -36,7 +36,7 @@ public class DBUploadAsThread implements Runnable {
             insertQuery(file);
             System.out.println("Finished importing " + file);
         } catch (CustomFileNotFoundException | CustomIOException | CustomSQLException e){
-            System.out.println("Unable to finish import of " + file + ". " + e.getMessage());
+            System.err.println("\nUnable to finish import of " + file + ". " + e.getMessage() + "\n");
         }
     }
 

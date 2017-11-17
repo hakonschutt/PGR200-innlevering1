@@ -50,13 +50,11 @@ public class SemesterCreator {
                     System.out.println("Creating a semester plan from week " + rc.getStartWeek() + " to week " + rc.getEndWeek() + "...");
                     correct = true;
                 } else {
-                    System.out.println("The semester can not be shorter then 12weeks.");
-                    System.out.println("Set a different end and start point.");
-                    System.out.println();
+                    System.err.println("The semester can not be shorter then 12weeks.");
+                    System.out.println("Set a different end and start point.\n");
                 }
             } else {
-                System.out.println("Not valid inputs! Try again.");
-                System.out.println();
+                System.err.println("Not valid inputs! Try again.\n");
             }
         }
     }

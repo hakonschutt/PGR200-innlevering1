@@ -36,7 +36,7 @@ public class FileUploadHandler {
                 threads[i].join();
             }
         } catch (InterruptedException e) {
-            System.out.println("Unable to join threads from upload.");
+            System.err.println("\nUnable to join threads from upload.\n");
         }
 
         uploadForeignKeys(files);
