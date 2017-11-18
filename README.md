@@ -1,5 +1,7 @@
 #Semester planer (JDBC assignment)
 
+youtube video: https://youtu.be/pc_xO67MzB8
+
 To make sure this program runs as planned you need to make sure you have the correct syntax for the txt files. The program will not upload unless the syntax is correct. 
 You are able to do some operations when connection to a database without the necassary tables. like search and print tables. 
 
