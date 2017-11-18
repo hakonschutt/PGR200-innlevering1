@@ -159,9 +159,7 @@ public class DBTableContentHandler {
      * @return
      */
     public int userChoice(int size) {
-        boolean wrongAns = true;
-
-        while(wrongAns){
+        while(true){
             int asw = 0;
 
             try {
@@ -178,7 +176,6 @@ public class DBTableContentHandler {
                 System.err.println("The entry is out of range. Try again: ");
             }
         }
-        return -1;
     }
 
     /**

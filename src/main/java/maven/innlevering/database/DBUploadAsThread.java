@@ -19,9 +19,6 @@ public class DBUploadAsThread implements Runnable {
     private String file;
     private DBConnection db = new DBConnection();
 
-    //Used for testing.
-    public DBUploadAsThread() {}
-
     public DBUploadAsThread(String file) {
         this.file = file;
     }

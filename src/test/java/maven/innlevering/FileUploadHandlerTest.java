@@ -1,14 +1,8 @@
 package maven.innlevering;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-
 import java.util.Arrays;
-
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by hakonschutt on 16/11/2017.
