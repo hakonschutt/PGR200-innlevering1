@@ -1,11 +1,11 @@
-#Semester planer (JDBC assignment)
+# Semester planer (JDBC assignment)
 
 youtube video: https://youtu.be/pc_xO67MzB8
 
 To make sure this program runs as planned you need to make sure you have the correct syntax for the txt files. The program will not upload unless the syntax is correct. 
 You are able to do some operations when connection to a database without the necassary tables. like search and print tables. 
 
-#####Correct syntax for txt file:
+##### Correct syntax for txt file:
 
     table_name
     column_name/column_name/column_name
@@ -16,7 +16,7 @@ You are able to do some operations when connection to a database without the nec
     data/data/data
     data/data/data
     
-###This program has 3 main functions 
+### This program has 3 main functions 
 1. Search in database
 2. Print tables in database
 3. Create semester plan
